@@ -65,9 +65,8 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       }
 
       final regData = jsonDecode(regResponse.body);
-      final userId = regData["user"]["id"]; // depends on your API response
+      final userId = regData["user"]["id"];
 
-      // 2️⃣ Set PIN
       final pinResponse = await http.post(
         Uri.parse("https://www.outletexpense.xyz/api/set-pin"),
         headers: {"Content-Type": "application/json"},

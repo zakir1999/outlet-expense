@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:outlet_expense/Signup/bloc/sign_up_bloc.dart';
 
+import '../../Custom-Component/Submit_Button.dart';
+import '../../Custom-Component/TextField.dart';
+
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 
@@ -20,6 +23,11 @@ class _SignUpView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final horizontalPadding = screenWidth < 600 ? 16.0 : 32.0;
+    final verticalPadding = screenWidth < 600 ? 16.0 : 24.0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -42,160 +50,125 @@ class _SignUpView extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 600),
-          padding: const EdgeInsets.all(20),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: BlocListener<SignUpBloc, SignUpState>(
-              listener: (context, state) {
-                if (state.status == SignUpStatus.success) {
-                  Navigator.pushReplacementNamed(context, "/home");
-                }
-                if (state.status == SignUpStatus.failure) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Registration failed")),
-                  );
-                }
-              },
-              child: BlocBuilder<SignUpBloc, SignUpState>(
-                builder: (context, state) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Gap(20),
-                              if (state.step == 1) _StepUserOutlet(),
-                              if (state.step == 2) _StepOutletType(),
-                              if (state.step == 3) _StepEmailPhone(),
-                              if (state.step == 4) _StepPassword(),
-                              if (state.step == 5) _StepPin(),
-                              if (state.step == 6) _StepConfirmPin(),
-                              const Gap(20),
-                            ],
+      body: BlocProvider(
+        create: (_) => SignUpBloc(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.only(
+                top: screenHeight * 0.05,
+                left: horizontalPadding,
+                right: horizontalPadding,
+                bottom: verticalPadding,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - verticalPadding * 2,
+                ),
+                child: IntrinsicHeight(
+                  child: Center(
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: screenWidth < 600 ? double.infinity : 600,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: BlocListener<SignUpBloc, SignUpState>(
+                          listener: (context, state) {
+                            if (state.status == SignUpStatus.success) {
+                              Navigator.pushReplacementNamed(context, "/home");
+                            }
+                            if (state.status == SignUpStatus.failure) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Registration failed"),
+                                ),
+                              );
+                            }
+                          },
+                          child: BlocBuilder<SignUpBloc, SignUpState>(
+                            builder: (context, state) {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Gap(20),
+                                          if (state.step == 1)
+                                            _StepUserOutlet(),
+                                          if (state.step == 2)
+                                            _StepOutletType(),
+                                          if (state.step == 3)
+                                            _StepEmailPhone(),
+                                          if (state.step == 4) _StepPassword(),
+                                          if (state.step == 5) _StepPin(),
+                                          if (state.step == 6)
+                                            _StepConfirmPin(),
+                                          const Gap(30),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 10,
+                                              bottom: 16,
+                                            ),
+                                            child: BlocBuilder<SignUpBloc, SignUpState>(
+                                              builder: (context, state) {
+                                                return SizedBox(
+                                                  width: double.infinity,
+                                                  child: CustomButton(
+                                                    text: state.step < 6
+                                                        ? "Next"
+                                                        : "Finish",
+                                                    isLoading:
+                                                        state.status ==
+                                                        SignUpStatus.loading,
+                                                    onPressed:
+                                                        state.status ==
+                                                            SignUpStatus.loading
+                                                        ? null
+                                                        : () {
+                                                            if (state.step <
+                                                                6) {
+                                                              context
+                                                                  .read<
+                                                                    SignUpBloc
+                                                                  >()
+                                                                  .add(
+                                                                    NextStep(),
+                                                                  );
+                                                            } else {
+                                                              context
+                                                                  .read<
+                                                                    SignUpBloc
+                                                                  >()
+                                                                  .add(
+                                                                    SubmitSignUp(),
+                                                                  );
+                                                            }
+                                                          },
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ),
-
-                      // Bottom Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (state.step > 1)
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    context.read<SignUpBloc>().add(
-                                      PreviousStep(),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 6,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    backgroundColor: const Color.fromARGB(
-                                      255,
-                                      105,
-                                      105,
-                                      105,
-                                    ),
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  child: const Text(
-                                    "Back",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: BlocBuilder<SignUpBloc, SignUpState>(
-                                builder: (context, state) {
-                                  return SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed:
-                                          state.status == SignUpStatus.loading
-                                          ? null
-                                          : () {
-                                              if (state.step < 6) {
-                                                context.read<SignUpBloc>().add(
-                                                  NextStep(),
-                                                );
-                                              } else {
-                                                context.read<SignUpBloc>().add(
-                                                  SubmitSignUp(),
-                                                );
-                                              }
-                                            },
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 6,
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            50,
-                                          ),
-                                        ),
-                                        backgroundColor: const Color.fromARGB(
-                                          255,
-                                          35,
-                                          59,
-                                          201,
-                                        ),
-                                        foregroundColor: Colors.white,
-                                      ),
-                                      child:
-                                          state.status == SignUpStatus.loading
-                                          ? const SizedBox(
-                                              height: 22,
-                                              width: 22,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2.5,
-                                                color: Colors.white,
-                                              ),
-                                            )
-                                          : Text(
-                                              state.step < 6
-                                                  ? "Next"
-                                                  : "Finish",
-                                              style: const TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                letterSpacing: 1.2,
-                                              ),
-                                            ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
@@ -209,71 +182,52 @@ class _StepUserOutlet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextFormField(
-          keyboardType: TextInputType.name,
-          decoration: InputDecoration(
-            labelText: 'User Name',
-            hintText: 'Enter your name',
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 18,
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey.shade300, width: 1.2),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: Color.fromARGB(255, 236, 239, 241),
-                width: 2,
-              ),
-            ),
+        Container(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Provide us your & \n Store Name',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.left,
           ),
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
+        ),
+        Gap(10),
+        Container(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Provide us your & Store Name',
+            style: TextStyle(
+              fontSize: 16,
+              color: const Color.fromARGB(255, 97, 96, 96),
+            ),
+            textAlign: TextAlign.left,
           ),
+        ),
+        Gap(10),
+        CustomTextField(
+          label: "Woner name",
+          hint: 'Woner name',
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Woner name can't be empty";
+            }
+          },
+          keyboardType: TextInputType.text,
           onChanged: (value) {
             context.read<SignUpBloc>().add(UserNameChanged(value));
           },
         ),
-        const Gap(16),
-        TextFormField(
-          keyboardType: TextInputType.name,
-          decoration: InputDecoration(
-            labelText: 'Outlet Name',
-            hintText: 'Enter outlet name',
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 18,
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey.shade300, width: 1.2),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: Color.fromARGB(255, 236, 239, 241),
-                width: 2,
-              ),
-            ),
-          ),
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-          ),
+        const Gap(20),
+        CustomTextField(
+          label: "Outlet name",
+          hint: 'Outlet name',
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Outlet name can't be empty";
+            }
+          },
+          keyboardType: TextInputType.text,
           onChanged: (value) {
-            context.read<SignUpBloc>().add(OutletNameChanged(value));
+            context.read<SignUpBloc>().add(UserNameChanged(value));
           },
         ),
       ],

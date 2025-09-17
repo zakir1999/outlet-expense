@@ -5,6 +5,7 @@ import 'package:outlet_expense/Signup/bloc/sign_up_bloc.dart';
 
 import '../../Custom-Component/Submit_Button.dart';
 import '../../Custom-Component/TextField.dart';
+import './StepOutLetType.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -99,8 +100,7 @@ class _SignUpView extends StatelessWidget {
                                           const Gap(20),
                                           if (state.step == 1)
                                             _StepUserOutlet(),
-                                          if (state.step == 2)
-                                            _StepOutletType(),
+                                          if (state.step == 2) StepOutletType(),
                                           if (state.step == 3)
                                             _StepEmailPhone(),
                                           if (state.step == 4) _StepPassword(),
@@ -231,25 +231,6 @@ class _StepUserOutlet extends StatelessWidget {
           },
         ),
       ],
-    );
-  }
-}
-
-class _StepOutletType extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      decoration: const InputDecoration(labelText: "Outlet Type"),
-      items: const [
-        DropdownMenuItem(value: "Shop", child: Text("Shop")),
-        DropdownMenuItem(value: "Restaurant", child: Text("Restaurant")),
-        DropdownMenuItem(value: "Other", child: Text("Other")),
-      ],
-      onChanged: (v) {
-        if (v != null) {
-          context.read<SignUpBloc>().add(OutletTypeChanged(v));
-        }
-      },
     );
   }
 }

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+
 import 'package:outlet_expense/login/bloc/login_bloc.dart';
-import 'package:outlet_expense/ui/Signup/sign_up_screen.dart';
+import 'package:outlet_expense/Signup/view/sign_up_screen.dart';
+import '../../Custom-Component/Password.dart';
+import '../../Custom-Component/Submit_Button.dart';
+import '../../Custom-Component/TextField.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool isPasswordVisible = false;
   late final LoginBloc _loginBloc;
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
@@ -38,10 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
         title: const Text(
           "Login",
           style: TextStyle(
-            fontWeight: FontWeight.bold, // Bold text
-            fontFamily: 'Times New Roman', // Times New Roman font
-            fontSize: 20, // Optional: adjust size
-            color: Colors.black, // Visible on white background
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Times New Roman',
+            fontSize: 20,
+            color: Colors.black,
           ),
         ),
         backgroundColor: Colors.white,
@@ -60,26 +65,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     buildWhen: (previous, current) =>
                         previous.email != current.email,
                     builder: (context, state) {
-                      return TextFormField(
+                      return CustomTextField(
+                        label: "Email",
+                        hint: "Email",
                         keyboardType: TextInputType.emailAddress,
                         focusNode: emailFocusNode,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          hintText: 'Email',
-
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 18,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        prefixIcon: Icons.email,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Email cannot be empty";
+                          }
+                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                            return "Enter a valid email";
+                          }
+                          return null;
+                        },
                         onChanged: (value) {
                           context.read<LoginBloc>().add(
                             EmailChanged(email: value),
@@ -89,107 +89,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const Gap(16),
-
                   BlocBuilder<LoginBloc, LoginState>(
                     buildWhen: (previous, current) =>
                         previous.password != current.password,
                     builder: (context, state) {
-                      bool isPasswordVisible = false;
-                      return StatefulBuilder(
-                        builder: (context, setState) {
-                          return TextFormField(
-                            keyboardType: TextInputType.visiblePassword,
-                            focusNode: passwordFocusNode,
-                            obscureText: !isPasswordVisible,
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              hintText: 'Password',
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 18,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  isPasswordVisible
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: Color.fromARGB(255, 105, 105, 105),
-                                ),
-                                onPressed: () {
-                                  setState(
-                                    () =>
-                                        isPasswordVisible = !isPasswordVisible,
-                                  );
-                                },
-                              ),
-                            ),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            onChanged: (value) {
-                              context.read<LoginBloc>().add(
-                                PasswordChanged(password: value),
-                              );
-                            },
+                      return CustomPasswordField(
+                        label: "Password",
+                        hint: "Password",
+                        focusNode: passwordFocusNode,
+                        onChanged: (value) {
+                          context.read<LoginBloc>().add(
+                            PasswordChanged(password: value),
                           );
                         },
                       );
                     },
                   ),
                   const Gap(24),
-
                   BlocBuilder<LoginBloc, LoginState>(
                     builder: (context, state) {
-                      return SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: state.loginStatus == LoginStatus.loading
-                              ? null
-                              : () {
-                                  context.read<LoginBloc>().add(
-                                    const LoginApi(),
-                                  );
-                                },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 6,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 16,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              35,
-                              59,
-                              201,
-                            ),
-                            foregroundColor: Colors.white,
-                          ),
-                          child: state.loginStatus == LoginStatus.loading
-                              ? const SizedBox(
-                                  height: 22,
-                                  width: 22,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                        ),
+                      return CustomButton(
+                        text: 'Login',
+                        isLoading: state.loginStatus == LoginStatus.loading,
+                        onPressed: () {
+                          context.read<LoginBloc>().add(const LoginApi());
+                        },
                       );
                     },
                   ),

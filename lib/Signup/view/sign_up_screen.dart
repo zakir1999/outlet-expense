@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:outlet_expense/Signup/bloc/sign_up_bloc.dart';
 
-import '../../Custom-Component/Submit_Button.dart';
-import '../../Custom-Component/TextField.dart';
+import '../../Widgets/password.dart';
+import '../../Widgets/custom_button.dart';
+import '../../Widgets/textfield.dart';
 import './StepOutLetType.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -176,7 +177,7 @@ class _SignUpView extends StatelessWidget {
 }
 
 class _StepUserOutlet extends StatelessWidget {
-  const _StepUserOutlet({super.key});
+  const _StepUserOutlet();
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +211,7 @@ class _StepUserOutlet extends StatelessWidget {
             if (value == null || value.isEmpty) {
               return "Woner name can't be empty";
             }
+            return null;
           },
           keyboardType: TextInputType.text,
           onChanged: (value) {
@@ -224,6 +226,7 @@ class _StepUserOutlet extends StatelessWidget {
             if (value == null || value.isEmpty) {
               return "Outlet name can't be empty";
             }
+            return null;
           },
           keyboardType: TextInputType.text,
           onChanged: (value) {
@@ -236,18 +239,57 @@ class _StepUserOutlet extends StatelessWidget {
 }
 
 class _StepEmailPhone extends StatelessWidget {
+  final emailFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextFormField(
-          decoration: const InputDecoration(labelText: "Email"),
-          onChanged: (v) => context.read<SignUpBloc>().add(EmailChanged(v)),
+        BlocBuilder<SignUpBloc, SignUpState>(
+          buildWhen: (previous, current) => previous.email != current.email,
+          builder: (context, state) {
+            return CustomTextField(
+              label: "Email",
+              hint: "Enter your E-mail",
+              keyboardType: TextInputType.emailAddress,
+              focusNode: emailFocusNode,
+              prefixIcon: Icons.email_outlined,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Email cannot be empty";
+                }
+                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                  return "Enter a valid email";
+                }
+                return null;
+              },
+              onChanged: (value) {
+                context.read<SignUpBloc>().add(EmailChanged(value));
+              },
+            );
+          },
         ),
         const Gap(16),
-        TextFormField(
-          decoration: const InputDecoration(labelText: "Phone"),
-          onChanged: (v) => context.read<SignUpBloc>().add(PhoneChanged(v)),
+        BlocBuilder<SignUpBloc, SignUpState>(
+          buildWhen: (previous, current) => previous.email != current.email,
+          builder: (context, state) {
+            return CustomTextField(
+              label: "Phone",
+              hint: "Enter your phone number",
+              keyboardType: TextInputType.phone,
+              focusNode: emailFocusNode,
+              prefixIcon: Icons.phone_outlined,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Phone cannot be empty";
+                } else {
+                  return null;
+                }
+              },
+              onChanged: (value) {
+                context.read<SignUpBloc>().add(PhoneChanged(value));
+              },
+            );
+          },
         ),
       ],
     );
@@ -255,21 +297,40 @@ class _StepEmailPhone extends StatelessWidget {
 }
 
 class _StepPassword extends StatelessWidget {
+  final passwordFocusNode = FocusNode();
+  final confirmPasswordChanged = FocusNode();
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextFormField(
-          obscureText: true,
-          decoration: const InputDecoration(labelText: "Password"),
-          onChanged: (v) => context.read<SignUpBloc>().add(PasswordChanged(v)),
+        BlocBuilder<SignUpBloc, SignUpState>(
+          buildWhen: (previous, current) =>
+              previous.password != current.password,
+          builder: (context, state) {
+            return CustomPasswordField(
+              label: "Password",
+              hint: "Password",
+              focusNode: passwordFocusNode,
+              onChanged: (value) {
+                context.read<SignUpBloc>().add(PasswordChanged(value));
+              },
+            );
+          },
         ),
         const Gap(16),
-        TextFormField(
-          obscureText: true,
-          decoration: const InputDecoration(labelText: "Confirm Password"),
-          onChanged: (v) =>
-              context.read<SignUpBloc>().add(ConfirmPasswordChanged(v)),
+        BlocBuilder<SignUpBloc, SignUpState>(
+          buildWhen: (previous, current) =>
+              previous.password != current.password,
+          builder: (context, state) {
+            return CustomPasswordField(
+              label: "confirm Password",
+              hint: "Confirm Password",
+              focusNode: confirmPasswordChanged,
+              onChanged: (value) {
+                context.read<SignUpBloc>().add(ConfirmPasswordChanged(value));
+              },
+            );
+          },
         ),
       ],
     );

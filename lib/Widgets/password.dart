@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './TextField.dart';
+import 'TextField.dart';
 
 class CustomPasswordField extends StatefulWidget {
   final String label;
@@ -35,7 +35,7 @@ class _CustomPasswordFieldState extends State<CustomPasswordField> {
       obscureText: !isPasswordVisible,
       focusNode: widget.focusNode,
       controller: widget.controller,
-      prefixIcon: Icons.lock_outline,
+
       suffixIcon: isPasswordVisible ? Icons.visibility : Icons.visibility_off,
       onSuffixTap: () {
         setState(() {

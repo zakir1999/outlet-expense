@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-import '../../login/bloc/login_bloc.dart';
+import '../../Widgets/custom_button.dart';
+import '../bloc/login_bloc.dart';
 import '../../Signup/view/sign_up_screen.dart';
-import '../../Custom-Component/Password.dart';
-import '../../Custom-Component/Submit_Button.dart';
-import '../../Custom-Component/TextField.dart';
+import '../../Widgets/password.dart';
+import '../../Widgets/textField.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();

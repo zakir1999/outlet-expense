@@ -1,176 +1,153 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../Signup/bloc/sign_up_bloc.dart';
-import 'package:gap/gap.dart';
-import './LockRadioList.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import '../blocs/signup_bloc.dart';
+// import '../blocs/signup_event.dart';
+// import '../blocs/signup_state.dart';
+// import '../widgets/common_app_bar.dart';
+// import '../widgets/next_button.dart';
 
-class StepOutletType extends StatelessWidget {
-  const StepOutletType({super.key});
+// class SignupPage2 extends StatefulWidget {
+//   @override
+//   _SignupPage2State createState() => _SignupPage2State();
+// }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final fontSize = screenWidth < 360 ? 14.0 : 16.0;
+// class _SignupPage2State extends State<SignupPage2> {
+//   String? selectedOutletType;
+//   List<String> selectedModules = [];
+  
+//   final List<String> outletTypes = [
+//     'Restaurant',
+//     'Retail Store',
+//     'Cafe',
+//     'Bar',
+//     'Fast Food',
+//   ];
 
-    return BlocBuilder<SignUpBloc, SignUpState>(
-      builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Provide us your Store \nType & select module',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Gap(10),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'For create a store for you, and keep track your expense for you.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: const Color.fromARGB(255, 97, 96, 96),
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Gap(10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isExpanded: true,
-                    hint: Text(
-                      "Select Outlet Type",
-                      style: TextStyle(fontSize: fontSize),
-                    ),
-                    value: state.outletType.isEmpty ? null : state.outletType,
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    dropdownColor: Colors.white,
-                    onChanged: (value) {
-                      if (value != null) {
-                        context.read<SignUpBloc>().add(
-                          OutletTypeChanged(value),
-                        );
-                      }
-                    },
-                    items: const [
-                      DropdownMenuItem(value: "Shop", child: Text("Shop")),
-                      DropdownMenuItem(
-                        value: "Restaurant",
-                        child: Text("Restaurant"),
-                      ),
-                      DropdownMenuItem(value: "Other", child: Text("Other")),
-                    ],
-                  ),
-                ),
-              ),
+//   final List<String> moduleNames = [
+//     'Inventory Management',
+//     'Sales Analytics',
+//     'Customer Management',
+//     'Employee Management',
+//     'Financial Reports',
+//   ];
 
-              Gap(10),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Select the module you want to use',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: const Color.fromARGB(255, 97, 96, 96),
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Gap(10),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: const LockSwitchList(),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
+//   @override
+//   void initState() {
+//     super.initState();
+//     final signupBloc = context.read<SignupBloc>();
+//     selectedOutletType = signupBloc.currentData.outletType.isEmpty 
+//         ? null 
+//         : signupBloc.currentData.outletType;
+//     selectedModules = List.from(signupBloc.currentData.selectedModules);
+//   }
 
-class LockSwitchList extends StatefulWidget {
-  const LockSwitchList({super.key});
-
-  @override
-  State<LockSwitchList> createState() => _LockSwitchListState();
-}
-
-class _LockSwitchListState extends State<LockSwitchList> {
-  final List<Map<String, dynamic>> items = [
-    {"title": "Expense", "description": "Module feature", "enabled": false},
-    {"title": "POS", "description": "Module feature", "enabled": false},
-    {"title": "HRM", "description": "Module feature", "enabled": false},
-    {"title": "Payroll", "description": "Module feature", "enabled": false},
-    {"title": "Attendence", "description": "Module feature", "enabled": false},
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final titleFontSize = screenWidth < 360 ? 14.0 : 16.0;
-    final descFontSize = screenWidth < 360 ? 12.0 : 14.0;
-
-    return Column(
-      children: List.generate(items.length, (index) {
-        final item = items[index];
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 6.0),
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade300),
-            color: Colors.white,
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.lock, color: Colors.grey),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item["title"],
-                      style: TextStyle(
-                        fontSize: titleFontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item["description"],
-                      style: TextStyle(
-                        fontSize: descFontSize,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Switch(
-                value: item["enabled"],
-                onChanged: (value) {
-                  setState(() {
-                    items[index]["enabled"] = value;
-                  });
-                },
-              ),
-            ],
-          ),
-        );
-      }),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: const CommonAppBar(),
+//       body: BlocBuilder<SignupBloc, SignupState>(
+//         builder: (context, state) {
+//           return SingleChildScrollView(
+//             padding: const EdgeInsets.all(20),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 const SizedBox(height: 30),
+//                 const Text(
+//                   'Business Setup',
+//                   style: TextStyle(
+//                     fontSize: 24,
+//                     fontWeight: FontWeight.bold,
+//                     color: Colors.black87,
+//                   ),
+//                 ),
+//                 const SizedBox(height: 8),
+//                 const Text(
+//                   'Select your outlet type and modules you want to use',
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     color: Colors.grey,
+//                   ),
+//                 ),
+//                 const SizedBox(height: 40),
+//                 const Text(
+//                   'Select Outlet Type *',
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.w500,
+//                   ),
+//                 ),
+//                 const SizedBox(height: 10),
+//                 DropdownButtonFormField<String>(
+//                   value: selectedOutletType,
+//                   decoration: const InputDecoration(
+//                     border: OutlineInputBorder(),
+//                     hintText: 'Choose outlet type',
+//                   ),
+//                   items: outletTypes.map((String type) {
+//                     return DropdownMenuItem<String>(
+//                       value: type,
+//                       child: Text(type),
+//                     );
+//                   }).toList(),
+//                   onChanged: (String? newValue) {
+//                     setState(() {
+//                       selectedOutletType = newValue;
+//                     });
+//                     if (newValue != null) {
+//                       context.read<SignupBloc>().add(UpdateOutletType(newValue));
+//                     }
+//                   },
+//                   validator: (value) {
+//                     if (value == null) {
+//                       return 'Please select outlet type';
+//                     }
+//                     return null;
+//                   },
+//                 ),
+//                 const SizedBox(height: 30),
+//                 const Text(
+//                   'Select Modules You Want to Use',
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.w500,
+//                   ),
+//                 ),
+//                 const SizedBox(height: 15),
+//                 ...moduleNames.map((module) {
+//                   return CheckboxListTile(
+//                     title: Text(module),
+//                     value: selectedModules.contains(module),
+//                     onChanged: (bool? value) {
+//                       setState(() {
+//                         if (value == true) {
+//                           selectedModules.add(module);
+//                         } else {
+//                           selectedModules.remove(module);
+//                         }
+//                       });
+//                       context.read<SignupBloc>().add(UpdateSelectedModules(List.from(selectedModules)));
+//                     },
+//                     controlAffinity: ListTileControlAffinity.leading,
+//                   );
+//                 }).toList(),
+//                 const SizedBox(height: 60),
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//       bottomNavigationBar: NextButton(
+//         onPressed: () {
+//           if (selectedOutletType != null) {
+//             Navigator.pushNamed(context, '/signup/3');
+//           } else {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               const SnackBar(content: Text('Please select outlet type')),
+//             );
+//           }
+//         },
+//       ),
+//     );
+//   }
+// }

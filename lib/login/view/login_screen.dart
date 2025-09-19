@@ -189,13 +189,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     );
                                   },
-                                  child: const Text(
+                                  child: Text(
                                     'Sign Up',
                                     style: TextStyle(
-                                      decoration: TextDecoration.underline,
                                       fontSize: 14,
                                       color: Color.fromARGB(255, 35, 59, 201),
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w400,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Color.fromARGB(
+                                        255,
+                                        35,
+                                        59,
+                                        201,
+                                      ),
+                                      decorationThickness: 1.5,
+                                      height:
+                                          1.5, // increase line height to push underline slightly down
                                     ),
                                   ),
                                 ),

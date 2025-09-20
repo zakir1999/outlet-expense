@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:outlet_expense/Widgets/textField.dart';
 import '../../Widgets/common_app_bar.dart';
 import '../../Widgets/next_button.dart';
 import '../bloc/signup_bloc.dart';
 import '../bloc/signup_event.dart';
 import '../bloc/signup_state.dart';
+import 'package:gap/gap.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignupPage3 extends StatefulWidget {
   @override
@@ -55,7 +57,7 @@ class _SignupPage3State extends State<SignupPage3> {
                 children: [
                   const SizedBox(height: 30),
                   const Text(
-                    'Contact Information',
+                    'Provide us your \nContact Information',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -64,19 +66,16 @@ class _SignupPage3State extends State<SignupPage3> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Please provide your contact details',
+                    'For create a store for you, and keep track your expense for you.',
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                   const SizedBox(height: 40),
-                  TextFormField(
+                  CustomTextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email Address *',
-                      hintText: 'Enter your email address',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
-                    ),
+                    label: 'Email',
+                    hint: 'Email',
+
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter email address';
@@ -89,38 +88,34 @@ class _SignupPage3State extends State<SignupPage3> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20),
-                  TextFormField(
+                  Gap(20.h),
+                  CustomTextField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone Number *',
-                      hintText: 'Enter your phone number',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.phone),
-                    ),
+                    label: 'Phone Number',
+                    hint: 'Phone Number',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter phone number';
                       }
-                      if (value.length < 10) {
+                      if (value.length < 11) {
                         return 'Please enter a valid phone number';
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 60),
+                  Gap(10.h),
+                  NextButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Navigator.pushNamed(context, '/signup/4');
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
           );
-        },
-      ),
-      bottomNavigationBar: NextButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            Navigator.pushNamed(context, '/signup/4');
-          }
         },
       ),
     );

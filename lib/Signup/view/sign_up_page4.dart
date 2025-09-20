@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:outlet_expense/Widgets/textfield.dart';
 import '../../Widgets/common_app_bar.dart';
 import '../../Widgets/next_button.dart';
+import '../../login/view/login_screen.dart';
 import '../bloc/signup_bloc.dart';
 import '../bloc/signup_event.dart';
 import '../bloc/signup_state.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignupPage4 extends StatefulWidget {
   @override
@@ -54,42 +57,26 @@ class _SignupPage4State extends State<SignupPage4> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Create Password',
+                  SizedBox(height: 30.h),
+                  Text(
+                    'Set up password For \n secure your account',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Create a secure password for your account',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  SizedBox(height: 8),
+                  Text(
+                    'For createa store for you,and keep trace your expense for you.',
+                    style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                   ),
                   const SizedBox(height: 40),
-                  TextFormField(
+                  CustomTextField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password *',
-                      hintText: 'Enter your password',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                    ),
+                    label: 'Password ',
+                    hint: 'Password',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter password';
@@ -100,28 +87,12 @@ class _SignupPage4State extends State<SignupPage4> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20),
-                  TextFormField(
+                  SizedBox(height: 20.h),
+                  CustomTextField(
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm Password *',
-                      hintText: 'Confirm your password',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                    ),
+                    label: 'Confirm Password',
+                    hint: 'Confirm password',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please confirm password';
@@ -132,18 +103,48 @@ class _SignupPage4State extends State<SignupPage4> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 60),
+                  SizedBox(height: 40.h),
+                  NextButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Navigator.pushNamed(context, '/signup/5');
+                      }
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Already have an account?",
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            decorationColor: Color.fromARGB(255, 35, 59, 201),
+                            decorationThickness: 2,
+                            fontSize: 14,
+                            color: Color.fromARGB(255, 35, 59, 201),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
           );
-        },
-      ),
-      bottomNavigationBar: NextButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            Navigator.pushNamed(context, '/signup/5');
-          }
         },
       ),
     );

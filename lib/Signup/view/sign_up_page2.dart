@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:outlet_expense/Widgets/drop_down.dart';
 import '../bloc/signup_event.dart';
 import '../../Widgets/common_app_bar.dart';
 import '../../Widgets/next_button.dart';
 import '../bloc/signup_bloc.dart';
 import '../bloc/signup_state.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignupPage2 extends StatefulWidget {
   @override
@@ -15,20 +17,14 @@ class _SignupPage2State extends State<SignupPage2> {
   String? selectedOutletType;
   List<String> selectedModules = [];
 
-  final List<String> outletTypes = [
-    'Restaurant',
-    'Retail Store',
-    'Cafe',
-    'Bar',
-    'Fast Food',
-  ];
+  final List<String> outletTypes = ['Pharmacy', 'POS'];
 
-  final List<String> moduleNames = [
-    'Inventory Management',
-    'Sales Analytics',
-    'Customer Management',
-    'Employee Management',
-    'Financial Reports',
+  final List<Map<String, String>> moduleData = [
+    {"name": "Expense", "description": "Module feature"},
+    {"name": "POS", "description": "Module feature"},
+    {"name": "HRM", "description": "Module feature"},
+    {"name": "Payroll", "description": "Module feature"},
+    {"name": "Attendance", "description": "Module feature"},
   ];
 
   @override
@@ -52,38 +48,26 @@ class _SignupPage2State extends State<SignupPage2> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 30),
-                const Text(
-                  'Business Setup',
+                Text(
+                  'Provide us your Store \nType & select module',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 22.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Select your outlet type and modules you want to use',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                const SizedBox(height: 40),
-                const Text(
-                  'Select Outlet Type *',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: selectedOutletType,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Choose outlet type',
+                SizedBox(height: 10.h),
+                Text(
+                  'for create a store for you, and keep trace your expense for you.',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: const Color.fromARGB(255, 97, 96, 96),
                   ),
-                  items: outletTypes.map((String type) {
-                    return DropdownMenuItem<String>(
-                      value: type,
-                      child: Text(type),
-                    );
-                  }).toList(),
+                ),
+                SizedBox(height: 10.h),
+                CustomDropdown(
+                  hint: 'Select outlet type',
+                  label: '',
+                  options: ['Pharmacy', 'POS'],
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedOutletType = newValue;
@@ -94,53 +78,102 @@ class _SignupPage2State extends State<SignupPage2> {
                       );
                     }
                   },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select outlet type';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: 20.h),
                 const Text(
-                  'Select Modules You Want to Use',
+                  'Select module you want to Use',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
-                const SizedBox(height: 15),
-                ...moduleNames.map((module) {
-                  return CheckboxListTile(
-                    title: Text(module),
-                    value: selectedModules.contains(module),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedModules.add(module);
-                        } else {
-                          selectedModules.remove(module);
-                        }
-                      });
-                      context.read<SignupBloc>().add(
-                        UpdateSelectedModules(List.from(selectedModules)),
-                      );
-                    },
-                    controlAffinity: ListTileControlAffinity.leading,
+                SizedBox(height: 10.h),
+
+                ...moduleData.map((module) {
+                  final isSelected = selectedModules.contains(module["name"]);
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.lock_outline,
+                                size: 20,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      module["name"]!,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      module["description"]!,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Switch(
+                          value: isSelected,
+                          onChanged: (bool value) {
+                            setState(() {
+                              if (value) {
+                                selectedModules.add(module["name"]!);
+                              } else {
+                                selectedModules.remove(module["name"]!);
+                              }
+                            });
+                            context.read<SignupBloc>().add(
+                              UpdateSelectedModules(List.from(selectedModules)),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   );
                 }).toList(),
-                const SizedBox(height: 60),
+
+                SizedBox(height: 10.h),
+                NextButton(
+                  onPressed: () {
+                    if (selectedOutletType != null) {
+                      Navigator.pushNamed(context, '/signup/3');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select outlet type'),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           );
-        },
-      ),
-      bottomNavigationBar: NextButton(
-        onPressed: () {
-          if (selectedOutletType != null) {
-            Navigator.pushNamed(context, '/signup/3');
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please select outlet type')),
-            );
-          }
         },
       ),
     );

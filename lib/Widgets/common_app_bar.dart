@@ -10,11 +10,18 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: const Text(
         'Sign Up',
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Colors.black,
+        ),
       ),
       centerTitle: true,
+      backgroundColor: Colors.white,
+
       leading: showBackButton
           ? IconButton(
+              color: Colors.black,
               icon: const Icon(Icons.arrow_back),
               onPressed: () => Navigator.of(context).pop(),
             )

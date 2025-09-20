@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../Widgets/common_app_bar.dart';
 import '../../Widgets/next_button.dart';
 import '../bloc/signup_bloc.dart';
@@ -36,76 +39,90 @@ class _SignupPage5State extends State<SignupPage5> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CommonAppBar(),
-      body: BlocBuilder<SignupBloc, SignupState>(
-        builder: (context, state) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Create PIN',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Create a 4-digit PIN for quick access to your account',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 40),
-                  Center(
-                    child: Container(
-                      width: 200,
-                      child: TextFormField(
-                        controller: _pinController,
-                        keyboardType: TextInputType.number,
-                        obscureText: true,
-                        textAlign: TextAlign.center,
-                        maxLength: 4,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 8,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'PIN',
-                          hintText: '••••',
-                          border: OutlineInputBorder(),
-                          counterText: '',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter PIN';
-                          }
-                          if (value.length != 4) {
-                            return 'PIN must be 4 digits';
-                          }
-                          return null;
-                        },
+      body: SafeArea(
+        child: BlocBuilder<SignupBloc, SignupState>(
+          builder: (context, state) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 30.h),
+                    Text(
+                      'Create PIN',
+                      style: TextStyle(
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 60),
-                ],
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Create a 6-digit PIN for quick access to your account',
+                      style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                    ),
+                    SizedBox(height: 40.h),
+
+                    /// ✅ Responsive PIN input
+                    Center(
+                      child: SizedBox(
+                        width: 0.85.sw, // takes 85% of screen width
+                        child: PinCodeTextField(
+                          appContext: context,
+                          controller: _pinController,
+                          length: 6,
+                          obscureText: true,
+                          animationType: AnimationType.fade,
+                          keyboardType: TextInputType.number,
+                          pinTheme: PinTheme(
+                            shape: PinCodeFieldShape
+                                .underline, // ✅ removes square box, uses underline
+                            borderRadius: BorderRadius.circular(0),
+                            fieldHeight: 55.h,
+                            fieldWidth: 45.w,
+                            activeFillColor: Colors.transparent,
+                            selectedFillColor: Colors.transparent,
+                            inactiveFillColor: Colors.transparent,
+                            inactiveColor: Colors.grey,
+                            selectedColor: Colors.blue,
+                            activeColor: Colors.blue,
+                          ),
+                          cursorColor: Colors.black,
+                          enableActiveFill: false, // ✅ underline mode
+                          onChanged: (value) {
+                            context.read<SignupBloc>().add(UpdatePin(value));
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter PIN";
+                            }
+                            if (value.length != 6) {
+                              return "PIN must be 6 digits";
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 40.h),
+
+                    /// ✅ Button stays at bottom with spacing
+                    NextButton(
+                      text: 'Continue',
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          Navigator.pushNamed(context, '/signup/6');
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: NextButton(
-        text: 'Continue',
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            Navigator.pushNamed(context, '/signup/6');
-          }
-        },
+            );
+          },
+        ),
       ),
     );
   }

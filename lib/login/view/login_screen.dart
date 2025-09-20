@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:outlet_expense/Signup/view/sign_up_page1.dart';
 
 import '../../Widgets/custom_button.dart';
 import '../bloc/login_bloc.dart';
@@ -85,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const SignUpScreen(),
+                                builder: (context) => const SignupPage1(),
                               ),
                             );
                           }
@@ -185,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const SignUpScreen(),
+                                            const SignupPage1(),
                                       ),
                                     );
                                   },
@@ -203,8 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         201,
                                       ),
                                       decorationThickness: 1.5,
-                                      height:
-                                          1.5, // increase line height to push underline slightly down
+                                      height: 1.5,
                                     ),
                                   ),
                                 ),

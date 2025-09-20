@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
+
 import '../../Widgets/common_app_bar.dart';
 import '../../Widgets/next_button.dart';
 import '../bloc/signup_bloc.dart';
@@ -36,109 +40,145 @@ class _SignupPage6State extends State<SignupPage6> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CommonAppBar(),
-      body: BlocListener<SignupBloc, SignupState>(
-        listener: (context, state) {
-          if (state is SignupSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Signup successful!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-              (route) => false,
-            );
-          } else if (state is SignupError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error: ${state.error}'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        child: BlocBuilder<SignupBloc, SignupState>(
-          builder: (context, state) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 30),
-                    const Text(
-                      'Confirm PIN',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+      body: SafeArea(
+        child: BlocListener<SignupBloc, SignupState>(
+          listener: (context, state) {
+            if (state is SignupSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Signup successful!'),
+                  backgroundColor: Color.fromARGB(255, 86, 76, 175),
+                ),
+              );
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/home',
+                (route) => false,
+              );
+            } else if (state is SignupError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error: ${state.error}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          child: BlocBuilder<SignupBloc, SignupState>(
+            builder: (context, state) {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 20.h,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Please confirm your 4-digit PIN',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 40),
-                    Center(
-                      child: Container(
-                        width: 200,
-                        child: TextFormField(
-                          controller: _confirmPinController,
-                          keyboardType: TextInputType.number,
-                          obscureText: true,
-                          textAlign: TextAlign.center,
-                          maxLength: 4,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 8,
+                      child: IntrinsicHeight(
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 30.h),
+                              Text(
+                                'Confirm PIN',
+                                style: TextStyle(
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              Text(
+                                'Please confirm your 6-digit PIN',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              SizedBox(height: 40.h),
+
+                              /// ✅ PIN Input with underline style
+                              Center(
+                                child: SizedBox(
+                                  width: 0.85.sw,
+                                  child: PinCodeTextField(
+                                    appContext: context,
+                                    controller: _confirmPinController,
+                                    length: 6,
+                                    obscureText: true,
+                                    animationType: AnimationType.fade,
+                                    keyboardType: TextInputType.number,
+                                    pinTheme: PinTheme(
+                                      shape: PinCodeFieldShape.underline,
+                                      fieldHeight: 55.h,
+                                      fieldWidth: 45.w,
+                                      inactiveColor: Colors.grey,
+                                      selectedColor: Colors.blue,
+                                      activeColor: Colors.blue,
+                                    ),
+                                    cursorColor: Colors.black,
+                                    enableActiveFill: false,
+                                    onChanged: (value) {
+                                      context.read<SignupBloc>().add(
+                                        UpdateConfirmPin(value),
+                                      );
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please confirm PIN";
+                                      }
+                                      if (value.length != 6) {
+                                        return "PIN must be 6 digits";
+                                      }
+                                      final signupBloc = context
+                                          .read<SignupBloc>();
+                                      if (value != signupBloc.currentData.pin) {
+                                        return "PINs do not match";
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Gap(20.h),
+                              BlocBuilder<SignupBloc, SignupState>(
+                                builder: (context, state) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: 20.h,
+                                      top: 40.h,
+                                    ),
+                                    child: NextButton(
+                                      text: 'Continue',
+                                      isLoading: state is SignupSubmitting,
+                                      onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          context.read<SignupBloc>().add(
+                                            const SubmitSignup(),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                          decoration: const InputDecoration(
-                            labelText: 'Confirm PIN',
-                            hintText: '••••',
-                            border: OutlineInputBorder(),
-                            counterText: '',
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please confirm PIN';
-                            }
-                            if (value.length != 4) {
-                              return 'PIN must be 4 digits';
-                            }
-                            final signupBloc = context.read<SignupBloc>();
-                            if (value != signupBloc.currentData.pin) {
-                              return 'PINs do not match';
-                            }
-                            return null;
-                          },
                         ),
                       ),
                     ),
-                    const SizedBox(height: 60),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: BlocBuilder<SignupBloc, SignupState>(
-        builder: (context, state) {
-          return NextButton(
-            text: 'Continue',
-            isLoading: state is SignupSubmitting,
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                context.read<SignupBloc>().add(const SubmitSignup());
-              }
+                  );
+                },
+              );
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }

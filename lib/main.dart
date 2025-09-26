@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:outlet_expense/Signup/view/home_page.dart';
+import 'package:outlet_expense/folder/dynamic_fields_page.dart';
 import 'package:outlet_expense/login/view/login_screen.dart';
 import 'Signup/bloc/signup_bloc.dart';
 import 'Signup/view/sign_up_page1.dart';

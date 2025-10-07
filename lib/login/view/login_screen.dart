@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:outlet_expense/Signup/view/sign_up_page1.dart';
-import 'package:gap/gap.dart';
 
 import '../../Widgets/custom_button.dart';
+import '../../menu/scaffold_with_nav_bar.dart';
 import '../bloc/login_bloc.dart';
 import '../../Widgets/password.dart';
 import '../../Widgets/textField.dart';
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -38,8 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
-    // Responsive padding & title size
     final horizontalPadding = screenWidth * 0.08;
     final titleFontSize = screenWidth < 400 ? 18.0 : 22.0;
 
@@ -69,12 +67,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: constraints.maxHeight,
                 child: BlocListener<LoginBloc, LoginState>(
                   listener: (context, state) {
+                    if (state.loginStatus == LoginStatus.success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message.isNotEmpty
+                              ? state.message
+                              : 'Login Successful!'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                        context.go('/');
+                    }
+
+                    else if (state.loginStatus == LoginStatus.error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message.isNotEmpty
+                              ? state.message
+                              : 'Something went wrong, please try again'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+
                     if (state.navigateToSignUp) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignupPage1(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const SignupPage1()),
                       );
                     }
                   },

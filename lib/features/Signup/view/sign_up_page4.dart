@@ -49,8 +49,27 @@ class _SignupPage4State extends State<SignupPage4> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CommonAppBar(),
-      body: BlocBuilder<SignupBloc, SignupState>(
+      body: BlocConsumer<SignupBloc, SignupState>(
+        listener: (context, state) {
+          // ✅ Navigate to PIN page on success
+          if (state is SignupSuccess) {
+            context.go('/signup/5');
+          }
+          if (state is SignupError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Signup failed: ${state.error}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          }
+        },
         builder: (context, state) {
+          final isLoading = state is SignupSubmitting;
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Form(
@@ -105,13 +124,30 @@ class _SignupPage4State extends State<SignupPage4> {
                     },
                   ),
                   SizedBox(height: 40.h),
+
+                  // ✅ Modified NextButton
                   NextButton(
-                    onPressed: () {
+                    onPressed: isLoading
+                        ? null
+                        : () {
                       if (_formKey.currentState!.validate()) {
-                        context.push('/signup/5');
+                        // Trigger API call
+                        context
+                            .read<SignupBloc>()
+                            .add(SubmitSignup());
                       }
                     },
                   ),
+
+                  // Optional: show loading indicator
+                  if (isLoading)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -132,7 +168,8 @@ class _SignupPage4State extends State<SignupPage4> {
                           'Login',
                           style: TextStyle(
                             decoration: TextDecoration.underline,
-                            decorationColor: Color.fromARGB(255, 35, 59, 201),
+                            decorationColor:
+                            Color.fromARGB(255, 35, 59, 201),
                             decorationThickness: 2,
                             fontSize: 14,
                             color: Color.fromARGB(255, 35, 59, 201),

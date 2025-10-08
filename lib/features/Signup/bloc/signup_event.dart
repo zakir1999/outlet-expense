@@ -96,13 +96,13 @@ abstract class SignupEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class UpdateUserName extends SignupEvent {
-  final String userName;
+class UpdateWonerName extends SignupEvent {
+  final String wonerName;
 
-  const UpdateUserName(this.userName);
+  const UpdateWonerName(this.wonerName);
 
   @override
-  List<Object> get props => [userName];
+  List<Object> get props => [wonerName];
 }
 
 class UpdateOutletName extends SignupEvent {
@@ -142,12 +142,12 @@ class UpdateEmail extends SignupEvent {
 }
 
 class UpdatePhoneNumber extends SignupEvent {
-  final String phoneNumber;
+  final String phone;
 
-  const UpdatePhoneNumber(this.phoneNumber);
+  const UpdatePhoneNumber(this.phone);
 
   @override
-  List<Object> get props => [phoneNumber];
+  List<Object> get props => [phone];
 }
 
 class UpdatePassword extends SignupEvent {
@@ -189,3 +189,5 @@ class UpdateConfirmPin extends SignupEvent {
 class SubmitSignup extends SignupEvent {
   const SubmitSignup();
 }
+
+class SubmitPinEvent extends SignupEvent {}

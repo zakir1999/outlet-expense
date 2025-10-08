@@ -25,7 +25,7 @@ class _SignupPage3State extends State<SignupPage3> {
     super.initState();
     final signupBloc = context.read<SignupBloc>();
     _emailController.text = signupBloc.currentData.email;
-    _phoneController.text = signupBloc.currentData.phoneNumber;
+    _phoneController.text = signupBloc.currentData.phone;
 
     _emailController.addListener(() {
       signupBloc.add(UpdateEmail(_emailController.text));

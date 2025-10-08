@@ -1,24 +1,24 @@
 import 'package:equatable/equatable.dart';
 
 class SignupData extends Equatable {
-  final String userName;
+  final String ownerName;
   final String outletName;
   final String outletType;
   final List<String> selectedModules;
   final String email;
-  final String phoneNumber;
+  final String phone;
   final String password;
   final String confirmPassword;
   final String pin;
   final String confirmPin;
 
   const SignupData({
-    this.userName = '',
+    this.ownerName = '',
     this.outletName = '',
     this.outletType = '',
     this.selectedModules = const [],
     this.email = '',
-    this.phoneNumber = '',
+    this.phone = '',
     this.password = '',
     this.confirmPassword = '',
     this.pin = '',
@@ -26,7 +26,7 @@ class SignupData extends Equatable {
   });
 
   SignupData copyWith({
-    String? userName,
+    String? ownerName,
     String? outletName,
     String? outletType,
     List<String>? selectedModules,
@@ -38,12 +38,12 @@ class SignupData extends Equatable {
     String? confirmPin,
   }) {
     return SignupData(
-      userName: userName ?? this.userName,
+      ownerName: ownerName ?? this.ownerName,
       outletName: outletName ?? this.outletName,
       outletType: outletType ?? this.outletType,
       selectedModules: selectedModules ?? this.selectedModules,
       email: email ?? this.email,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
+      phone: phoneNumber ?? this.phone,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
       pin: pin ?? this.pin,
@@ -53,25 +53,27 @@ class SignupData extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
-      'userName': userName,
+      'ownerName': ownerName,
       'outletName': outletName,
-      'outletType': outletType,
-      'selectedModules': selectedModules,
       'email': email,
-      'phoneNumber': phoneNumber,
+      'phone': phone,
       'password': password,
+    };
+  }
+  Map<String, dynamic> toPinJson() {
+    return {
       'pin': pin,
     };
   }
 
   @override
   List<Object> get props => [
-    userName,
+    ownerName,
     outletName,
     outletType,
     selectedModules,
     email,
-    phoneNumber,
+    phone,
     password,
     confirmPassword,
     pin,

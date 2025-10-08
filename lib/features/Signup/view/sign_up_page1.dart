@@ -19,7 +19,7 @@ class SignupPage1 extends StatefulWidget {
 }
 
 class _SignupPage1State extends State<SignupPage1> {
-  final _userNameController = TextEditingController();
+  final _wonerNameController = TextEditingController();
   final _outletNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -27,11 +27,11 @@ class _SignupPage1State extends State<SignupPage1> {
   void initState() {
     super.initState();
     final signupBloc = context.read<SignupBloc>();
-    _userNameController.text = signupBloc.currentData.userName;
+    _wonerNameController.text = signupBloc.currentData.ownerName;
     _outletNameController.text = signupBloc.currentData.outletName;
 
-    _userNameController.addListener(() {
-      signupBloc.add(UpdateUserName(_userNameController.text));
+    _wonerNameController.addListener(() {
+      signupBloc.add(UpdateWonerName(_wonerNameController.text));
     });
 
     _outletNameController.addListener(() {
@@ -41,7 +41,7 @@ class _SignupPage1State extends State<SignupPage1> {
 
   @override
   void dispose() {
-    _userNameController.dispose();
+    _wonerNameController.dispose();
     _outletNameController.dispose();
     super.dispose();
   }
@@ -79,7 +79,7 @@ class _SignupPage1State extends State<SignupPage1> {
                   CustomTextField(
                     label: "Owner name",
                     hint: 'Owner name',
-                    controller: _userNameController,
+                    controller: _wonerNameController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Owner name can't be empty";

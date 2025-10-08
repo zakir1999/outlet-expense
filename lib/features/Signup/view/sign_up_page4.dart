@@ -1,57 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:outlet_expense/Widgets/textField.dart';
-import 'package:outlet_expense/login/view/login_screen.dart';
-import '../../Widgets/common_app_bar.dart';
-import '../../Widgets/next_button.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/widgets/textfield.dart';
+import '../../../core/widgets/common_app_bar.dart';
+import '../../../core/widgets/next_button.dart';
+import '../../login/view/login_screen.dart';
 import '../bloc/signup_bloc.dart';
 import '../bloc/signup_event.dart';
 import '../bloc/signup_state.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SignupPage1 extends StatefulWidget {
-  const SignupPage1({super.key});
-
+class SignupPage4 extends StatefulWidget {
   @override
-  _SignupPage1State createState() => _SignupPage1State();
+  _SignupPage4State createState() => _SignupPage4State();
 }
 
-class _SignupPage1State extends State<SignupPage1> {
-  final _userNameController = TextEditingController();
-  final _outletNameController = TextEditingController();
+class _SignupPage4State extends State<SignupPage4> {
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void initState() {
     super.initState();
     final signupBloc = context.read<SignupBloc>();
-    _userNameController.text = signupBloc.currentData.userName;
-    _outletNameController.text = signupBloc.currentData.outletName;
+    _passwordController.text = signupBloc.currentData.password;
+    _confirmPasswordController.text = signupBloc.currentData.confirmPassword;
 
-    _userNameController.addListener(() {
-      signupBloc.add(UpdateUserName(_userNameController.text));
+    _passwordController.addListener(() {
+      signupBloc.add(UpdatePassword(_passwordController.text));
     });
 
-    _outletNameController.addListener(() {
-      signupBloc.add(UpdateOutletName(_outletNameController.text));
+    _confirmPasswordController.addListener(() {
+      signupBloc.add(UpdateConfirmPassword(_confirmPasswordController.text));
     });
   }
 
   @override
   void dispose() {
-    _userNameController.dispose();
-    _outletNameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppBar(showBackButton: false),
+      appBar: const CommonAppBar(),
       body: BlocBuilder<SignupBloc, SignupState>(
         builder: (context, state) {
           return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            padding: const EdgeInsets.all(20),
             child: Form(
               key: _formKey,
               child: Column(
@@ -59,49 +60,55 @@ class _SignupPage1State extends State<SignupPage1> {
                 children: [
                   SizedBox(height: 30.h),
                   Text(
-                    'Provide us your & \nStore Name',
+                    'Set up password For \n secure your account',
                     style: TextStyle(
-                      fontSize: 22.sp,
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
-                  SizedBox(height: 10.h),
+                  SizedBox(height: 8),
                   Text(
-                    'Provide us your & Store Name',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: const Color.fromARGB(255, 97, 96, 96),
-                    ),
+                    'For createa store for you,and keep trace your expense for you.',
+                    style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                   ),
-                  SizedBox(height: 20.h),
+                  const SizedBox(height: 40),
                   CustomTextField(
-                    label: "Owner name",
-                    hint: 'Owner name',
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    label: 'Password ',
+                    hint: 'Password',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Owner name can't be empty";
+                        return 'Please enter password';
                       }
-                      return null;
-                    },
-                    keyboardType: TextInputType.text,
-                  ),
-                  SizedBox(height: 20.h),
-                  CustomTextField(
-                    hint: "Outlet name",
-                    label: "Outlet name",
-                    controller: _outletNameController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter outlet name';
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: 50.h),
+                  SizedBox(height: 20.h),
+                  CustomTextField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureConfirmPassword,
+                    label: 'Confirm Password',
+                    hint: 'Confirm password',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm password';
+                      }
+                      if (value != _passwordController.text) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 40.h),
                   NextButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushNamed(context, '/signup/2');
+                        context.push('/signup/5');
                       }
                     },
                   ),

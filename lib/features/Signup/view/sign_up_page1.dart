@@ -1,57 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:outlet_expense/Widgets/textfield.dart';
-import '../../Widgets/common_app_bar.dart';
-import '../../Widgets/next_button.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/widgets/textfield.dart';
+
+import '../../../core/widgets/next_button.dart';
+import '../../../core/widgets/common_app_bar.dart';
 import '../../login/view/login_screen.dart';
 import '../bloc/signup_bloc.dart';
 import '../bloc/signup_event.dart';
 import '../bloc/signup_state.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SignupPage4 extends StatefulWidget {
+class SignupPage1 extends StatefulWidget {
+  const SignupPage1({super.key});
+
   @override
-  _SignupPage4State createState() => _SignupPage4State();
+  _SignupPage1State createState() => _SignupPage1State();
 }
 
-class _SignupPage4State extends State<SignupPage4> {
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+class _SignupPage1State extends State<SignupPage1> {
+  final _userNameController = TextEditingController();
+  final _outletNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
 
   @override
   void initState() {
     super.initState();
     final signupBloc = context.read<SignupBloc>();
-    _passwordController.text = signupBloc.currentData.password;
-    _confirmPasswordController.text = signupBloc.currentData.confirmPassword;
+    _userNameController.text = signupBloc.currentData.userName;
+    _outletNameController.text = signupBloc.currentData.outletName;
 
-    _passwordController.addListener(() {
-      signupBloc.add(UpdatePassword(_passwordController.text));
+    _userNameController.addListener(() {
+      signupBloc.add(UpdateUserName(_userNameController.text));
     });
 
-    _confirmPasswordController.addListener(() {
-      signupBloc.add(UpdateConfirmPassword(_confirmPasswordController.text));
+    _outletNameController.addListener(() {
+      signupBloc.add(UpdateOutletName(_outletNameController.text));
     });
   }
 
   @override
   void dispose() {
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _userNameController.dispose();
+    _outletNameController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppBar(),
+      appBar: const CommonAppBar(showBackButton: false),
       body: BlocBuilder<SignupBloc, SignupState>(
         builder: (context, state) {
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             child: Form(
               key: _formKey,
               child: Column(
@@ -59,55 +61,50 @@ class _SignupPage4State extends State<SignupPage4> {
                 children: [
                   SizedBox(height: 30.h),
                   Text(
-                    'Set up password For \n secure your account',
+                    'Provide us your & \nStore Name',
                     style: TextStyle(
-                      fontSize: 24.sp,
+                      fontSize: 22.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 10.h),
                   Text(
-                    'For createa store for you,and keep trace your expense for you.',
-                    style: TextStyle(fontSize: 16.sp, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 40),
-                  CustomTextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    label: 'Password ',
-                    hint: 'Password',
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter password';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
+                    'Provide us your & Store Name',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: const Color.fromARGB(255, 97, 96, 96),
+                    ),
                   ),
                   SizedBox(height: 20.h),
                   CustomTextField(
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    label: 'Confirm Password',
-                    hint: 'Confirm password',
+                    label: "Owner name",
+                    hint: 'Owner name',
+                    controller: _userNameController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please confirm password';
+                        return "Owner name can't be empty";
                       }
-                      if (value != _passwordController.text) {
-                        return 'Passwords do not match';
+                      return null;
+                    },
+                    keyboardType: TextInputType.text,
+                  ),
+                  SizedBox(height: 20.h),
+                  CustomTextField(
+                    hint: "Outlet name",
+                    label: "Outlet name",
+                    controller: _outletNameController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter outlet name';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: 40.h),
+                  SizedBox(height: 50.h),
                   NextButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushNamed(context, '/signup/5');
+                        context.push('/signup/2');
                       }
                     },
                   ),

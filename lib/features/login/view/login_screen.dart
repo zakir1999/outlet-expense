@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:outlet_expense/Signup/view/sign_up_page1.dart';
 
-import '../../Widgets/custom_button.dart';
-import '../../menu/scaffold_with_nav_bar.dart';
+import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/password.dart';
+import '../../../core/widgets/TextField.dart';
+
+import '../../Signup/view/sign_up_page1.dart';
+
 import '../bloc/login_bloc.dart';
-import '../../Widgets/password.dart';
-import '../../Widgets/textField.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 

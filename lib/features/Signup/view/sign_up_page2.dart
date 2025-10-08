@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:outlet_expense/Widgets/drop_down.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/widgets/drop_down.dart';
 import '../bloc/signup_event.dart';
-import '../../Widgets/common_app_bar.dart';
-import '../../Widgets/next_button.dart';
+
+import '../../../core/widgets/common_app_bar.dart';
+import '../../../core/widgets/next_button.dart';
+
 import '../bloc/signup_bloc.dart';
 import '../bloc/signup_state.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -161,7 +164,7 @@ class _SignupPage2State extends State<SignupPage2> {
                 NextButton(
                   onPressed: () {
                     if (selectedOutletType != null) {
-                      Navigator.pushNamed(context, '/signup/3');
+                      context.push( '/signup/3');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

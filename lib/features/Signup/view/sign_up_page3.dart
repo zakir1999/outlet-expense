@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:outlet_expense/Widgets/textField.dart';
-import '../../Widgets/common_app_bar.dart';
-import '../../Widgets/next_button.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/widgets/textfield.dart';
+import '../../../core/widgets/common_app_bar.dart';
+import '../../../core/widgets/next_button.dart';
 import '../bloc/signup_bloc.dart';
 import '../bloc/signup_event.dart';
 import '../bloc/signup_state.dart';
@@ -108,7 +109,7 @@ class _SignupPage3State extends State<SignupPage3> {
                   NextButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushNamed(context, '/signup/4');
+                        context.push('/signup/4');
                       }
                     },
                   ),

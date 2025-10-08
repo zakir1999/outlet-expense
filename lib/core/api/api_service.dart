@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/signup_data.dart';
+
+import '../../features/Signup/models/signup_data.dart';
+
 
 class ApiService {
   static const String baseUrl =
@@ -9,7 +11,7 @@ class ApiService {
   Future<void> submitSignupData(SignupData data) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/signup'),
+        Uri.parse('$baseUrl'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data.toJson()),
       );

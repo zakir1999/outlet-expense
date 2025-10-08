@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'bloc/navigation_bloc.dart';
+import '../bloc/navigation_bloc.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
-import 'bloc/navigation_event.dart';
-import 'bloc/navigation_state.dart';
+import '../bloc/navigation_event.dart';
+import '../bloc/navigation_state.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;

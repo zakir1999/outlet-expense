@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
-import '../../Widgets/common_app_bar.dart';
-import '../../Widgets/next_button.dart';
+import '../../../core/widgets/common_app_bar.dart';
+import '../../../core/widgets/next_button.dart';
 import '../bloc/signup_bloc.dart';
 import '../bloc/signup_event.dart';
 import '../bloc/signup_state.dart';
@@ -50,11 +51,7 @@ class _SignupPage6State extends State<SignupPage6> {
                   backgroundColor: Color.fromARGB(255, 86, 76, 175),
                 ),
               );
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/home',
-                (route) => false,
-              );
+              context.go('/home');
             } else if (state is SignupError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

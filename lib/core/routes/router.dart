@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../login/view/login_screen.dart';
-import '../menu/cart_screen.dart';
-import '../menu/contact_screen.dart';
-import '../menu/payment_screen.dart';
-import '../menu/profile_screen.dart';
-import '../menu/scaffold_with_nav_bar.dart';
-import '../Signup/view/sign_up_page1.dart';
-import '../Signup/view/sign_up_page2.dart';
-import '../Signup/view/sign_up_page3.dart';
-import '../Signup/view/sign_up_page4.dart';
-import '../Signup/view/sign_up_page5.dart';
-import '../Signup/view/sign_up_page6.dart';
+
+import '../../features/login/view/login_screen.dart';
+import '../../features/menu/view/cart_screen.dart';
+import '../../features/menu/view/contact_screen.dart';
+import '../../features/menu/view/payment_screen.dart';
+import '../../features/menu/view/profile_screen.dart';
+import '../../features/menu/view/scaffold_with_nav_bar.dart';
+import '../../features/Signup/view/sign_up_page1.dart';
+import '../../features/Signup/view/sign_up_page2.dart';
+import '../../features/Signup/view/sign_up_page3.dart';
+import '../../features/Signup/view/sign_up_page4.dart';
+import '../../features/Signup/view/sign_up_page5.dart';
+import '../../features/Signup/view/sign_up_page6.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 

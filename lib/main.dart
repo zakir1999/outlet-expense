@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:outlet_expense/services/api_service.dart';
-
-import 'Signup/bloc/signup_bloc.dart';
-
-import 'menu/bloc/navigation_bloc.dart';
-import 'router/router.dart'; // Make sure your GoRouter `router` is imported
+import 'package:outlet_expense/core/api/api_service.dart';
+import 'core/routes/router.dart';
+import 'features/Signup/bloc/signup_bloc.dart';
+import 'features/menu/bloc/navigation_bloc.dart'; // Make sure your GoRouter `router` is imported
 
 void main() {
   runApp(const MyApp());

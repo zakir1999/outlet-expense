@@ -95,10 +95,11 @@
 // }
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/api/api_service.dart';
+import '../models/signup_data.dart';
 import 'signup_event.dart';
 import 'signup_state.dart';
-import '../../models/signup_data.dart';
-import '../../services/api_service.dart';
+
 
 class SignupBloc extends Bloc<SignupEvent, SignupState> {
   final ApiService apiService;

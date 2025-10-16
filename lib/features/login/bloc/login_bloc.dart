@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-// 👇 These must point to *exactly* the correct paths
 part 'login_event.dart';
 part 'login_state.dart';
 
@@ -35,6 +35,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
+        final token = jsonResponse['authorisation']?['token'] as String?;
+        if (token != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+        }
         emit(
           state.copyWith(
             loginStatus: LoginStatus.success,

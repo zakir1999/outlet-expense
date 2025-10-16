@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../features/login/view/login_screen.dart';
 import '../../features/menu/view/cart_screen.dart';
 import '../../features/menu/view/contact_screen.dart';
 import '../../features/menu/view/payment_screen.dart';
-import '../../features/menu/view/profile_screen.dart';
+import '../../features/menu/view/dash_board.dart';
 import '../../features/menu/view/scaffold_with_nav_bar.dart';
 import '../../features/Signup/view/sign_up_page1.dart';
 import '../../features/Signup/view/sign_up_page2.dart';
@@ -20,6 +22,24 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GoRouter router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/login',
+  redirect: (BuildContext context, GoRouterState state) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final publicRoutes = ['/login', '/signup/1', '/signup/2', '/signup/3', '/signup/4', '/signup/5', '/signup/6'];
+
+    final isLoggedIn = token != null;
+    final isPublicRoute = publicRoutes.contains(state.matchedLocation);
+
+    if (!isLoggedIn && !isPublicRoute) {
+      return '/login';
+    }
+
+    if (isLoggedIn && state.matchedLocation == '/login') {
+      return '/';
+    }
+
+    return null;
+  },
   routes: <RouteBase>[
     // Login page
     GoRoute(

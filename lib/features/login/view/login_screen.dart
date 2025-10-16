@@ -43,62 +43,53 @@ class _LoginScreenState extends State<LoginScreen> {
     final horizontalPadding = screenWidth * 0.08;
     final titleFontSize = screenWidth < 400 ? 18.0 : 22.0;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          "Login",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Times New Roman',
-            fontSize: titleFontSize,
-            color: Colors.black,
+    return BlocProvider(
+      create: (_) => _loginBloc,
+      child: BlocListener<LoginBloc, LoginState>(
+        listener: (context, state) {
+          if (state.loginStatus == LoginStatus.success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message.isNotEmpty
+                    ? state.message
+                    : 'Login Successful!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            context.go('/');
+          } else if (state.loginStatus == LoginStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message.isNotEmpty
+                    ? state.message
+                    : 'Something went wrong, please try again'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: Text(
+              "Login",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Times New Roman',
+                fontSize: titleFontSize,
+                color: Colors.black,
+              ),
+            ),
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            elevation: 0,
           ),
-        ),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: BlocProvider(
-        create: (_) => _loginBloc,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: SizedBox(
-                height: constraints.maxHeight,
-                child: BlocListener<LoginBloc, LoginState>(
-                  listener: (context, state) {
-                    if (state.loginStatus == LoginStatus.success) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(state.message.isNotEmpty
-                              ? state.message
-                              : 'Login Successful!'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                        context.go('/');
-                    }
-
-                    else if (state.loginStatus == LoginStatus.error) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(state.message.isNotEmpty
-                              ? state.message
-                              : 'Something went wrong, please try again'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-
-                    if (state.navigateToSignUp) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SignupPage1()),
-                      );
-                    }
-                  },
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: SizedBox(
+                  height: constraints.maxHeight,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -108,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Email Field
                       BlocBuilder<LoginBloc, LoginState>(
                         buildWhen: (previous, current) =>
-                        previous.email != current.email,
+                            previous.email != current.email,
                         builder: (context, state) {
                           return CustomTextField(
                             label: "Email",
@@ -140,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Password Field
                       BlocBuilder<LoginBloc, LoginState>(
                         buildWhen: (previous, current) =>
-                        previous.password != current.password,
+                            previous.password != current.password,
                         builder: (context, state) {
                           return CustomPasswordField(
                             label: "Password",
@@ -166,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: CustomButton(
                               text: 'Login',
                               isLoading:
-                              state.loginStatus == LoginStatus.loading,
+                                  state.loginStatus == LoginStatus.loading,
                               onPressed: () {
                                 context.read<LoginBloc>().add(const LoginApi());
                               },
@@ -222,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fontWeight: FontWeight.w500,
                                 decoration: TextDecoration.underline,
                                 decorationColor:
-                                Color.fromARGB(255, 35, 59, 201),
+                                    Color.fromARGB(255, 35, 59, 201),
                                 decorationThickness: 1.3,
                               ),
                             ),
@@ -235,9 +226,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

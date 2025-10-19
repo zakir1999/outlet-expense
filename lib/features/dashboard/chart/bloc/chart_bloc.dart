@@ -36,6 +36,7 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         final dashboardData = jsonResponse['data'];
+        print('Dashboard Data: $jsonResponse');
         final chartList = dashboardData['revenue_chart'] ?? [];
         final labels =
         chartList.map<String>((e) => e['name'] as String).toList();
@@ -55,7 +56,6 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
         final customer_percentage = dashboardData['customer_percentage'].toString();
         final income = dashboardData['income'] ?? 0;
         final purchase = dashboardData['purchase'] ?? 0;
-        print('customer_percentage: $customer_percentage');
         emit(ChartLoaded(
           data: formattedData,
           sales: sales,

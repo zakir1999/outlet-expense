@@ -4,7 +4,11 @@ import 'package:outlet_expense/features/dashboard/chart/bloc/chart_bloc.dart';
 import 'package:outlet_expense/features/dashboard/chart/widgets/chart_widget.dart';
 import 'package:outlet_expense/features/dashboard/chart/widgets/interval_buttons.dart';
 import 'package:outlet_expense/features/dashboard/chart/widgets/summary_card.dart';
+import '../../../../core/widgets/list_item_tile.dart';
 import '../widgets/info_label.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../widgets/recent_oder.dart';
 
 class ChartView extends StatefulWidget {
   const ChartView({super.key});
@@ -169,6 +173,10 @@ class _ChartViewState extends State<ChartView> {
                                 ),
                               ),
                               const SizedBox(height: 24),
+                              RecentOrderOneValue(orderValue:'Recent Orders' ),
+                              RecentOrderOneValue(orderValue:'Most Selling Products' ),
+                              RecentOrderOneValue(orderValue:'Recent Purchase' ),
+
                             ],
                           ),
                         ),

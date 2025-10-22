@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import '../../../../core/api/api_client.dart';
 import '../model/invoice_model.dart';
 
@@ -8,26 +7,36 @@ class InvoiceRepository {
 
   InvoiceRepository({required this.apiClient});
 
-  Future<List<Invoice>> fetchInvoice({required int page,required int limit}) async {
-    final url='invoice-list?page=$page&limit=$limit';
+  Future<List<Invoice>> fetchInvoice({
+    required int page,
+    required int limit,
+  }) async {
+    final url = 'invoice-list?page=$page&limit=$limit';
     final res = await apiClient.get(url);
 
-    if (res.statusCode != 200) throw Exception('Failed to fetch invoices');
-    final body = json.decode(res.body);
-    print('Raw API Response Body: ${res.body}');
+    if (res.statusCode != 200) {
+      throw Exception('Failed to fetch invoices');
+    }
 
-    List<dynamic> list;
-    if (body is List) {
-      list = body;
-    } else if (body is Map && body['data'] is List) {
-      list = body['data'];
-    } else if (body is Map && body['invoices'] is List) {
-      list = body['invoices'];
-    } else {
-      list = [];
-      body.forEach((key, value) {
-        if (value is List) list = value;
-      });
+    final body = json.decode(res.body);
+
+    // ✅ Safely extract list of invoices
+    List<dynamic> list = [];
+    try {
+      if (body['data'] is Map && body['data']['data'] is List) {
+        list = body['data']['data'];
+      } else if (body['data'] is List) {
+        list = body['data'];
+      } else if (body['invoices'] is List) {
+        list = body['invoices'];
+      } else {
+        // fallback scan for list anywhere
+        body.forEach((key, value) {
+          if (value is List) list = value;
+        });
+      }
+    } catch (e) {
+      throw Exception('Unexpected response format: $e');
     }
 
     return list.map((e) => Invoice.fromJson(e)).toList();

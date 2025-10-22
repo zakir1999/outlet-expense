@@ -1,5 +1,5 @@
 class Invoice {
-  final String id;
+  final String id; // invoice_id
   final String customerName;
   final double amount;
   final String type;
@@ -18,7 +18,8 @@ class Invoice {
       id: json['invoice_id']?.toString() ?? 'Unknown',
       customerName: json['customer_name']?.toString() ?? 'Unknown',
       amount: double.tryParse(json['paid_amount']?.toString() ?? '0') ?? 0,
-      type: json['type']?.toString() ?? (json['is_purchase'] == true ? 'Pur' : 'Inv'),
+      type: json['type']?.toString() ??
+          (json['is_purchase'] == true ? 'Pur' : 'Inv'),
       createdAt: json['created_at']?.toString() ?? '',
     );
   }

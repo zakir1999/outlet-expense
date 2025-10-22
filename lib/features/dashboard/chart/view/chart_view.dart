@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:outlet_expense/features/dashboard/chart/bloc/chart_bloc.dart';
 import 'package:outlet_expense/features/dashboard/chart/widgets/chart_widget.dart';
 import 'package:outlet_expense/features/dashboard/chart/widgets/interval_buttons.dart';
 import 'package:outlet_expense/features/dashboard/chart/widgets/summary_card.dart';
-import '../../../../core/widgets/list_item_tile.dart';
 import '../widgets/info_label.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../widgets/recent_oder.dart';
 
@@ -173,9 +172,25 @@ class _ChartViewState extends State<ChartView> {
                                 ),
                               ),
                               const SizedBox(height: 24),
-                              RecentOrderOneValue(orderValue:'Recent Orders' ),
-                              RecentOrderOneValue(orderValue:'Most Selling Products' ),
-                              RecentOrderOneValue(orderValue:'Recent Purchase' ),
+                              RecentOrderOneValue(
+                                orderValue: 'Recent Orders',
+                                onPressed: () {
+                                  // Example navigation
+                                  context.push('/recent-orders');
+                                },
+                              ),
+                              RecentOrderOneValue(
+                                orderValue: 'Most Selling Products',
+                                onPressed: () {
+                                  context.go('/most-selling');
+                                },
+                              ),
+                              RecentOrderOneValue(
+                                orderValue: 'Recent Purchase',
+                                onPressed: () {
+                                  context.go('/recent-purchase');
+                                },
+                              ),
 
                             ],
                           ),

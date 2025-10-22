@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/api/api_client.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/password.dart';
 import '../../../core/widgets/TextField.dart';
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _loginBloc = LoginBloc();
+    _loginBloc = LoginBloc(apiClient: ApiClient());
   }
 
   @override
@@ -68,169 +69,172 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
         },
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            title: Text(
-              "Login",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Times New Roman',
-                fontSize: titleFontSize,
-                color: Colors.black,
-              ),
-            ),
+        child: SafeArea(
+          child: Scaffold(
             backgroundColor: Colors.white,
-            centerTitle: true,
-            elevation: 0,
-          ),
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: SizedBox(
-                  height: constraints.maxHeight,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Top flexible space
-                      Expanded(flex: 2, child: SizedBox()),
+            appBar: AppBar(
+              title: Text(
+                "Login",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Times New Roman',
+                  fontSize: titleFontSize,
+                  color: Colors.black,
+                ),
+              ),
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              elevation: 0,
+            ),
+            body: LayoutBuilder(
+              builder: (context, constraints) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: SizedBox(
+                    height: constraints.maxHeight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Top flexible space
+                        Expanded(flex: 2, child: SizedBox()),
 
-                      // Email Field
-                      BlocBuilder<LoginBloc, LoginState>(
-                        buildWhen: (previous, current) =>
-                            previous.email != current.email,
-                        builder: (context, state) {
-                          return CustomTextField(
-                            label: "Email",
-                            hint: "Email",
-                            keyboardType: TextInputType.emailAddress,
-                            focusNode: emailFocusNode,
-                            prefixIcon: Icons.email,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Email cannot be empty";
-                              }
-                              if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                  .hasMatch(value)) {
-                                return "Enter a valid email";
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              context
-                                  .read<LoginBloc>()
-                                  .add(EmailChanged(email: value));
-                            },
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Password Field
-                      BlocBuilder<LoginBloc, LoginState>(
-                        buildWhen: (previous, current) =>
-                            previous.password != current.password,
-                        builder: (context, state) {
-                          return CustomPasswordField(
-                            label: "Password",
-                            hint: "Password",
-                            focusNode: passwordFocusNode,
-                            onChanged: (value) {
-                              context
-                                  .read<LoginBloc>()
-                                  .add(PasswordChanged(password: value));
-                            },
-                          );
-                        },
-                      ),
-
-                      // Flexible space between fields and button
-                      Expanded(flex: 1, child: SizedBox()),
-
-                      // Login Button
-                      BlocBuilder<LoginBloc, LoginState>(
-                        builder: (context, state) {
-                          return SizedBox(
-                            width: double.infinity,
-                            child: CustomButton(
-                              text: 'Login',
-                              isLoading:
-                                  state.loginStatus == LoginStatus.loading,
-                              onPressed: () {
-                                context.read<LoginBloc>().add(const LoginApi());
+                        // Email Field
+                        BlocBuilder<LoginBloc, LoginState>(
+                          buildWhen: (previous, current) =>
+                              previous.email != current.email,
+                          builder: (context, state) {
+                            return CustomTextField(
+                              label: "Email",
+                              hint: "Email",
+                              keyboardType: TextInputType.emailAddress,
+                              focusNode: emailFocusNode,
+                              prefixIcon: Icons.email,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Email cannot be empty";
+                                }
+                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                    .hasMatch(value)) {
+                                  return "Enter a valid email";
+                                }
+                                return null;
                               },
-                            ),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Forgot Password
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 35, 59, 201),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                              onChanged: (value) {
+                                context
+                                    .read<LoginBloc>()
+                                    .add(EmailChanged(email: value));
+                              },
+                            );
+                          },
                         ),
-                      ),
 
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // Sign Up Text
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Don't have an account? ",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignupPage1(),
-                                ),
-                              );
-                            },
+                        // Password Field
+                        BlocBuilder<LoginBloc, LoginState>(
+                          buildWhen: (previous, current) =>
+                              previous.password != current.password,
+                          builder: (context, state) {
+                            return CustomPasswordField(
+                              label: "Password",
+                              hint: "Password",
+                              focusNode: passwordFocusNode,
+                              onChanged: (value) {
+                                context
+                                    .read<LoginBloc>()
+                                    .add(PasswordChanged(password: value));
+                              },
+                            );
+                          },
+                        ),
+
+                        // Flexible space between fields and button
+                        Expanded(flex: 1, child: SizedBox()),
+
+                        // Login Button
+                        BlocBuilder<LoginBloc, LoginState>(
+                          builder: (context, state) {
+                            return SizedBox(
+                              width: double.infinity,
+                              child: CustomButton(
+                                text: 'Login',
+                                isLoading:
+                                    state.loginStatus == LoginStatus.loading,
+                                onPressed: () {
+                                  context.read<LoginBloc>().add(const LoginApi());
+                                },
+                              ),
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Forgot Password
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {},
                             child: const Text(
-                              'Sign Up',
+                              'Forgot Password?',
                               style: TextStyle(
-                                fontSize: 14,
                                 color: Color.fromARGB(255, 35, 59, 201),
-                                fontWeight: FontWeight.w500,
-                                decoration: TextDecoration.underline,
-                                decorationColor:
-                                    Color.fromARGB(255, 35, 59, 201),
-                                decorationThickness: 1.3,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
 
-                      // Bottom flexible space
-                      Expanded(flex: 2, child: SizedBox()),
-                    ],
+                        const SizedBox(height: 16),
+
+                        // Sign Up Text
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Don't have an account? ",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SignupPage1(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color.fromARGB(255, 35, 59, 201),
+                                  fontWeight: FontWeight.w500,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor:
+                                      Color.fromARGB(255, 35, 59, 201),
+                                  decorationThickness: 1.3,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Bottom flexible space
+                        Expanded(flex: 2, child: SizedBox()),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
     );
   }
 }
+

@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../core/api/api_client.dart';
 
 part 'chart_event.dart';
 part 'chart_state.dart';
 
 class ChartBloc extends Bloc<ChartEvent, ChartState> {
-  ChartBloc() : super(ChartInitial()) {
+  final ApiClient apiClient;
+
+  ChartBloc({required this.apiClient}) : super(ChartInitial()) {
     on<FetchChartData>(_onFetchChartData);
   }
 
@@ -18,25 +20,11 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
       ) async {
     emit(ChartLoading());
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
-      if (token == null) {
-        emit(const ChartError('Not authenticated'));
-        return;
-      }
-
-      final response = await http.get(
-        Uri.parse(
-          'https://www.outletexpense.xyz/api/web-dashboard?interval=${event.interval}',
-        ),
-        headers: {'Authorization': 'Bearer $token'},
-      );
+      final response = await apiClient.get('web-dashboard?interval=${event.interval}');
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         final dashboardData = jsonResponse['data'];
-        print('Dashboard Data: $jsonResponse');
         final chartList = dashboardData['revenue_chart'] ?? [];
         final labels =
         chartList.map<String>((e) => e['name'] as String).toList();

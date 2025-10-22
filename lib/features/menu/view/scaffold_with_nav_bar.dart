@@ -14,64 +14,66 @@ class ScaffoldWithNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
-        return Scaffold(
-          body: navigationShell,
-          extendBody: true,
-          bottomNavigationBar: AnimatedNotchBottomBar(
-            notchBottomBarController: NotchBottomBarController(index: state.index),
-            onTap: (index) {
-              context.read<NavigationBloc>().add(NavigateTo(index));
-              navigationShell.goBranch(
-                index,
-                initialLocation: index == navigationShell.currentIndex,
-              );
-            },
-            bottomBarItems: [
-              BottomBarItem(
-                inActiveItem: const Icon(Icons.home, color: Colors.white),
-                activeItem: Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blueAccent,
+        return SafeArea(
+          child: Scaffold(
+            body: navigationShell,
+            extendBody: true,
+            bottomNavigationBar: AnimatedNotchBottomBar(
+              notchBottomBarController: NotchBottomBarController(index: state.index),
+              onTap: (index) {
+                context.read<NavigationBloc>().add(NavigateTo(index));
+                navigationShell.goBranch(
+                  index,
+                  initialLocation: index == navigationShell.currentIndex,
+                );
+              },
+              bottomBarItems: [
+                BottomBarItem(
+                  inActiveItem: const Icon(Icons.home, color: Colors.white),
+                  activeItem: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blueAccent,
+                    ),
+                    child: const Icon(Icons.home, color: Colors.white),
                   ),
-                  child: const Icon(Icons.home, color: Colors.white),
                 ),
-              ),
-              BottomBarItem(
-                inActiveItem: const Icon(Icons.person, color: Colors.white),
-                activeItem: Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blueAccent,
+                BottomBarItem(
+                  inActiveItem: const Icon(Icons.person, color: Colors.white),
+                  activeItem: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blueAccent,
+                    ),
+                    child: const Icon(Icons.person, color: Colors.white),
                   ),
-                  child: const Icon(Icons.person, color: Colors.white),
                 ),
-              ),
-              BottomBarItem(
-                inActiveItem: const Icon(Icons.shopping_cart, color: Colors.white),
-                activeItem: Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blueAccent,
+                BottomBarItem(
+                  inActiveItem: const Icon(Icons.shopping_cart, color: Colors.white),
+                  activeItem: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blueAccent,
+                    ),
+                    child: const Icon(Icons.shopping_cart, color: Colors.white),
                   ),
-                  child: const Icon(Icons.shopping_cart, color: Colors.white),
                 ),
-              ),
-              BottomBarItem(
-                inActiveItem: const Icon(Icons.pages, color: Colors.white),
-                activeItem: Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blueAccent,
+                BottomBarItem(
+                  inActiveItem: const Icon(Icons.pages, color: Colors.white),
+                  activeItem: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blueAccent,
+                    ),
+                    child: const Icon(Icons.pages, color: Colors.white),
                   ),
-                  child: const Icon(Icons.pages, color: Colors.white),
                 ),
-              ),
-            ],
-            kIconSize: 25.0,
-            kBottomRadius: 25.0,
-            color: const Color.fromRGBO(35, 59, 201, 1.0), // opacity 1.0 = fully visible
-          showLabel: false,
+              ],
+              kIconSize: 25.0,
+              kBottomRadius: 25.0,
+              color: const Color.fromRGBO(35, 59, 201, 1.0), // opacity 1.0 = fully visible
+            showLabel: false,
+            ),
           ),
         );
       },

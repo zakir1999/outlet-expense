@@ -63,9 +63,9 @@ class ChartWidget extends StatelessWidget {
               gridData: FlGridData(
                 show: true,
                 drawVerticalLine: true,
-                drawHorizontalLine: false, // horizontal lines hidden
+                drawHorizontalLine: false,
                 getDrawingVerticalLine: (value) => FlLine(
-                  color: Colors.white24, // subtle vertical line on blue bg
+                  color: Colors.white24,
                   strokeWidth: 1.2,
                 ),
               ),
@@ -85,7 +85,7 @@ class ChartWidget extends StatelessWidget {
                           child: Text(
                             labels[index],
                             style: const TextStyle(
-                              color: Colors.white, // readable on blue bg
+                              color: Colors.white,
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
                             ),
@@ -112,7 +112,7 @@ class ChartWidget extends StatelessWidget {
                   spots: spots,
                   isCurved: true,
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFFFA500), Color(0xFFFFE066)], // Orange → Yellow
+                    colors: [Color(0xFFFFA500), Color(0xFFFFE066)],
                   ),
                   barWidth: 3,
                   isStrokeCapRound: true,
@@ -120,8 +120,8 @@ class ChartWidget extends StatelessWidget {
                     show: true,
                     getDotPainter: (spot, percent, barData, index) =>
                         FlDotCirclePainter(
-                          radius: 4, // dot size
-                          color: Colors.white, // dot color
+                          radius: 4,
+                          color: Colors.white,
                           strokeWidth: 0,
                         ),
                   ),

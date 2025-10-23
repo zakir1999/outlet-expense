@@ -16,11 +16,14 @@ class SummaryCard extends StatelessWidget {
     this.customer_percentage,
   }) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final cardWidth = screenWidth * 0.4;
+    final screenW = MediaQuery.of(context).size.width;
+    final screenH = MediaQuery.of(context).size.height;
+
+    // Responsive card width & height
+    final cardWidth = screenW < 600 ? screenW * 0.42 : screenW * 0.28;
+    final cardHeight = screenH * 0.16; // scales with screen height
 
     return Container(
       width: cardWidth,
@@ -29,7 +32,7 @@ class SummaryCard extends StatelessWidget {
         children: [
           // Card Background
           Container(
-            height: 120,
+            height: cardHeight,
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(20),
@@ -42,6 +45,7 @@ class SummaryCard extends StatelessWidget {
               ],
             ),
           ),
+
           // Upward Trending Flow Line (Bottom-Right)
           Positioned(
             bottom: 8,
@@ -51,55 +55,63 @@ class SummaryCard extends StatelessWidget {
               painter: _UpwardTrendLinePainter(color),
             ),
           ),
-          // --- NEW: Income Percentage on Top Right ---
-          if (customer_percentage != null) // Only show if percentage is provided
+
+          // Income Percentage (Top Right)
+          if (customer_percentage != null)
             Positioned(
-              top: 16, // Align with the top padding of the content
-              right: 16, // Align with the right padding of the content
+              top: 12,
+              right: 16,
               child: Text(
                 customer_percentage!,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: screenW < 400 ? 14 : 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-          // Card Content
+
+          // Main Card Content
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Icon
-                  Icon(icon, color: Colors.white, size: 26),
-                  const SizedBox(height: 10),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      value,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min, // ✅ prevents overflow
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(icon, color: Colors.white, size: constraints.maxHeight * 0.25),
+                      const SizedBox(height: 8),
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            value,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: screenW < 400 ? 18 : 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
+                      const SizedBox(height: 4),
+                      Flexible(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: screenW < 400 ? 12 : 14,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
             ),
           ),

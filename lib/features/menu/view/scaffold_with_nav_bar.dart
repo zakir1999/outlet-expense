@@ -14,8 +14,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
-        return SafeArea(
-          child: Scaffold(
+        return Scaffold(
             body: navigationShell,
             extendBody: true,
             bottomNavigationBar: AnimatedNotchBottomBar(
@@ -74,8 +73,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
               color: const Color.fromRGBO(35, 59, 201, 1.0), // opacity 1.0 = fully visible
             showLabel: false,
             ),
-          ),
-        );
+          );
       },
     );
   }

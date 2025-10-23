@@ -63,7 +63,10 @@ class _ChartViewState extends State<ChartView> {
                         SizedBox(
                           height: screenHeight * 0.30,
                           width: double.infinity,
-                          child: ChartWidget(data: state.data),
+                          child: ChartWidget(data: {
+                            'labels': state.chartData.labels,
+                            'values': state.chartData.values,
+                          },),
                         ),
 
                         // Bottom White Area
@@ -86,32 +89,33 @@ class _ChartViewState extends State<ChartView> {
                                 height: screenHeight * 0.16,
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
+                                  physics: BouncingScrollPhysics(),
                                   children: [
                                     SummaryCard(
                                       color: Colors.purple,
                                       title: "Total Sales",
-                                      value: "${state.sales}৳",
+                                      value: "${state.chartData.sales}৳",
                                       icon: Icons.pie_chart,
                                     ),
                                     SummaryCard(
                                       color: Colors.orange,
                                       title: "Total Expense",
-                                      value: "${state.expenses}৳",
+                                      value: "${state.chartData.expenses}৳",
                                       icon: Icons.shopping_cart,
                                     ),
                                     SummaryCard(
                                       color: Colors.teal,
                                       title: "Orders",
-                                      value: "${state.orders}",
+                                      value: "${state.chartData.orders}",
                                       icon: Icons.timer,
                                     ),
                                     SummaryCard(
                                       color: Colors.green,
                                       title: "Customers",
-                                      value: "${state.customers}",
+                                      value: "${state.chartData.customers}",
                                       icon: Icons.person,
                                       customer_percentage:
-                                      "${state.customer_percentage}",
+                                      "${state.chartData.customerPercentage}",
                                     ),
                                   ],
                                 ),
@@ -144,7 +148,7 @@ class _ChartViewState extends State<ChartView> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      "${state.balance} ৳",
+                                      "${state.chartData.balance} ৳",
                                       style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -158,12 +162,12 @@ class _ChartViewState extends State<ChartView> {
                                       children: [
                                         InfoLabel(
                                           label: "Spent",
-                                          value: "${state.income}৳",
+                                          value: "${state.chartData.income}৳",
                                           color: Colors.red,
                                         ),
                                         InfoLabel(
                                           label: "Income",
-                                          value: "${state.expenses}৳",
+                                          value: "${state.chartData.expenses}৳",
                                           color: Colors.green,
                                         ),
                                       ],

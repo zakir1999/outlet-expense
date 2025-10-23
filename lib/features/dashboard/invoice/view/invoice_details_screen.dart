@@ -1,75 +1,59 @@
 import 'package:flutter/material.dart';
-import '../model/invoice_model.dart';
-import '../repository/invoice_repository.dart';
 
-class InvoiceDetailScreen extends StatefulWidget {
+class InvoiceDetailsScreen extends StatelessWidget {
   final String invoiceId;
-  final InvoiceRepository repository;
-  const InvoiceDetailScreen({super.key, required this.invoiceId, required this.repository});
+  final String? customerName;
+  final String? createdAt;
+  final double? amount;
 
-  @override
-  State<InvoiceDetailScreen> createState() => _InvoiceDetailScreenState();
-}
-
-class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
-  late Future<Invoice> _invoiceFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _invoiceFuture = widget.repository.fetchInvoiceById(widget.invoiceId);
-  }
+  const InvoiceDetailsScreen({
+    Key? key,
+    required this.invoiceId,
+    this.customerName,
+    this.createdAt,
+    this.amount,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Invoice Details'),
-        backgroundColor: Colors.white,
-        elevation: 0.3,
-        leading: const BackButton(color: Colors.black),
+        title: Text('Invoice #$invoiceId'),
+        backgroundColor: const Color.fromARGB(255, 35, 59, 201),
       ),
-      body: FutureBuilder<Invoice>(
-        future: _invoiceFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text(snapshot.error.toString()));
-          } else if (!snapshot.hasData) {
-            return const Center(child: Text('Invoice not found'));
-          }
-
-          final invoice = snapshot.data!;
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(invoice.id, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Text('Customer: ${invoice.customerName}'),
-                    Text('Amount: ${invoice.amount} ৳'),
-                    Text('Created At: ${invoice.createdAt}'),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton.icon(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.arrow_back),
-                        label: const Text('Back'),
-                      ),
-                    )
-                  ],
-                ),
-              ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Customer: ${customerName ?? "N/A"}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
-          );
-        },
+            const SizedBox(height: 8),
+            Text(
+              'Created At: ${createdAt ?? "N/A"}',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Amount: \$${amount?.toStringAsFixed(2) ?? "0.00"}',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 16),
+            const Text(
+              'Additional Details:',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'You can add more invoice details here, like items, taxes, payment status, etc.',
+              style: TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
       ),
     );
   }

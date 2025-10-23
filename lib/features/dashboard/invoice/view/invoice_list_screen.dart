@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../chart/widgets/recent_oder.dart';
-
-
 import '../bloc/invoice_bloc.dart';
 import '../bloc/invoice_event.dart';
-import '../invoice_card.dart';
-import '../repository/invoice_repository.dart';
+import '../widget/invoice_card.dart';
 import 'invoice_details_screen.dart';
-
 class InvoiceListScreen extends StatelessWidget {
   const InvoiceListScreen({super.key});
 
@@ -19,7 +14,7 @@ class InvoiceListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Invoice list'),
+        title: const Text('Invoice list',style: TextStyle(color: Colors.black),),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0.2,
@@ -91,14 +86,27 @@ class InvoiceListScreen extends StatelessWidget {
                   final invoices = state.visibleInvoices;
                   if (invoices.isEmpty) return const Center(child: Text('No Invoices Found'));
                   return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    cacheExtent: 200,
                     itemCount: invoices.length,
                     itemBuilder: (context, index) {
                       final inv = invoices[index];
-                      return InvoiceCard(
-                        id: inv.id,
-                        customerName: inv.customerName,
-                        createdAt: inv.createdAt,
-                        amount: inv.amount,
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InvoiceDetailsScreen(invoiceId: inv.id),
+                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(12), // optional for rounded ripple
+                        child: InvoiceCard(
+                          id: inv.id,
+                          customerName: inv.customerName,
+                          createdAt: inv.createdAt,
+                          amount: inv.amount,
+                        ),
                       );
                     },
                   );

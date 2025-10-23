@@ -5,6 +5,7 @@ import 'core/routes/router.dart';
 import 'features/Signup/bloc/signup_bloc.dart';
 import 'features/Signup/repository/signup_respository.dart';
 import 'features/menu/bloc/navigation_bloc.dart'; // Make sure your GoRouter `router` is imported
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +14,10 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
+
     return MultiBlocProvider(
       providers: [
         // SignupBloc provider

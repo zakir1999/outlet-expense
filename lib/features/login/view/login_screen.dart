@@ -7,6 +7,7 @@ import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/password.dart';
 import '../../../core/widgets/TextField.dart';
 
+import '../../../main.dart';
 import '../../Signup/view/sign_up_page1.dart';
 
 import '../bloc/login_bloc.dart';
@@ -27,8 +28,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _loginBloc = LoginBloc(apiClient: ApiClient());
+    // Initialize the bloc here
+    _loginBloc = LoginBloc(apiClient: ApiClient(navigatorKey: navigatorKey));
   }
+
+
 
   @override
   void dispose() {

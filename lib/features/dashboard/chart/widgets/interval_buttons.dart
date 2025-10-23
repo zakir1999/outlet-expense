@@ -88,30 +88,25 @@ class _HoverButtonState extends State<_HoverButton> {
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTap: widget.onTap,
-        // **To make the button take full height/width, we use a Container with `double.infinity`**
-        // Since it's wrapped in an `Expanded`, it takes the available space.
         child: Container(
-          // **Set both height and width to double.infinity**
-          // This will make it fill the space given by `Expanded` and the `Row`'s height.
-          // The height will be determined by the content padding.
-          constraints: const BoxConstraints(minHeight: 45), // Ensure a minimum height if needed
+          constraints: const BoxConstraints(minHeight: 45),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
-            // Adjust padding to control the final height
+
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: BorderRadius.circular(25), // Reduced slightly to fit better inside the 25-radius parent
+              borderRadius: BorderRadius.circular(25),
               boxShadow: isActive
                   ? [
                 BoxShadow(
-                  color: Colors.blue[800]?.withOpacity(0.3) ?? Colors.blue.withOpacity(0.3),                  blurRadius: 6,
+                  color: Colors.blue[800]?.withOpacity(0.3) ?? Colors.blue.withOpacity(0.3),
+                  blurRadius: 6,
                   offset: const Offset(0, 3),
                 ),
               ]
-                  : null, // Removed shadow for unselected state for a cleaner look
-              // **REMOVED border definition**
+                  : null,
             ),
             child: Center(
               child: Text(
@@ -129,7 +124,3 @@ class _HoverButtonState extends State<_HoverButton> {
     );
   }
 }
-
-// **Note on `ChartBloc`:**
-// The line `context.read<ChartBloc>().add(FetchChartData(lower))` assumes you have a ChartBloc
-// and a FetchChartData event defined and correctly provided higher up in your widget tree.

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:outlet_expense/core/api/api_client.dart';
-import 'package:outlet_expense/features/dashboard/invoice/bloc/invoice_bloc.dart';
-import 'package:outlet_expense/features/dashboard/invoice/repository/invoice_repository.dart';
-import 'package:outlet_expense/features/dashboard/invoice/view/invoice_list_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/dashboard/invoice/bloc/invoice_event.dart';
@@ -14,6 +10,9 @@ import '../../features/menu/view/contact_screen.dart';
 import '../../features/menu/view/dash_board.dart';
 import '../../features/menu/view/payment_screen.dart';
 import '../../features/menu/view/scaffold_with_nav_bar.dart';
+import '../../features/dashboard/invoice/bloc/invoice_bloc.dart';
+import '../../features/dashboard/invoice/repository/invoice_repository.dart';
+import '../../features/dashboard/invoice/view/invoice_list_screen.dart';
 import '../../features/Signup/view/sign_up_page1.dart';
 import '../../features/Signup/view/sign_up_page2.dart';
 import '../../features/Signup/view/sign_up_page3.dart';
@@ -21,10 +20,11 @@ import '../../features/Signup/view/sign_up_page4.dart';
 import '../../features/Signup/view/sign_up_page5.dart';
 import '../../features/Signup/view/sign_up_page6.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+import '../api/api_client.dart';
 
-// 1. ASYNCHRONOUS HELPER FUNCTION TO GET TOKEN
-// We move the SharedPreferences logic into this function so it can be awaited.
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+// Helper function to get stored token
 Future<String?> _getToken() async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString('token');
@@ -33,110 +33,78 @@ Future<String?> _getToken() async {
 final GoRouter router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/login',
-  // The redirect works fine because it is an async function
   redirect: (BuildContext context, GoRouterState state) async {
-    final token = await _getToken(); // Use the helper function here
-    final publicRoutes = ['/login', '/signup/1', '/signup/2', '/signup/3', '/signup/4', '/signup/5', '/signup/6'];
+    final token = await _getToken();
+    final publicRoutes = [
+      '/login',
+      '/signup/1',
+      '/signup/2',
+      '/signup/3',
+      '/signup/4',
+      '/signup/5',
+      '/signup/6'
+    ];
 
     final isLoggedIn = token != null;
     final isPublicRoute = publicRoutes.contains(state.matchedLocation);
 
-    if (!isLoggedIn && !isPublicRoute) {
-      return '/login';
-    }
-
-    if (isLoggedIn && state.matchedLocation == '/login') {
-      return '/';
-    }
-
+    if (!isLoggedIn && !isPublicRoute) return '/login';
+    if (isLoggedIn && state.matchedLocation == '/login') return '/';
     return null;
   },
   routes: <RouteBase>[
-    // Login page
+    // Login
     GoRoute(
       path: '/login',
-      builder: (BuildContext context, GoRouterState state) {
-        return const LoginScreen();
-      },
+      builder: (BuildContext context, GoRouterState state) => const LoginScreen(),
     ),
 
     // Signup pages
-    GoRoute(
-      path: '/signup/1',
-      builder: (context, state) =>  SignupPage1(),
-    ),
-    GoRoute(
-      path: '/signup/2',
-      builder: (context, state) =>  SignupPage2(),
-    ),
-    GoRoute(
-      path: '/signup/3',
-      builder: (context, state) =>  SignupPage3(),
-    ),
-    GoRoute(
-      path: '/signup/4',
-      builder: (context, state) => SignupPage4(),
-    ),
-    GoRoute(
-      path: '/signup/5',
-      builder: (context, state) =>  SignupPage5(),
-    ),
-    GoRoute(
-      path: '/signup/6',
-      builder: (context, state) =>  SignupPage6(),
-    ),
+    GoRoute(path: '/signup/1', builder: (_, __) => SignupPage1()),
+    GoRoute(path: '/signup/2', builder: (_, __) => SignupPage2()),
+    GoRoute(path: '/signup/3', builder: (_, __) => SignupPage3()),
+    GoRoute(path: '/signup/4', builder: (_, __) => SignupPage4()),
+    GoRoute(path: '/signup/5', builder: (_, __) => SignupPage5()),
+    GoRoute(path: '/signup/6', builder: (_, __) => SignupPage6()),
 
     // Bottom NavBar + Home tabs
     StatefulShellRoute.indexedStack(
-      builder: (BuildContext context, GoRouterState state, StatefulNavigationShell navigationShell) {
-        return ScaffoldWithNavBar(navigationShell: navigationShell);
-      },
-      branches: <StatefulShellBranch>[
+      builder: (context, state, navigationShell) =>
+          ScaffoldWithNavBar(navigationShell: navigationShell),
+      branches: [
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/', // First tab: Profile/Dashboard
-              // NOTE: Assuming ProfileScreen is a typo for DashboardScreen or similar in your structure
-              builder: (context, state) => const DashBoard(), // Changed to DashboardScreen
-            ),
+            GoRoute(path: '/', builder: (_, __) => const DashBoard()),
           ],
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/cart', // Second tab: Cart
-              builder: (context, state) => const CartScreen(),
-            ),
+            GoRoute(path: '/cart', builder: (_, __) => const CartScreen()),
           ],
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/contact', // Third tab: Contact
-              builder: (context, state) => const ContactScreen(),
-            ),
+            GoRoute(path: '/contact', builder: (_, __) => const ContactScreen()),
           ],
         ),
       ],
     ),
 
-    // Payment page (outside nav bar)
+    // Payment (outside bottom nav)
     GoRoute(
       path: '/payment',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (BuildContext context, GoRouterState state) {
-        return const PaymentScreen();
-      },
+      builder: (_, __) => const PaymentScreen(),
     ),
 
-    // 2. RECENT ORDERS ROUTE (UPDATED)
+    // Recent Orders (Invoice)
     GoRoute(
       path: '/recent-orders',
       builder: (context, state) {
         return BlocProvider(
           create: (context) => InvoiceBloc(
             repository: InvoiceRepository(
-              apiClient: ApiClient(),
+              apiClient: ApiClient(navigatorKey: _rootNavigatorKey),
             ),
           )..add(FetchInvoices()),
           child: const InvoiceListScreen(),

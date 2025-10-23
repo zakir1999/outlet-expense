@@ -17,7 +17,7 @@ class InfoLabel extends StatelessWidget {
     return Flexible(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        margin: const EdgeInsets.only(right: 8), // space between labels
+        margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(10),
@@ -28,7 +28,7 @@ class InfoLabel extends StatelessWidget {
             color: color,
             fontWeight: FontWeight.w500,
           ),
-          overflow: TextOverflow.ellipsis, // truncate long text with ...
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );

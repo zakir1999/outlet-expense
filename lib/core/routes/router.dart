@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:outlet_expense/features/dashboard/purchase/bloc/purchase_invoice_bloc.dart';
+import 'package:outlet_expense/features/dashboard/purchase/bloc/purchase_invoice_event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../features/dashboard/invoice/bloc/invoice_event.dart';
+import '../../features/dashboard/purchase/repository/purchase_repository.dart';
+import '../../features/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
 import '../../features/menu/view/cart_screen.dart';
 import '../../features/menu/view/contact_screen.dart';
@@ -96,7 +99,6 @@ final GoRouter router = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (_, __) => const PaymentScreen(),
     ),
-
     // Recent Orders (Invoice)
     GoRoute(
       path: '/recent-orders',
@@ -108,6 +110,19 @@ final GoRouter router = GoRouter(
             ),
           )..add(FetchInvoices()),
           child: const InvoiceListScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/purchase-invoice',
+      builder: (context, state) {
+        return BlocProvider(
+          create: (context) => PurchaseInvoiceBloc(
+            repository: PurchaseInvoiceRepository(
+              apiClient: ApiClient(navigatorKey: _rootNavigatorKey),
+            ),
+          )..add(FetchPurchaseInvoices()),
+          child: const PurchaseInvoiceListScreen(),
         );
       },
     ),

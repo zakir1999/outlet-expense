@@ -1,121 +1,199 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/TextField.dart';
 import '../bloc/invoice_bloc.dart';
 import '../bloc/invoice_event.dart';
+import '../bloc/invoice_state.dart';
 import '../widget/invoice_card.dart';
 import 'invoice_details_screen.dart';
+
 class InvoiceListScreen extends StatelessWidget {
   const InvoiceListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<InvoiceBloc>();
-    final screenW = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Invoice list',style: TextStyle(color: Colors.black),),
+        title: Text(
+          'Invoice List',
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontWeight: FontWeight.bold,
+            fontSize: 18.sp,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
-        elevation: 0.2,
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0.3,
       ),
       backgroundColor: const Color(0xFFF6F8FA),
-      body: Column(
-        children: [
-          const SizedBox(height: 10),
-
-          // Sales / Purchases Toggle
-          BlocBuilder<InvoiceBloc, InvoiceState>(
-            builder: (context, state) {
-              String active = 'Inv';
-              if (state is InvoiceLoaded) active = state.activeType;
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenW * 0.05),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: active == 'Inv' ? Colors.teal : Colors.grey.shade300,
-                        ),
-                        onPressed: () => bloc.add(ChangeTypeFilter('Inv')),
-                        child: const Text('Sales'),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: active == 'Pur' ? Colors.teal : Colors.grey.shade300,
-                        ),
-                        onPressed: () => bloc.add(ChangeTypeFilter('Pur')),
-                        child: const Text('Purchase'),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: screenW * 0.05),
-            child: TextField(
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Search Invoice',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (v) => bloc.add(SearchQueryChanged(v)),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          // Invoice List
-          Expanded(
-            child: BlocBuilder<InvoiceBloc, InvoiceState>(
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        child: Column(
+          children: [
+            // --- Toggle Buttons (Sales / Purchase) ---
+            BlocBuilder<InvoiceBloc, InvoiceState>(
               builder: (context, state) {
-                if (state is InvoiceLoading || state is InvoiceInitial) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is InvoiceError) {
-                  return Center(child: Text(state.message));
-                } else if (state is InvoiceLoaded) {
-                  final invoices = state.visibleInvoices;
-                  if (invoices.isEmpty) return const Center(child: Text('No Invoices Found'));
-                  return ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    cacheExtent: 200,
-                    itemCount: invoices.length,
-                    itemBuilder: (context, index) {
-                      final inv = invoices[index];
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => InvoiceDetailsScreen(invoiceId: inv.id),
+                String active = 'Inv';
+                if (state is InvoiceLoaded) active = state.activeType;
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(50.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.15),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(5.w),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: active == 'Inv'
+                                ? AppColors.primary
+                                : Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40.r),
                             ),
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(12), // optional for rounded ripple
-                        child: InvoiceCard(
-                          id: inv.id,
-                          customerName: inv.customerName,
-                          createdAt: inv.createdAt,
-                          amount: inv.amount,
+                            elevation: 0,
+                            padding: EdgeInsets.symmetric(vertical: 10.h),
+                          ),
+                          onPressed: () => bloc.add(ChangeTypeFilter('Inv')),
+                          child: Text(
+                            'Sales',
+                            style: TextStyle(
+                              color: active == 'Inv'
+                                  ? AppColors.background
+                                  : AppColors.textDark,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14.sp,
+                            ),
+                          ),
                         ),
-                      );
-                    },
-                  );
-                }
-                return const SizedBox.shrink();
+                      ),
+                      SizedBox(width: 5.w),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: active == 'Pur'
+                                ? AppColors.primary
+                                : Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40.r),
+                            ),
+                            elevation: 0,
+                            padding: EdgeInsets.symmetric(vertical: 10.h),
+                          ),
+                          onPressed: () => bloc.add(ChangeTypeFilter('Pur')),
+                          child: Text(
+                            'Purchase',
+                            style: TextStyle(
+                              color: active == 'Pur'
+                                  ? AppColors.background
+                                  : AppColors.textDark,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
-          ),
-        ],
+
+            SizedBox(height: 16.h),
+
+            // --- Search Bar ---
+            Theme(
+              data: Theme.of(context).copyWith(
+                inputDecorationTheme: const InputDecorationTheme(
+                  prefixIconColor: Color(0xFF142EE4),
+                ),
+              ),
+              child: CustomTextField(
+                label: 'Search Invoice',
+                hint: 'Search Invoice',
+                prefixIcon: Icons.search,
+                onChanged: (value) => bloc.add(SearchQueryChanged(value)),
+                keyboardType: TextInputType.text,
+                controller: null,
+              ),
+            ),
+
+            SizedBox(height: 14.h),
+
+            // --- Invoice List ---
+            Expanded(
+              child: BlocBuilder<InvoiceBloc, InvoiceState>(
+                builder: (context, state) {
+                  if (state is InvoiceLoading || state is InvoiceInitial) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is InvoiceError) {
+                    return Center(
+                      child: Text(
+                        state.message,
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
+                    );
+                  } else if (state is InvoiceLoaded) {
+                    final invoices = state.visibleInvoices;
+                    if (invoices.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No Invoices Found',
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: invoices.length,
+                      itemBuilder: (context, index) {
+                        final inv = invoices[index];
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4.h),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => InvoiceDetailsScreen(
+                                    invoiceId: inv.id,
+                                  ),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(12.r),
+                            child: InvoiceCard(
+                              id: inv.id,
+                              customerName: inv.customerName,
+                              createdAt: inv.createdAt,
+                              amount: inv.amount,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -43,6 +43,8 @@ dependencies:
   fl_chart: ^0.68.0
   timeago: ^3.7.1
   shimmer_animation: ^2.2.2
+  shimmer: ^3.0.0
+
 
 
 dev_dependencies:

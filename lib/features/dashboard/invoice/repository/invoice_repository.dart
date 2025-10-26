@@ -17,7 +17,6 @@ class InvoiceRepository {
     if (res.statusCode != 200) {
       throw Exception('Failed to fetch invoices');
     }
-
     final body = json.decode(res.body);
 
     // ✅ Safely extract list of invoices

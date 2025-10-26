@@ -5,6 +5,10 @@ import 'package:outlet_expense/features/dashboard/purchase/bloc/purchase_invoice
 import 'package:outlet_expense/features/dashboard/purchase/bloc/purchase_invoice_event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/dashboard/invoice/bloc/invoice_event.dart';
+import '../../features/dashboard/most_sellling_product/bloc/most_selling_bloc.dart';
+import '../../features/dashboard/most_sellling_product/bloc/most_selling_event.dart';
+import '../../features/dashboard/most_sellling_product/repository/most_selling_repository.dart';
+import '../../features/dashboard/most_sellling_product/view/most_selling_screen.dart';
 import '../../features/dashboard/purchase/repository/purchase_repository.dart';
 import '../../features/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
@@ -126,5 +130,19 @@ final GoRouter router = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/most-selling',
+      builder: (context, state) {
+        return BlocProvider(
+          create: (context) => MostSellingBloc(
+            MostSellingRepository(
+              apiClient: ApiClient(navigatorKey: _rootNavigatorKey),
+            ),
+          )..add(FetchMostSellingProducts()),
+          child: const MostSellingScreen(),
+        );
+      },
+    ),
+
   ],
 );

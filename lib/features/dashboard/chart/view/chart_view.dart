@@ -186,7 +186,7 @@ class _ChartViewState extends State<ChartView> {
                               RecentOrderOneValue(
                                 orderValue: 'Most Selling Products',
                                 onPressed: () {
-                                  context.go('/most-selling');
+                                  context.push('/most-selling');
                                 },
                               ),
                               RecentOrderOneValue(

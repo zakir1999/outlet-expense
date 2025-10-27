@@ -73,7 +73,6 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
         },
-        child: SafeArea(
           child: Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -237,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-      ),
+
     );
   }
 }

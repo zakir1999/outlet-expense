@@ -37,24 +37,15 @@ class InvoiceListScreen extends StatelessWidget {
         child: Column(
           children: [
             // --- Toggle Buttons (Sales / Purchase) ---
+
+
             BlocBuilder<InvoiceBloc, InvoiceState>(
               builder: (context, state) {
                 String active = 'Inv';
                 if (state is InvoiceLoaded) active = state.activeType;
 
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(50.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.15),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  padding: EdgeInsets.all(5.w),
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18.w),
                   child: Row(
                     children: [
                       Expanded(
@@ -63,11 +54,12 @@ class InvoiceListScreen extends StatelessWidget {
                             backgroundColor: active == 'Inv'
                                 ? AppColors.primary
                                 : Colors.white,
+                            elevation: 3,
+                            shadowColor: AppColors.primary,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40.r),
+                              borderRadius: BorderRadius.circular(50.r),
                             ),
-                            elevation: 0,
-                            padding: EdgeInsets.symmetric(vertical: 10.h),
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
                           ),
                           onPressed: () => bloc.add(ChangeTypeFilter('Inv')),
                           child: Text(
@@ -77,23 +69,24 @@ class InvoiceListScreen extends StatelessWidget {
                                   ? AppColors.background
                                   : AppColors.textDark,
                               fontWeight: FontWeight.w600,
-                              fontSize: 14.sp,
+                              fontSize: 16.sp,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: 5.w),
+                      SizedBox(width: 8.w),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: active == 'Pur'
                                 ? AppColors.primary
                                 : Colors.white,
+                            elevation: 3,
+                            shadowColor: AppColors.primary,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40.r),
+                              borderRadius: BorderRadius.circular(50.r),
                             ),
-                            elevation: 0,
-                            padding: EdgeInsets.symmetric(vertical: 10.h),
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
                           ),
                           onPressed: () => bloc.add(ChangeTypeFilter('Pur')),
                           child: Text(
@@ -103,7 +96,7 @@ class InvoiceListScreen extends StatelessWidget {
                                   ? AppColors.background
                                   : AppColors.textDark,
                               fontWeight: FontWeight.w600,
-                              fontSize: 14.sp,
+                              fontSize: 16.sp,
                             ),
                           ),
                         ),
@@ -113,6 +106,7 @@ class InvoiceListScreen extends StatelessWidget {
                 );
               },
             ),
+
 
             SizedBox(height: 16.h),
 

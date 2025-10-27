@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 
 abstract class InvoiceEvent extends Equatable {
@@ -9,6 +8,14 @@ abstract class InvoiceEvent extends Equatable {
 }
 
 class FetchInvoices extends InvoiceEvent {}
+
+/// ✅ NEW EVENT: For loading next page
+class FetchMoreInvoices extends InvoiceEvent {
+  const FetchMoreInvoices();
+
+  @override
+  List<Object?> get props => [];
+}
 
 class ChangeTypeFilter extends InvoiceEvent {
   final String type;

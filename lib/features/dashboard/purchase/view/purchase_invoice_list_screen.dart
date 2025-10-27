@@ -45,11 +45,6 @@ class PurchaseInvoiceListScreen extends StatelessWidget {
           SizedBox(height: 10.h),
 
           /// Sales / Purchase Toggle
-
-
-
-
-
           BlocBuilder<PurchaseInvoiceBloc, PurchaseInvoiceState>(
             builder: (context, state) {
               String active = 'Inv';
@@ -85,7 +80,7 @@ class PurchaseInvoiceListScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    SizedBox(width: 4.w),
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -120,6 +115,7 @@ class PurchaseInvoiceListScreen extends StatelessWidget {
 
           SizedBox(height: 12.h),
 
+
           /// Search Field
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
@@ -141,52 +137,87 @@ class PurchaseInvoiceListScreen extends StatelessWidget {
           ),
 
           SizedBox(height: 10.h),
-
-          /// Invoice List
           Expanded(
             child: BlocBuilder<PurchaseInvoiceBloc, PurchaseInvoiceState>(
               builder: (context, state) {
-                if (state is PurchaseInvoiceLoading ||
-                    state is PurchaseInvoiceInitial) {
-                  return const Center(child: CircularProgressIndicator());
+                if (state is PurchaseInvoiceLoading || state is PurchaseInvoiceInitial) {
+                  return const Center(child: CircularProgressIndicator(color: Colors.grey,));
                 } else if (state is PurchaseInvoiceError) {
-                  return Center(child: Text(state.message));
+                  return Center(
+                    child: Text(
+                      state.message,
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
+                  );
                 } else if (state is PurchaseInvoiceLoaded) {
                   final invoices = state.visibleInvoices;
                   if (invoices.isEmpty) {
-                    return const Center(child: Text('No Invoices Found'));
+                    return Center(
+                      child: Text(
+                        'No Invoices Found',
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
+                    );
                   }
-                  return ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    cacheExtent: 200,
-                    itemCount: invoices.length,
-                    itemBuilder: (context, index) {
-                      final inv = invoices[index];
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  InvoiceDetailsScreen(invoiceId: inv.id),
+                  return NotificationListener<ScrollNotification>(
+                    onNotification: (scrollInfo) {
+                      if (scrollInfo.metrics.pixels >=
+                          scrollInfo.metrics.maxScrollExtent - 100) {
+                        bloc.add(const FetchMorePurchaseInvoices());
+                      }
+                      return false;
+                    },
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: invoices.length + 1,
+                      cacheExtent: 100,
+                      itemBuilder: (context, index) {
+                        if (index < invoices.length) {
+                          final inv = invoices[index];
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 4.h),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        InvoiceDetailsScreen(invoiceId: inv.id),
+                                  ),
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(12.r),
+                              child: InvoiceCard(
+                                id: inv.id,
+                                customerName: inv.customerName,
+                                createdAt: inv.createdAt,
+                                amount: inv.amount,
+                              ),
                             ),
                           );
-                        },
-                        borderRadius: BorderRadius.circular(12.r),
-                        child: InvoiceCard(
-                          id: inv.id,
-                          customerName: inv.customerName,
-                          createdAt: inv.createdAt,
-                          amount: inv.amount,
-                        ),
-                      );
-                    },
+                        } else {
+                          // ✅ Show loader when more data is loading
+                          final hasMore = (state).hasMore;
+                          if (hasMore) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              child: Center(child: CircularProgressIndicator(color: Colors.grey,)),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }
+                      },
+                    ),
                   );
+
                 }
                 return const SizedBox.shrink();
               },
             ),
           ),
+
+
         ],
       ),
     );

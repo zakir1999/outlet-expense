@@ -7,6 +7,13 @@ abstract class PurchaseInvoiceEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+
+class FetchMorePurchaseInvoices extends PurchaseInvoiceEvent {
+  const FetchMorePurchaseInvoices();
+
+  @override
+  List<Object?> get props => [];
+}
 /// Fetch purchase invoices from API
 class FetchPurchaseInvoices extends PurchaseInvoiceEvent {}
 

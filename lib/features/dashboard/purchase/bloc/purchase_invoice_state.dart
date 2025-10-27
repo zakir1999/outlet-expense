@@ -19,25 +19,30 @@ class PurchaseInvoiceLoaded extends PurchaseInvoiceState {
   final List<PurchaseInvoice> allInvoices;
   final String activeType;
   final String searchQuery;
+  final int page;
+  final bool hasMore;
 
   const PurchaseInvoiceLoaded({
     required this.allInvoices,
     this.activeType = 'Inv',
     this.searchQuery = '',
+    this.page = 1,
+    this.hasMore = true,
   });
 
   /// Computed list based on active type & search query
+
   List<PurchaseInvoice> get visibleInvoices {
     var filtered = allInvoices.where((e) => e.type == activeType).toList();
-
     if (searchQuery.isNotEmpty) {
       filtered = filtered
           .where((e) =>
       e.id.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          (e.customerName?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false))
+          e.customerName
+              .toLowerCase()
+              .contains(searchQuery.toLowerCase()))
           .toList();
     }
-
     return filtered;
   }
 
@@ -45,16 +50,20 @@ class PurchaseInvoiceLoaded extends PurchaseInvoiceState {
     List<PurchaseInvoice>? allInvoices,
     String? activeType,
     String? searchQuery,
+    int? page,
+    bool? hasMore,
   }) {
     return PurchaseInvoiceLoaded(
       allInvoices: allInvoices ?? this.allInvoices,
       activeType: activeType ?? this.activeType,
       searchQuery: searchQuery ?? this.searchQuery,
+      page: page ?? this.page,
+      hasMore: hasMore ?? this.hasMore,
     );
   }
 
   @override
-  List<Object?> get props => [allInvoices, activeType, searchQuery];
+  List<Object?> get props => [allInvoices, activeType, searchQuery,page, hasMore];
 }
 
 /// Error state — when API call fails

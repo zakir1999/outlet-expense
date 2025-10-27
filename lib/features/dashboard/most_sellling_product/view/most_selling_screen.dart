@@ -96,7 +96,9 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
       minTextAdapt: true,
       builder: (context, child) => Scaffold(
         appBar: AppBar(
-          title: Text('Most Selling', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600)),
+          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: Colors.white,
+          title: Text('Most Selling', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600,color: Colors.black)),
           centerTitle: true,
         ),
         body: BlocBuilder<MostSellingBloc, MostSellingState>(
@@ -105,7 +107,6 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
             if (state is MostSellingLoading || state is MostSellingInitial) {
               return _shimmerList();
             } else if (state is MostSellingLoaded) {
-              // keep local copies for search filter
               _allProducts = state.allProducts;
               _filtered = _searchController.text.isEmpty ? List.from(state.filteredProducts) : _filtered;
 
@@ -115,13 +116,12 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
                 },
                 child: Column(
                   children: [
-
                     Padding(
                       padding: EdgeInsets.all(12.w),
                       child: TextField(
                         controller: _searchController,
                         decoration: InputDecoration(
-                          hintText: 'Search by product name',
+                          hintText: 'Search product',
                           prefixIcon: Icon(Icons.search, size: 20.sp),
                           contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.r)),

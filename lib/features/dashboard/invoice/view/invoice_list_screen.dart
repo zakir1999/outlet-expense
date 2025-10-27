@@ -134,7 +134,7 @@ class InvoiceListScreen extends StatelessWidget {
               child: BlocBuilder<InvoiceBloc, InvoiceState>(
                 builder: (context, state) {
                   if (state is InvoiceLoading || state is InvoiceInitial) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator(color: Colors.grey,));
                   } else if (state is InvoiceError) {
                     return Center(
                       child: Text(
@@ -152,35 +152,57 @@ class InvoiceListScreen extends StatelessWidget {
                         ),
                       );
                     }
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: invoices.length,
-                      itemBuilder: (context, index) {
-                        final inv = invoices[index];
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.h),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => InvoiceDetailsScreen(
-                                    invoiceId: inv.id,
-                                  ),
-                                ),
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(12.r),
-                            child: InvoiceCard(
-                              id: inv.id,
-                              customerName: inv.customerName,
-                              createdAt: inv.createdAt,
-                              amount: inv.amount,
-                            ),
-                          ),
-                        );
+                    return NotificationListener<ScrollNotification>(
+                      onNotification: (scrollInfo) {
+                        if (scrollInfo.metrics.pixels >=
+                            scrollInfo.metrics.maxScrollExtent - 100) {
+                          bloc.add(const FetchMoreInvoices()); // ✅ pagination trigger
+                        }
+                        return false;
                       },
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: invoices.length + 1, // ✅ +1 for bottom loader
+                        itemBuilder: (context, index) {
+                          if (index < invoices.length) {
+                            final inv = invoices[index];
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 4.h),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          InvoiceDetailsScreen(invoiceId: inv.id),
+                                    ),
+                                  );
+                                },
+                                borderRadius: BorderRadius.circular(12.r),
+                                child: InvoiceCard(
+                                  id: inv.id,
+                                  customerName: inv.customerName,
+                                  createdAt: inv.createdAt,
+                                  amount: inv.amount,
+                                ),
+                              ),
+                            );
+                          } else {
+                            // ✅ Show loader when more data is loading
+                            final hasMore = (state).hasMore;
+                            if (hasMore) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16.0),
+                                child: Center(child: CircularProgressIndicator(color: Colors.grey,)),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }
+                        },
+                      ),
                     );
+
                   }
                   return const SizedBox.shrink();
                 },

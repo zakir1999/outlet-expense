@@ -68,7 +68,7 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
 
   Widget _shimmerList() {
     return ListView.builder(
-      itemCount: 6,
+      itemCount: _filtered.length,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       itemBuilder: (_, __) => Padding(
         padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -90,7 +90,6 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // If your app already uses ScreenUtilInit at top-level, you don't need to call it here.
     return ScreenUtilInit(
       designSize: const Size(390, 844),
       minTextAdapt: true,
@@ -98,7 +97,7 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.black),
           backgroundColor: Colors.white,
-          title: Text('Most Selling', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600,color: Colors.black)),
+          title: Text('Most Selling Products', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600,color: Colors.black)),
           centerTitle: true,
         ),
         body: BlocBuilder<MostSellingBloc, MostSellingState>(
@@ -116,8 +115,15 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
                 },
                 child: Column(
                   children: [
+                Theme(
+                data: Theme.of(context).copyWith(
+                  inputDecorationTheme: const InputDecorationTheme(
+                    prefixIconColor: Color(0xFF142EE4),
+                  ),
+                ),
+                    child:
                     Padding(
-                      padding: EdgeInsets.all(12.w),
+                      padding: EdgeInsets.fromLTRB(25.w, 10.h, 25.w, 10.h),
                       child: TextField(
                         controller: _searchController,
                         decoration: InputDecoration(
@@ -128,6 +134,7 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
                         ),
                       ),
                     ),
+                ),
                     Expanded(
                       child: _filtered.isEmpty
                           ? Center(child: Text('No products found', style: TextStyle(fontSize: 14.sp)))

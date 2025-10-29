@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:outlet_expense/core/api/api_client.dart';
-import 'package:outlet_expense/features/dashboard/chart/bloc/chart_bloc.dart';
-import 'package:outlet_expense/features/dashboard/chart/view/chart_view.dart';
-import 'package:outlet_expense/features/dashboard/chart/repository/chart_repository.dart'; // <<< NEW IMPORT HERE
+import 'package:outlet_expense/features/menu/dashboard/chart/bloc/chart_bloc.dart';
+import 'package:outlet_expense/features/menu/dashboard/chart/view/chart_view.dart';
+import 'package:outlet_expense/features/menu/dashboard/chart/repository/chart_repository.dart'; // <<< NEW IMPORT HERE
 
 import '../../../main.dart'; // Assuming this provides the global navigatorKey
 

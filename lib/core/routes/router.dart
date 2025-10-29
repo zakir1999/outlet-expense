@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:outlet_expense/features/dashboard/purchase/bloc/purchase_invoice_bloc.dart';
-import 'package:outlet_expense/features/dashboard/purchase/bloc/purchase_invoice_event.dart';
+import 'package:outlet_expense/features/menu/dashboard/purchase/bloc/purchase_invoice_bloc.dart';
+import 'package:outlet_expense/features/menu/dashboard/purchase/bloc/purchase_invoice_event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../features/dashboard/invoice/bloc/invoice_event.dart';
-import '../../features/dashboard/most_sellling_product/bloc/most_selling_bloc.dart';
-import '../../features/dashboard/most_sellling_product/bloc/most_selling_event.dart';
-import '../../features/dashboard/most_sellling_product/repository/most_selling_repository.dart';
-import '../../features/dashboard/most_sellling_product/view/most_selling_screen.dart';
-import '../../features/dashboard/purchase/repository/purchase_repository.dart';
-import '../../features/dashboard/purchase/view/purchase_invoice_list_screen.dart';
+import '../../features/menu/dashboard/invoice/bloc/invoice_event.dart';
+import '../../features/menu/dashboard/most_sellling_product/bloc/most_selling_bloc.dart';
+import '../../features/menu/dashboard/most_sellling_product/bloc/most_selling_event.dart';
+import '../../features/menu/dashboard/most_sellling_product/repository/most_selling_repository.dart';
+import '../../features/menu/dashboard/most_sellling_product/view/most_selling_screen.dart';
+import '../../features/menu/dashboard/purchase/repository/purchase_repository.dart';
+import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
-import '../../features/menu/view/cart_screen.dart';
+import '../../features/menu/report/sales_report/view/sales_report_screen.dart';
+import '../../features/menu/report/view/report_screen.dart';
 import '../../features/menu/view/contact_screen.dart';
 import '../../features/menu/view/dash_board.dart';
 import '../../features/menu/view/payment_screen.dart';
 import '../../features/menu/view/scaffold_with_nav_bar.dart';
-import '../../features/dashboard/invoice/bloc/invoice_bloc.dart';
-import '../../features/dashboard/invoice/repository/invoice_repository.dart';
-import '../../features/dashboard/invoice/view/invoice_list_screen.dart';
+import '../../features/menu/dashboard/invoice/bloc/invoice_bloc.dart';
+import '../../features/menu/dashboard/invoice/repository/invoice_repository.dart';
+import '../../features/menu/dashboard/invoice/view/invoice_list_screen.dart';
 import '../../features/Signup/view/sign_up_page1.dart';
 import '../../features/Signup/view/sign_up_page2.dart';
 import '../../features/Signup/view/sign_up_page3.dart';
@@ -86,7 +87,7 @@ final GoRouter router = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/cart', builder: (_, __) => const CartScreen()),
+            GoRoute(path: '/report', builder: (_, __) => const ReportScreen()),
           ],
         ),
         StatefulShellBranch(
@@ -140,6 +141,14 @@ final GoRouter router = GoRouter(
             ),
           )..add(FetchMostSellingProducts()),
           child: const MostSellingScreen(),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/sales-report',
+      builder: (context, state) {
+        return SalesReportScreen(
+          navigatorKey: _rootNavigatorKey,
         );
       },
     ),

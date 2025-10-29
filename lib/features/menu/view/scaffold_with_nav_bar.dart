@@ -38,13 +38,13 @@ class ScaffoldWithNavBar extends StatelessWidget {
                   ),
                 ),
                 BottomBarItem(
-                  inActiveItem: const Icon(Icons.person, color: Colors.white),
+                  inActiveItem: const Icon(Icons.pie_chart, color: Colors.white),
                   activeItem: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.blueAccent,
                     ),
-                    child: const Icon(Icons.person, color: Colors.white),
+                    child: const Icon(Icons.pie_chart_outline, color: Colors.white),
                   ),
                 ),
                 BottomBarItem(

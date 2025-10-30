@@ -3,12 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:outlet_expense/features/menu/report/sales_report/bloc/sales_report_event.dart';
 import 'package:outlet_expense/features/menu/report/sales_report/bloc/sales_report_state.dart';
 import '../sales_repository/sales_repository.dart';
-import '../../../../../core/api/api_client.dart'; // adjust import path if needed
+import '../../../../../core/api/api_client.dart';
 
 class ReportBloc extends Bloc<ReportEvent, ReportState> {
   final ReportRepository repository;
 
-  // ✅ Constructor now accepts navigatorKey
   ReportBloc({required GlobalKey<NavigatorState> navigatorKey})
       : repository = ReportRepository(
     apiClient: ApiClient(navigatorKey: navigatorKey),
@@ -21,13 +20,13 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       FetchReportEvent event, Emitter<ReportState> emit) async {
     emit(ReportLoading());
     try {
-      final reports = await repository.fetchReportData(
+      final reportResponse = await repository.fetchReportDataResponse(
         startDate: event.startDate,
         endDate: event.endDate,
         filter: event.filter,
         brandId: event.brandId,
       );
-      emit(ReportLoaded(reports));
+      emit(ReportLoaded(reportResponse));
     } catch (e) {
       emit(ReportError(e.toString()));
     }

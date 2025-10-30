@@ -5,6 +5,7 @@ abstract class ReportEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+/// Trigger fetching the report between startDate and endDate
 class FetchReportEvent extends ReportEvent {
   final String startDate;
   final String endDate;

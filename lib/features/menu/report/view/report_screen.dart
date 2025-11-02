@@ -8,8 +8,7 @@ import '../bloc/report_bloc.dart';
 import '../bloc/report_event.dart';
 import '../bloc/report_state.dart';
 import '../widgets/report_card.dart';
-// Needed for BlocListener types
-// -------------------- DATA MODEL --------------------
+
 
 class _ReportItem {
   final String title;
@@ -17,7 +16,6 @@ class _ReportItem {
   const _ReportItem({required this.title, required this.color});
 }
 
-// -------------------- REPORT SCREEN (UI) --------------------
 
 class ReportScreen extends StatelessWidget {
 

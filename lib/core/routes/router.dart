@@ -12,6 +12,7 @@ import '../../features/menu/dashboard/most_sellling_product/view/most_selling_sc
 import '../../features/menu/dashboard/purchase/repository/purchase_repository.dart';
 import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
+import '../../features/menu/report/imei_serial_report/view/imei_serial_report_screen.dart';
 import '../../features/menu/report/sales_report/view/sales_report_screen.dart';
 import '../../features/menu/report/view/report_screen.dart';
 import '../../features/menu/view/contact_screen.dart';
@@ -145,13 +146,22 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/sales-report',
+      path: '/category-sale-report',
       builder: (context, state) {
         return SalesReportScreen(
           navigatorKey: _rootNavigatorKey,
         );
       },
     ),
-
+    GoRoute(
+      path: '/imei-serial-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey); // or use dependency injection
+        return ImeiSerialReportScreen(
+          navigatorKey: _rootNavigatorKey,
+          apiClient: apiClient,
+        );
+      },
+    ),
   ],
 );

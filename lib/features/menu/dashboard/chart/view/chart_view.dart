@@ -27,6 +27,9 @@ class _ChartViewState extends State<ChartView> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding = screenWidth * 0.04;
+    final verticalPadding = screenWidth * 0.03;
+    final horizontalMargin = screenWidth * 0.02;
 
     return SafeArea(
       child: Container(
@@ -73,12 +76,13 @@ class _ChartViewState extends State<ChartView> {
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.only(
-                              top: 20, left: 16, right: 16, bottom: 20),
+                              top: 15, left: 2, right: 0, bottom: 10),
                           decoration: const BoxDecoration(
                             color: Color(0xFFF9F9FF),
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(28),
-                              topRight: Radius.circular(28),
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30),
+
                             ),
                           ),
                           child: Column(
@@ -123,56 +127,59 @@ class _ChartViewState extends State<ChartView> {
                               const SizedBox(height: 20),
 
                               // Total Balance Card
-                              Container(
-                                width: screenWidth * 0.9,
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    const Text(
-                                      "Total Balance",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
+                              Center(
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+                                  margin: EdgeInsets.symmetric(horizontal: horizontalMargin, vertical: 8.0),
+
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 3),
                                       ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      "${state.chartData.balance} ৳",
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.indigo,
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                        "Total Balance",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        InfoLabel(
-                                          label: "Spent",
-                                          value: "${state.chartData.income}৳",
-                                          color: Colors.red,
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "${state.chartData.balance} ৳",
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.indigo,
                                         ),
-                                        InfoLabel(
-                                          label: "Income",
-                                          value: "${state.chartData.expenses}৳",
-                                          color: Colors.green,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          InfoLabel(
+                                            label: "Spent",
+                                            value: "${state.chartData.income}৳",
+                                            color: Colors.red,
+                                          ),
+                                          InfoLabel(
+                                            label: "Income",
+                                            value: "${state.chartData.expenses}৳",
+                                            color: Colors.green,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 24),

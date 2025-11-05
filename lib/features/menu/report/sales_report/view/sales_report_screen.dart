@@ -27,8 +27,6 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
   String brandId = "";
   final ScrollController _scrollController = ScrollController();
   bool _isHovered = false;
-
-  /// 🧾 PDF generator — table layout matches UI table
   Future<void> _generatePDF(ReportResponse reportResponse) async {
     if (reportResponse.reports.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -49,35 +47,40 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4.landscape,
-        margin: const pw.EdgeInsets.all(20),
+        margin: const pw.EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         build: (context) => [
+          // 🔹 Centered title
           pw.Center(
             child: pw.Text(
               'Sales Report',
-              style:
-              pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
+              textAlign: pw.TextAlign.center,
+              style: pw.TextStyle(
+                fontSize: 22,
+                fontWeight: pw.FontWeight.bold,
+              ),
             ),
           ),
-          pw.SizedBox(height: 15),
-          // 🔹 Header Row
+          pw.SizedBox(height: 10),
+
+          // 🔹 Fixed column layout
           pw.Table(
             border: pw.TableBorder.all(color: PdfColors.black, width: 0.3),
             columnWidths: const {
-              0: pw.FlexColumnWidth(1),
-              1: pw.FlexColumnWidth(2),
-              2: pw.FlexColumnWidth(2),
-              3: pw.FlexColumnWidth(2),
-              4: pw.FlexColumnWidth(2),
-              5: pw.FlexColumnWidth(2),
-              6: pw.FlexColumnWidth(1),
-              7: pw.FlexColumnWidth(2),
-              8: pw.FlexColumnWidth(2),
-              9: pw.FlexColumnWidth(2),
+              0: pw.FlexColumnWidth(1),  // SL
+              1: pw.FlexColumnWidth(2),  // Date
+              2: pw.FlexColumnWidth(2),  // Voucher
+              3: pw.FlexColumnWidth(2.5),// Customer
+              4: pw.FlexColumnWidth(2),  // Order Type
+              5: pw.FlexColumnWidth(3),  // Product
+              6: pw.FlexColumnWidth(1),  // Qty
+              7: pw.FlexColumnWidth(2),  // Sales
+              8: pw.FlexColumnWidth(2),  // Purchase
+              9: pw.FlexColumnWidth(2),  // Profit
             },
             children: [
+              // 🔹 Header Row
               pw.TableRow(
-                decoration:
-                const pw.BoxDecoration(color: PdfColors.grey),
+                decoration: const pw.BoxDecoration(color: PdfColors.grey300),
                 children: [
                   for (var h in [
                     "SL",
@@ -92,7 +95,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                     "Profit"
                   ])
                     pw.Padding(
-                      padding: const pw.EdgeInsets.all(6),
+                      padding: const pw.EdgeInsets.all(5),
                       child: pw.Text(
                         h,
                         textAlign: pw.TextAlign.center,
@@ -104,6 +107,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                     ),
                 ],
               ),
+
+              // 🔹 Data Rows
               ...List.generate(reports.length, (i) {
                 final r = reports[i];
                 final bgColor =
@@ -125,6 +130,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                   ],
                 );
               }),
+
               // 🔹 Footer rows (totals)
               _pdfFooterRow(
                 days: "${reportResponse.daysCount} Days",
@@ -156,7 +162,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
   }
 
   pw.Widget _pdfCell(String text, {bool bold = false}) => pw.Padding(
-    padding: const pw.EdgeInsets.all(6),
+    padding: const pw.EdgeInsets.all(5),
     child: pw.Text(
       text,
       textAlign: pw.TextAlign.center,
@@ -165,6 +171,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
         bold ? pw.FontWeight.bold : pw.FontWeight.normal,
         fontSize: 9,
       ),
+      maxLines: 2,
+      overflow: pw.TextOverflow.clip,
     ),
   );
 
@@ -193,13 +201,16 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ReportBloc(navigatorKey: widget.navigatorKey),
       child: Builder(
+
         builder: (context) => Scaffold(
           backgroundColor: Colors.white,
+
           appBar: AppBar(
             iconTheme: const IconThemeData(color: Colors.black),
             backgroundColor: Colors.white,
@@ -240,8 +251,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                     Expanded(
                       child: CustomDatePicker(
                         title: "Start Date",
-                        hintText: "Start Date",
-                        initialDate: startDate,
+                        hintText: (startDate ?? DateTime.now()).toIso8601String().split("T").first,
+                        initialDate: startDate ?? DateTime.now(),
                         onDateSelected: (date) {
                           setState(() => startDate = date);
                         },
@@ -251,7 +262,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                     Expanded(
                       child: CustomDatePicker(
                         title: "End Date",
-                        hintText: "End Date",
+                        hintText: (endDate ?? DateTime.now()).toIso8601String().split("T").first,
                         initialDate: endDate,
                         onDateSelected: (date) {
                           setState(() => endDate = date);
@@ -261,66 +272,74 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                   ],
                 ),
                 const SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        alignment: WrapAlignment.start,
-                        spacing: 10,
-                        children: ["All", "IEMI", "Normal"].map((item) {
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Radio<String>(
-                                value: item,
-                                groupValue: filter,
-                                onChanged: (val) =>
-                                    setState(() => filter = val!),
-                              ),
-                              Text(item),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3240B6),
-                        ),
-                        icon: const Icon(
-                          Icons.analytics_outlined,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          "Report",
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        onPressed: () {
-                          if (startDate != null && endDate != null) {
-                            context.read<ReportBloc>().add(
-                              FetchReportEvent(
-                                startDate: startDate!.toIso8601String(),
-                                endDate: endDate!.toIso8601String(),
-                                filter: filter,
-                                brandId: brandId,
-                              ),
+  Row(
+
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Wrap(
+                          alignment: WrapAlignment.start,
+                          spacing: 10,
+                          children: ["All", "IEMI", "Normal"].map((item) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Radio<String>(
+                                  value: item,
+                                  groupValue: filter,
+                                  onChanged: (val) =>
+                                      setState(() => filter = val!),
+                                ),
+                                Text(item),
+                              ],
                             );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    "Please select both start and end dates."),
-                              ),
-                            );
-                          }
-                        },
+                          }).toList(),
+                        ),
                       ),
-                    ),
-                  ],
+
+                      Container(
+                        margin: const EdgeInsets.all(3),
+                        width: 150,
+                        height: 50,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF3240B6),
+                            ),
+                            icon: const Icon(
+                              Icons.analytics_outlined,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              "Report",
+                              style: TextStyle(
+                                  color: Colors.white, fontSize:17, fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: () {
+                              if (startDate != null && endDate != null) {
+                                context.read<ReportBloc>().add(
+                                  FetchReportEvent(
+                                    startDate: startDate!.toIso8601String(),
+                                    endDate: endDate!.toIso8601String(),
+                                    filter: filter,
+                                    brandId: brandId,
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        "Please select both start and end dates."),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+
                 ),
                 Expanded(
                   child: SingleChildScrollView(

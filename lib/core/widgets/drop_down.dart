@@ -6,6 +6,7 @@ class CustomDropdown extends StatelessWidget {
   final List<String> options;
   final String? selectedValue;
   final ValueChanged<String?>? onChanged;
+  final VoidCallback? onTap;
   final String? errorText;
   final double borderRadius;
   final Color borderColor;
@@ -17,6 +18,7 @@ class CustomDropdown extends StatelessWidget {
     required this.options,
     this.selectedValue,
     this.onChanged,
+    this.onTap,
     this.hint,
     this.errorText,
     this.borderRadius = 12.0,
@@ -39,34 +41,40 @@ class CustomDropdown extends StatelessWidget {
             style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(borderRadius),
-              border: Border.all(
-                color: errorText != null ? Colors.red : borderColor,
+          GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(borderRadius),
+                border: Border.all(
+                  color: errorText != null ? Colors.red : borderColor,
+                ),
               ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                isExpanded: true,
-                hint: hint != null
-                    ? Text(hint!, style: TextStyle(fontSize: fontSize))
-                    : null,
-                value: selectedValue,
-                icon: const Icon(Icons.keyboard_arrow_down),
-                onChanged: onChanged,
-                items: options
-                    .map(
-                      (option) => DropdownMenuItem<String>(
-                        value: option,
-                        child: Text(
-                          option,
-                          style: TextStyle(fontSize: fontSize),
-                        ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  hint: Text(
+                     (hint ?? 'Select'),
+                    style: TextStyle(fontSize: fontSize, color: Colors.grey[600]),
+                  ),
+                  value: options.contains(selectedValue) ? selectedValue : null,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  onChanged: options.isEmpty ? null : onChanged,
+                  items: options.isEmpty
+                      ? []
+                      : options
+                      .map(
+                        (option) => DropdownMenuItem<String>(
+                      value: option,
+                      child: Text(
+                        option,
+                        style: TextStyle(fontSize: fontSize),
                       ),
-                    )
-                    .toList(),
+                    ),
+                  )
+                      .toList(),
+                ),
               ),
             ),
           ),

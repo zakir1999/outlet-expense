@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -11,6 +12,14 @@ import '../bloc/imei_state.dart';
 import '../bloc/imei_bloc.dart';
 import '../model/imei_model.dart';
 import '../repository/imei_report_repository.dart';
+
+import 'package:pdf/widgets.dart' as pw; // ✅ correct
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
+import 'dart:typed_data';
+
+
+
 
 class ImeiSerialReportScreen extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;
@@ -41,17 +50,10 @@ class ImeiSerialReportView extends StatefulWidget {
 
 class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
   bool _isDateSelected = false;
+  bool _isHovered = false;
   DateTime? _startDate = DateTime.now();
   DateTime? _endDate = DateTime.now();
-  List<String> customerOptions = [
-    "Tushar Khan",
-    "Sayem Ahmed",
-    "Shamim",
-    "Evan",
-    "Imran",
-    "Emon",
-    "Nazim",
-  ];
+
   final _customerCtrl = TextEditingController();
   final _vendorCtrl = TextEditingController();
   final _productCtrl = TextEditingController();
@@ -79,6 +81,93 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
       );
     }
   }
+
+
+  // 🆕 Function to Generate PDF from the current grouped table
+  Future<void> _generatePDF(Map<String, List<ImeiSerialRecord>> groups) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4.landscape,
+        build: (pw.Context context) => [
+          pw.Center(
+            child: pw.Text(
+              'IMEI / Serial Report',
+              style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+            ),
+          ),
+          pw.SizedBox(height: 12),
+
+          for (final entry in groups.entries) ...[
+            pw.Padding(
+              padding: const pw.EdgeInsets.symmetric(vertical: 6),
+              child: pw.Text(
+                entry.key,
+                style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+              ),
+            ),
+
+            pw.Table.fromTextArray(
+              headers: [
+                'Date',
+                'Brand',
+                'Product Name',
+                'IMEI/Serial',
+                'Invoice No.',
+                'Purchase Price',
+                'Sale Price',
+                'Product Condition',
+                'Vendor Name',
+                'Customer Name',
+              ],
+              data: entry.value.map((r) {
+                return [
+                  r.date ?? '',
+                  r.brandName ?? '',
+                  r.productName ?? '',
+                  r.imei ?? '',
+                  (r.purchaseInvoice?.isNotEmpty == true
+                      ? r.purchaseInvoice
+                      : r.saleInvoice) ?? '',
+                  (r.purchasePrice ?? 0).toString(),
+                  (r.salePrice ?? 0).toString(),
+                  r.productCondition ?? '',
+                  r.vendorName ?? '',
+                  r.customerName ?? '',
+                ];
+              }).toList(),
+              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 9),
+              cellStyle: const pw.TextStyle(fontSize: 9),
+              headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
+              border: pw.TableBorder.all(width: 0.4, color: PdfColors.grey600),
+              cellAlignment: pw.Alignment.centerLeft,
+
+              // ✅ Correct columnWidths usage
+              columnWidths: {
+                0: pw.FractionColumnWidth(0.10),
+                1: pw.FractionColumnWidth(0.10),
+                2: pw.FractionColumnWidth(0.20),
+                3: pw.FractionColumnWidth(0.12),
+                4: pw.FractionColumnWidth(0.12),
+                5: pw.FractionColumnWidth(0.08),
+                6: pw.FractionColumnWidth(0.08),
+                7: pw.FractionColumnWidth(0.10),
+                8: pw.FractionColumnWidth(0.12),
+                9: pw.FractionColumnWidth(0.12),
+              },
+            ),
+
+            pw.SizedBox(height: 10),
+          ]
+        ],
+      ),
+    );
+
+    final Uint8List bytes = await pdf.save();
+    await Printing.layoutPdf(onLayout: (format) async => bytes);
+  }
+
 
   Future<void> _pickEndDate(BuildContext ctx) async {
     final picked = await showDatePicker(
@@ -108,16 +197,14 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
       ),
     );
     context.read<ImeiSerialReportBloc>().add(const ImeiSerialFetchRequested());
-
   }
 
   // UI Widgets
-
   Widget _inputField(
-    String label,
-    TextEditingController controller, {
-    VoidCallback? onTap,
-  }) {
+      String label,
+      TextEditingController controller, {
+        VoidCallback? onTap,
+      }) {
     return TextField(
       controller: controller,
       readOnly: onTap != null,
@@ -134,205 +221,212 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
   }
 
   Widget _filtersSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return BlocBuilder<ImeiSerialReportBloc, ImeiSerialReportState>(
+      builder: (context, state) {
+        // Default empty lists
+        List<String> customerOptions = [];
+        List<String> vendorOptions = [];
+        List<String> productOptions = [];
+        List<String> brandOptions = [];
+        List<String> conditionOptions =["Intact","Used","Damaged","Service","Client"];
+
+        if (state is ImeiSerialLoadSuccess) {
+          customerOptions = state.customerOptions;
+          vendorOptions = state.vendorOptions;
+          productOptions = state.productOptions;
+          brandOptions = state.brandOptions;
+
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _isDateSelected,
-                        onChanged: (v) {
-                          setState(() => _isDateSelected = v ?? false);
-                          context.read<ImeiSerialReportBloc>().add(
-                            ImeiSerialToggleDateSelection(_isDateSelected),
-                          );
-                        },
+            Row(
+              children: [
+                Checkbox(
+                  value: _isDateSelected,
+                  onChanged: (v) {
+                    setState(() => _isDateSelected = v ?? false);
+                    context.read<ImeiSerialReportBloc>().add(
+                      ImeiSerialToggleDateSelection(_isDateSelected),
+                    );
+                  },
+                ),
+                const SizedBox(width: 8),
+                const Text('Select Date', style: TextStyle(fontSize: 16)),
+                const Spacer(),
+                Container(
+                  margin: const EdgeInsets.all(3),
+                  width: 150,
+                  height: 50,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3240B6),
                       ),
-                      const SizedBox(width: 8),
-                      const Text('Select Date', style: TextStyle(fontSize: 16)),
-                      const Spacer(),
-                      Container(
-                        margin: const EdgeInsets.all(3),
-                        width: 150,
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF3240B6),
-                            ),
-                            icon: const Icon(
-                              Icons.analytics_outlined,
-                              color: Colors.white,
-                            ),
-                            label: const Text(
-                              "Report",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            onPressed: _applyFilters,
-                          ),
+                      icon: const Icon(Icons.analytics_outlined,
+                          color: Colors.white),
+                      label: const Text(
+                        "Report",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 12),
-                  if (_isDateSelected)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _inputField(
-                            'Start Date',
-                            TextEditingController(
-                              text: _formatDate(_startDate),
-                            ),
-                            onTap: () => _pickStartDate(context),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _inputField(
-                            'End Date',
-                            TextEditingController(text: _formatDate(_endDate)),
-                            onTap: () => _pickEndDate(context),
-                          ),
-                        ),
-                      ],
+                      onPressed: _applyFilters,
                     ),
-                  const SizedBox(height: 12),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: BlocBuilder<ImeiSerialReportBloc, ImeiSerialReportState>(
-                          builder: (context, state) {
-                            List<String> customerOptions = [];
-
-                            if (state is ImeiSerialLoadSuccess) {
-                              customerOptions = state.customerOptions;
-                              print(state.customerOptions);
-                            }
-
-                            return CustomDropdown(
-                              label: 'Customer',
-                              options: customerOptions,
-                              selectedValue:
-                              _customerCtrl.text.isEmpty ? null : _customerCtrl.text,
-                              onChanged: (value) {
-                                setState(() => _customerCtrl.text = value ?? "");
-                              },
-                            );
-                          },
-                        ),
-                      ),
-
-                      const SizedBox(width: 12.0),
-
-                      Expanded(
-                        child: CustomDropdown(
-                          label: 'Product',
-                          options: customerOptions, // you can keep it as it was for now
-                          selectedValue:
-                          _productCtrl.text.isEmpty ? null : _productCtrl.text,
-                          onChanged: (value) {
-                            setState(() => _productCtrl.text = value ?? " ");
-                          },
-                        ),
-                      ),
-                    ],
                   ),
-
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomDropdown(
-                          label: 'Vendor',
-                          options: customerOptions,
-                          selectedValue: _vendorCtrl.text.isEmpty
-                              ? null
-                              : _vendorCtrl.text,
-                          onChanged: (value) {
-                            setState(() => _vendorCtrl.text = value ?? " ");
-                          },
-                        ),
-                      ),
-                      Gap(12.0),
-                      Expanded(
-                        child: CustomDropdown(
-                          label: 'Product Condition',
-                          options: customerOptions,
-                          selectedValue: _conditionCtrl.text.isEmpty
-                              ? null
-                              : _conditionCtrl.text,
-                          onChanged: (value) {
-                            setState(() => _conditionCtrl.text = value ?? " ");
-                          },
-                        ),
-                      ),
-                    ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (_isDateSelected)
+              Row(
+                children: [
+                  Expanded(
+                    child: _inputField(
+                      'Start Date',
+                      TextEditingController(text: _formatDate(_startDate)),
+                      onTap: () => _pickStartDate(context),
+                    ),
                   ),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 27.0),
-
-                          child: CustomTextField(
-                            hint: 'IMEI',
-                            label: "IMEI Number",
-                            obscureText: false,
-                            onChanged: (value) {
-                              setState(() => _imeiCtrl.text = value);
-                            },
-                          ),
-                        ),
-                      ),
-                      Gap(12.0),
-                      Expanded(
-                        child: CustomDropdown(
-                          label: 'Brand',
-                          options: customerOptions,
-                          selectedValue: _brandCtrl.text.isEmpty
-                              ? null
-                              : _brandCtrl.text,
-                          onChanged: (value) {
-                            setState(() => _brandCtrl.text = value ?? " ");
-                          },
-                        ),
-                      ),
-
-                    ],
-                  ),
-                  Gap(2.0),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _stockTypeButton('Stock In'),
-                      const SizedBox(width: 12),
-                      _stockTypeButton('Stock Out'),
-                    ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _inputField(
+                      'End Date',
+                      TextEditingController(text: _formatDate(_endDate)),
+                      onTap: () => _pickEndDate(context),
+                    ),
                   ),
                 ],
               ),
+            const SizedBox(height: 12),
+
+            // ✅ Customer + Product Dropdown
+            Row(
+              children: [
+                Expanded(
+                  child: CustomDropdown(
+                    label: 'Customer',
+                    options: customerOptions,
+                    selectedValue: _customerCtrl.text.isEmpty ? null : _customerCtrl.text,
+                    onTap: () {
+                      if (customerOptions.isEmpty) {
+                        context.read<ImeiSerialReportBloc>().add(FetchCustomerOptions());
+                      }
+                    },
+                    onChanged: (value) {
+                      setState(() => _customerCtrl.text = value ?? "");
+                    },
+                  ),
+                ),
+
+
+                const SizedBox(width: 12.0),
+                Expanded(
+                  child: CustomDropdown(
+                    label: 'Product',
+                    options: productOptions,
+                    selectedValue: _productCtrl.text.isEmpty ? null : _productCtrl.text,
+                    onTap: () {
+                      context.read<ImeiSerialReportBloc>().add(FetchProductOptions());
+                    },
+                    onChanged: (value) {
+                      setState(() => _productCtrl.text = value ?? "");
+                    },
+                  ),
+                ),
+
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                Expanded(
+                  child: CustomDropdown(
+                    label: 'Vendor',
+                    options: vendorOptions,
+
+                    selectedValue: _vendorCtrl.text.isEmpty ? null : _vendorCtrl.text,
+                    onTap: () {
+                      context.read<ImeiSerialReportBloc>().add(FetchVendorOptions());
+                    },
+                    onChanged: (value) {
+                      setState(() => _vendorCtrl.text = value ?? "");
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: CustomDropdown(
+                    label: 'Product Condition',
+                    options: conditionOptions,
+                    selectedValue: _conditionCtrl.text.isEmpty
+                        ? null
+                        : _conditionCtrl.text,
+                    onChanged: (value) {
+                      setState(() => _conditionCtrl.text = value ?? "");
+                    },
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // ✅ IMEI + Brand Dropdown
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 27.0),
+                    child: CustomTextField(
+                      hint: 'IMEI',
+                      label: "IMEI Number",
+                      obscureText: false,
+
+                      onChanged: (value) {
+                        setState(() => _imeiCtrl.text = value);
+                      },
+                    ),
+                  ),
+                ),
+                const Gap(12.0),
+                Expanded(
+                  child: CustomDropdown(
+                    label: 'Brand',
+                    options: brandOptions,
+                    selectedValue: _brandCtrl.text.isEmpty ? null : _brandCtrl.text,
+                    onTap: () {
+                      context.read<ImeiSerialReportBloc>().add(FetchBrandOptions());
+                    },
+                    onChanged: (value) {
+                      setState(() => _brandCtrl.text = value ?? "");
+                    },
+                  ),
+                ),
+
+              ],
+            ),
+
+            const Gap(8.0),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _stockTypeButton('Stock In'),
+                const SizedBox(width: 12),
+                _stockTypeButton('Stock Out'),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -366,11 +460,13 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                productName,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              child: Center(
+                child: Text(
+                  productName,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -425,15 +521,50 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
         ),
         elevation: 0.6,
       ),
+
+
+
+
+
+
+
+
+
+      floatingActionButton: BlocBuilder<ImeiSerialReportBloc, ImeiSerialReportState>(
+        builder: (context, state) {
+          if (state is ImeiSerialLoadSuccess && state.groupedRecords.isNotEmpty) {
+            return MouseRegion(
+              onEnter: (_) => setState(() => _isHovered = true),
+              onExit: (_) => setState(() => _isHovered = false),
+              child: AnimatedScale(
+                scale: _isHovered ? 1.1 : 1.0,
+                duration: const Duration(milliseconds: 100),
+                child: FloatingActionButton(
+                  onPressed: () => _generatePDF(state.groupedRecords),
+                  backgroundColor:
+                  _isHovered ? Colors.blueGrey : Colors.grey,
+                  elevation: _isHovered ? 8 : 4,
+                  child: const Icon(
+                    Icons.file_download,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ),
+            );
+
+          }
+          return const SizedBox.shrink();
+        },
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: BlocConsumer<ImeiSerialReportBloc, ImeiSerialReportState>(
             listener: (context, state) {
               if (state is ImeiSerialLoadFailure) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(state.error)));
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(state.error)));
               }
             },
             builder: (context, state) {

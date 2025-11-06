@@ -272,8 +272,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                   ],
                 ),
                 const SizedBox(height: 5),
-  Row(
-
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(

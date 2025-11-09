@@ -85,8 +85,5 @@ class ImeiSerialFetchRequested extends ImeiSerialReportEvent {
 }
 
 /// 🆕 Lazy-load dropdown events
-class FetchCustomerOptions extends ImeiSerialReportEvent {}
-class FetchVendorOptions extends ImeiSerialReportEvent {}
-class FetchProductOptions extends ImeiSerialReportEvent {}
-class FetchBrandOptions extends ImeiSerialReportEvent {}
+class FetchAllDropdownOptions extends ImeiSerialReportEvent {}
 

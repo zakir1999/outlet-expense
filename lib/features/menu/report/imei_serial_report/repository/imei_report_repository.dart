@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../model/imei_model.dart';
 
 class ImeiSerialReportRepository {
+
   final dynamic apiClient;
   static const String endpoint = 'imei-serial-stock-report';
 
@@ -14,7 +15,6 @@ class ImeiSerialReportRepository {
 
     if (response == null) throw Exception('Null response from API');
 
-    // ✅ JSON decode করতে হবে
     final Map<String, dynamic> data = jsonDecode(response.body);
 
     if (data['success'] == true || data['status'] == 200) {
@@ -38,22 +38,14 @@ class ImeiSerialReportRepository {
 
       return result;
     } else {
-      // ✅ JSON থেকে message access করতে হবে
       throw Exception(data['message'] ?? 'Failed to fetch report');
     }
   }
 
-  Future<List<String>> _parseListResponse(String url) async {
-    final data = await apiClient.get(url);
 
-    if (data is List) return data.map((e) => e.toString()).toList();
-    if (data is Map && data.containsKey('data') && data['data'] is List) {
-      return (data['data'] as List).map((e) => e.toString()).toList();
-    }
-    throw Exception('Unexpected response for $url');
-  }
 
   Future<List<String>> fetchCustomerList() async {
+
     final response = await apiClient.get('customer-lists?page=1&limit=10');
 
     if (response.statusCode == 200) {
@@ -70,7 +62,7 @@ class ImeiSerialReportRepository {
     }
   }
   Future<List<String>> fetchVendorList() async {
-    final response = await apiClient.get('vendor-lists?page=1&limit=10');
+    final response = await apiClient.post('search-vendor?page=1&limit=10',"");
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
@@ -88,6 +80,7 @@ class ImeiSerialReportRepository {
 
 
   Future<List<String>> fetchProductList() async {
+
     final response = await apiClient.get('product?page=1&limit=10');
 
     if (response.statusCode == 200) {
@@ -104,6 +97,7 @@ class ImeiSerialReportRepository {
     }
   }
   Future<List<String>> fetchBrandList() async {
+
     final response = await apiClient.get('brands?page=1&limit=10');
 
     if (response.statusCode == 200) {

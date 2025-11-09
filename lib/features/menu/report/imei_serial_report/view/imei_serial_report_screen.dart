@@ -62,6 +62,11 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
   final _conditionCtrl = TextEditingController();
 
   String _stockType = '';
+  @override
+  void initState() {
+    super.initState();
+    context.read<ImeiSerialReportBloc>().add(FetchAllDropdownOptions());
+  }
 
   // Helper Methods
   String _formatDate(DateTime? date) =>
@@ -313,8 +318,13 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                     options: customerOptions,
                     selectedValue: _customerCtrl.text.isEmpty ? null : _customerCtrl.text,
                     onTap: () {
-                      if (customerOptions.isEmpty) {
-                        context.read<ImeiSerialReportBloc>().add(FetchCustomerOptions());
+                      if (customerOptions.isEmpty ||
+                          productOptions.isEmpty ||
+                          vendorOptions.isEmpty ||
+                          brandOptions.isEmpty) {
+                        context
+                            .read<ImeiSerialReportBloc>()
+                            .add(FetchAllDropdownOptions());
                       }
                     },
                     onChanged: (value) {
@@ -331,7 +341,14 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                     options: productOptions,
                     selectedValue: _productCtrl.text.isEmpty ? null : _productCtrl.text,
                     onTap: () {
-                      context.read<ImeiSerialReportBloc>().add(FetchProductOptions());
+                      if (customerOptions.isEmpty ||
+                          productOptions.isEmpty ||
+                          vendorOptions.isEmpty ||
+                          brandOptions.isEmpty) {
+                        context
+                            .read<ImeiSerialReportBloc>()
+                            .add(FetchAllDropdownOptions());
+                      }
                     },
                     onChanged: (value) {
                       setState(() => _productCtrl.text = value ?? "");
@@ -353,7 +370,14 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
 
                     selectedValue: _vendorCtrl.text.isEmpty ? null : _vendorCtrl.text,
                     onTap: () {
-                      context.read<ImeiSerialReportBloc>().add(FetchVendorOptions());
+                      if (customerOptions.isEmpty ||
+                          productOptions.isEmpty ||
+                          vendorOptions.isEmpty ||
+                          brandOptions.isEmpty) {
+                        context
+                            .read<ImeiSerialReportBloc>()
+                            .add(FetchAllDropdownOptions());
+                      }
                     },
                     onChanged: (value) {
                       setState(() => _vendorCtrl.text = value ?? "");
@@ -376,9 +400,7 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
             // ✅ IMEI + Brand Dropdown
             Row(
               children: [
@@ -403,7 +425,14 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                     options: brandOptions,
                     selectedValue: _brandCtrl.text.isEmpty ? null : _brandCtrl.text,
                     onTap: () {
-                      context.read<ImeiSerialReportBloc>().add(FetchBrandOptions());
+                      if (customerOptions.isEmpty ||
+                          productOptions.isEmpty ||
+                          vendorOptions.isEmpty ||
+                          brandOptions.isEmpty) {
+                        context
+                            .read<ImeiSerialReportBloc>()
+                            .add(FetchAllDropdownOptions());
+                      }
                     },
                     onChanged: (value) {
                       setState(() => _brandCtrl.text = value ?? "");
@@ -514,6 +543,12 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_sharp, color: Colors.black),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         backgroundColor: Colors.white,
         title: const Text(
           'IMEI/Serial Report',
@@ -521,15 +556,6 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
         ),
         elevation: 0.6,
       ),
-
-
-
-
-
-
-
-
-
       floatingActionButton: BlocBuilder<ImeiSerialReportBloc, ImeiSerialReportState>(
         builder: (context, state) {
           if (state is ImeiSerialLoadSuccess && state.groupedRecords.isNotEmpty) {

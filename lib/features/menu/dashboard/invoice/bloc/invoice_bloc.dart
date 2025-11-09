@@ -8,6 +8,8 @@ import 'invoice_state.dart';
 
 class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
   final InvoiceRepository repository;
+  bool _isFetching = false;
+
 
   InvoiceBloc({required this.repository}) : super(InvoiceInitial()) {
     on<FetchInvoices>(_onFetchInvoices);
@@ -45,11 +47,13 @@ class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
       FetchMoreInvoices event,
       Emitter<InvoiceState> emit,
       ) async {
+    if(_isFetching)return;
     if (state is InvoiceLoaded) {
       final current = state as InvoiceLoaded;
       if (!current.hasMore) return;
 
       try {
+        _isFetching=true;
         final nextPage = current.page + 1;
         final newInvoices =
         await repository.fetchInvoice(page: nextPage, limit: 10,type: current.activeType);
@@ -64,6 +68,8 @@ class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
         ));
       } catch (e) {
         emit(InvoiceError("Error loading more invoices: $e"));
+      }finally{
+        _isFetching =false;
       }
     }
   }

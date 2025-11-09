@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../model/purchase_invoice_model.dart';
 import 'purchase_invoice_event.dart';
 import 'purchase_invoice_state.dart';
 import '../repository/purchase_repository.dart';
@@ -8,6 +7,7 @@ import 'package:stream_transform/stream_transform.dart';
 
 class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceState> {
   final PurchaseInvoiceRepository repository;
+  int purchase_api_call=0;
 
   PurchaseInvoiceBloc({required this.repository})
       : super(PurchaseInvoiceInitial()) {
@@ -50,6 +50,8 @@ class PurchaseInvoiceBloc extends Bloc<PurchaseInvoiceEvent, PurchaseInvoiceStat
         final nextPage = current.page + 1;
         final newInvoices =
         await repository.fetchPurchaseInvoice(page: nextPage, limit: 10,type: current.activeType);
+        purchase_api_call++;
+        print("purchase api call ${purchase_api_call}");
 
         final allInvoices = [...current.allInvoices, ...newInvoices];
         final hasMore = newInvoices.length == 10;

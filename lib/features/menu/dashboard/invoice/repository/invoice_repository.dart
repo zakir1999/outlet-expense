@@ -4,7 +4,6 @@ import '../model/invoice_model.dart';
 
 class InvoiceRepository {
   final ApiClient apiClient;
-
   InvoiceRepository({required this.apiClient});
 
   Future<List<Invoice>> fetchInvoice({
@@ -15,7 +14,6 @@ class InvoiceRepository {
     final endpoint=(type=='Pur')?'purchase-invoice-list': 'invoice-list';
     final url = '$endpoint?page=$page&limit=$limit';
     final res = await apiClient.get(url);
-
     if (res.statusCode != 200) {
       throw Exception('Failed to fetch invoices');
     }

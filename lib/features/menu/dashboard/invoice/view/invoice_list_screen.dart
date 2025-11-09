@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,8 +10,43 @@ import '../bloc/invoice_state.dart';
 import '../widget/invoice_card.dart';
 import 'invoice_details_screen.dart';
 
-class InvoiceListScreen extends StatelessWidget {
+class InvoiceListScreen extends StatefulWidget {
   const InvoiceListScreen({super.key});
+
+  @override
+  State<InvoiceListScreen> createState() => _InvoiceListScreenState();
+}
+
+class _InvoiceListScreenState extends State<InvoiceListScreen> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isFetching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<InvoiceBloc>();
+
+    // ✅ initial fetch
+    bloc.add( const FetchMoreInvoices());
+
+    _scrollController.addListener(() {
+      final state = bloc.state;
+      if (state is InvoiceLoaded &&
+          state.hasMore &&
+          !_isFetching &&
+          _scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 100) {
+        _isFetching = true;
+        bloc.add(const FetchMoreInvoices());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,79 +78,7 @@ class InvoiceListScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         child: Column(
           children: [
-            // // --- Toggle Buttons (Sales / Purchase) ---
-            //
-            //
-            // BlocBuilder<InvoiceBloc, InvoiceState>(
-            //   builder: (context, state) {
-            //     String active = 'Inv';
-            //     if (state is InvoiceLoaded) active = state.activeType;
-            //
-            //     return Padding(
-            //       padding: EdgeInsets.symmetric(horizontal: 18.w),
-            //       child: Row(
-            //         children: [
-            //           Expanded(
-            //             child: ElevatedButton(
-            //               style: ElevatedButton.styleFrom(
-            //                 backgroundColor: active == 'Inv'
-            //                     ? AppColors.primary
-            //                     : Colors.white,
-            //                 elevation: 3,
-            //                 shadowColor: AppColors.primary,
-            //                 shape: RoundedRectangleBorder(
-            //                   borderRadius: BorderRadius.circular(50.r),
-            //                 ),
-            //                 padding: EdgeInsets.symmetric(vertical: 12.h),
-            //               ),
-            //               onPressed: () => bloc.add(ChangeTypeFilter('Inv')),
-            //               child: Text(
-            //                 'Sales',
-            //                 style: TextStyle(
-            //                   color: active == 'Inv'
-            //                       ? AppColors.background
-            //                       : AppColors.textDark,
-            //                   fontWeight: FontWeight.w600,
-            //                   fontSize: 16.sp,
-            //                 ),
-            //               ),
-            //             ),
-            //           ),
-            //           SizedBox(width: 8.w),
-            //           Expanded(
-            //             child: ElevatedButton(
-            //               style: ElevatedButton.styleFrom(
-            //                 backgroundColor: active == 'Pur'
-            //                     ? AppColors.primary
-            //                     : Colors.white,
-            //                 elevation: 3,
-            //                 shadowColor: AppColors.primary,
-            //                 shape: RoundedRectangleBorder(
-            //                   borderRadius: BorderRadius.circular(50.r),
-            //                 ),
-            //                 padding: EdgeInsets.symmetric(vertical: 12.h),
-            //               ),
-            //               onPressed: () => bloc.add(ChangeTypeFilter('Pur')),
-            //               child: Text(
-            //                 'Purchase',
-            //                 style: TextStyle(
-            //                   color: active == 'Pur'
-            //                       ? AppColors.background
-            //                       : AppColors.textDark,
-            //                   fontWeight: FontWeight.w600,
-            //                   fontSize: 16.sp,
-            //                 ),
-            //               ),
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //     );
-            //   },
-            // ),
-
-
-            SizedBox(height: 16.h),
+            SizedBox(height: 5.h),
 
             // --- Search Bar ---
             Theme(
@@ -133,15 +97,18 @@ class InvoiceListScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 14.h),
+            SizedBox(height: 5.h),
 
             // --- Invoice List ---
             Expanded(
               child: BlocBuilder<InvoiceBloc, InvoiceState>(
                 builder: (context, state) {
                   if (state is InvoiceLoading || state is InvoiceInitial) {
-                    return const Center(child: CircularProgressIndicator(color: Colors.grey,));
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.grey),
+                    );
                   } else if (state is InvoiceError) {
+                    _isFetching = false; // ✅ reset fetching on error
                     return Center(
                       child: Text(
                         state.message,
@@ -149,6 +116,7 @@ class InvoiceListScreen extends StatelessWidget {
                       ),
                     );
                   } else if (state is InvoiceLoaded) {
+                    _isFetching = false; // ✅ reset fetching after success
                     final invoices = state.visibleInvoices;
                     if (invoices.isEmpty) {
                       return Center(
@@ -158,57 +126,51 @@ class InvoiceListScreen extends StatelessWidget {
                         ),
                       );
                     }
-                    return NotificationListener<ScrollNotification>(
-                      onNotification: (scrollInfo) {
-                        if (scrollInfo.metrics.pixels >=
-                            scrollInfo.metrics.maxScrollExtent - 100) {
-                          bloc.add(const FetchMoreInvoices()); // ✅ pagination trigger
-                        }
-                        return false;
-                      },
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: invoices.length + 1, // ✅ +1 for bottom loader
-                        itemBuilder: (context, index) {
-                          if (index < invoices.length) {
-                            final inv = invoices[index];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 4.h),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          InvoiceDetailsScreen(invoiceId: inv.id),
-                                    ),
-                                  );
-                                },
-                                borderRadius: BorderRadius.circular(12.r),
-                                child: InvoiceCard(
-                                  id: inv.id,
-                                  customerName: inv.customerName,
-                                  createdAt: inv.createdAt,
-                                  amount: inv.amount,
+                    return ListView.builder(
+                      controller: _scrollController, // ✅ attach controller
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: invoices.length + 1, // +1 for bottom loader
+                      itemBuilder: (context, index) {
+                        if (index < invoices.length) {
+                          final inv = invoices[index];
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 4.h),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        InvoiceDetailsScreen(invoiceId: inv.id),
+                                  ),
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(12.r),
+                              child: InvoiceCard(
+                                id: inv.id,
+                                customerName: inv.customerName,
+                                createdAt: inv.createdAt,
+                                amount: inv.amount,
+                              ),
+                            ),
+                          );
+                        } else {
+                          // ✅ Show loader when more data is loading
+                          if (state.hasMore) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.grey,
                                 ),
                               ),
                             );
                           } else {
-                            // ✅ Show loader when more data is loading
-                            final hasMore = (state).hasMore;
-                            if (hasMore) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 16.0),
-                                child: Center(child: CircularProgressIndicator(color: Colors.grey,)),
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
+                            return const SizedBox.shrink();
                           }
-                        },
-                      ),
+                        }
+                      },
                     );
-
                   }
                   return const SizedBox.shrink();
                 },
@@ -220,3 +182,4 @@ class InvoiceListScreen extends StatelessWidget {
     );
   }
 }
+

@@ -12,7 +12,6 @@ class PurchaseInvoiceRepository {
     required int limit,
     String type='Pur',
 
-
   }) async {
 
     final endpoint=(type=='Pur')?'purchase-invoice-list': 'invoice-list';
@@ -25,7 +24,6 @@ class PurchaseInvoiceRepository {
 
     final body = json.decode(res.body);
 
-    // ✅ Safely extract list of invoices
     List<dynamic> list = [];
     try {
       if (body['data'] is Map && body['data']['data'] is List) {
@@ -35,7 +33,6 @@ class PurchaseInvoiceRepository {
       } else if (body['invoices'] is List) {
         list = body['invoices'];
       } else {
-        // fallback scan for list anywhere
         body.forEach((key, value) {
           if (value is List) list = value;
         });

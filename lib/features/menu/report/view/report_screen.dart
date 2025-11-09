@@ -16,16 +16,23 @@ class _ReportItem {
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});
-
-  final List<_ReportItem> _items = const [
-    _ReportItem(title: 'Category Sale Report', color: Color(0xFF165F68)),
-    _ReportItem(title: 'IMEI/Serial Report', color: Color(0xFF30386D)),
-    _ReportItem(title: 'Product Sale Report', color: Color(0xFF5F5EC8)),
-    _ReportItem(title: 'Product Stock Report', color: Color(0xFF166155)),
-    _ReportItem(title: 'Balance History', color: Color(0xFF1D2981)),
-    _ReportItem(title: 'Category Stock Report', color: Color(0xFF19A886)),
-    _ReportItem(title: 'Accounting History Report', color: Color(0xFF708320)),
+  final List<_ReportItem> _items = const[
+    _ReportItem(title: 'Category Sale Report', color: Color(0xFF00897B)),
+    _ReportItem(title: 'IMEI/Serial Report', color: Color(0xFF3949AB)),
+    _ReportItem(title: 'Sales Register Details Report', color: Color(0xFF1976D2)),
+    _ReportItem(title: 'Product Stock Report', color: Color(0xFF388E3C)),
+    _ReportItem(title: 'Expense Type Wise Report', color: Color(0xFF1E3A8A)),
+    _ReportItem(title: 'Employee Wise Sales Report', color: Color(0xFF26A69A)),
+    _ReportItem(title: 'Cash Book Details History', color: Color(0xFF9E9D24)),
+    _ReportItem(title: 'Monthly Sales Day Counting Report', color: Color(0xFFFFB300)),
+    _ReportItem(title: 'Monthly Purchase Day Counting Report', color: Color(0xFFF4511E)),
+    _ReportItem(title: 'Purchase Summary Report', color: Color(0xFF546E7A)),
+    _ReportItem(title: 'Profit and Loss Account Report', color: Color(0xFF8E24AA)),
+    _ReportItem(title: 'Customer Summary Report', color: Color(0xFF2E7D32)),
+    _ReportItem(title: 'Due Report History', color: Color(0xFF6D4C41)),
   ];
+
+
 
   @override
   Widget build(BuildContext context) {

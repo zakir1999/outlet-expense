@@ -1,6 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class CustomDropdown extends StatelessWidget {
+class CustomDropdown extends StatefulWidget {
   final String label;
   final String? hint;
   final List<String> options;
@@ -27,67 +28,282 @@ class CustomDropdown extends StatelessWidget {
   });
 
   @override
+  State<CustomDropdown> createState() => _CustomDropdownState();
+}
+
+class _CustomDropdownState extends State<CustomDropdown> {
+  late List<String> filteredOptions;
+  final TextEditingController _searchCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    filteredOptions = List.from(widget.options);
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomDropdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.options != widget.options) {
+      filteredOptions = List.from(widget.options);
+    }
+  }
+
+  /// 🔹 Decide between bottom sheet (mobile) or dialog (desktop/web)
+  void _openDropdownAdaptive() {
+    if (widget.onTap != null) widget.onTap!();
+
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
+    if (isMobile) {
+      _openBottomSheet();
+    } else {
+      _openCenterDialog();
+    }
+  }
+
+  /// 🧭 Mobile: opens from bottom with search + scroll
+  void _openBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return _DropdownContent(
+          label: widget.label,
+          options: widget.options,
+          onChanged: widget.onChanged,
+        );
+      },
+    );
+  }
+
+  /// 🖥️ Desktop/Web: centered frosted dialog
+  void _openCenterDialog() {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black26,
+      builder: (context) {
+        return Dialog(
+          elevation: 8,
+          backgroundColor: Colors.white.withOpacity(0.9),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 450, maxHeight: 600),
+                padding: const EdgeInsets.all(16),
+                child: _DropdownListView(
+                  label: widget.label,
+                  options: widget.options,
+                  onChanged: (val) {
+                    widget.onChanged?.call(val);
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final fontSize = screenWidth < 360 ? 14.0 : 16.0;
 
     return Padding(
-      padding: padding ?? const EdgeInsets.symmetric(vertical: 8.0),
+      padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label,
+            widget.label,
             style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
           GestureDetector(
-            onTap: onTap,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+            onTap: _openDropdownAdaptive,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(borderRadius),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(widget.borderRadius),
                 border: Border.all(
-                  color: errorText != null ? Colors.red : borderColor,
+                  color: widget.errorText != null
+                      ? Colors.red
+                      : widget.borderColor,
                 ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  hint: Text(
-                     (hint ?? 'Select'),
-                    style: TextStyle(fontSize: fontSize, color: Colors.grey[600]),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.15),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
                   ),
-                  value: options.contains(selectedValue) ? selectedValue : null,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  onChanged: options.isEmpty ? null : onChanged,
-                  items: options.isEmpty
-                      ? []
-                      : options
-                      .map(
-                        (option) => DropdownMenuItem<String>(
-                      value: option,
-                      child: Text(
-                        option,
-                        style: TextStyle(fontSize: fontSize),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.selectedValue ??
+                          widget.hint ??
+                          "Select ${widget.label}",
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        color: widget.selectedValue == null
+                            ? Colors.grey[600]
+                            : Colors.black,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  )
-                      .toList(),
-                ),
+                  ),
+                  const Icon(Icons.keyboard_arrow_down_rounded,
+                      color: Colors.black54),
+                ],
               ),
             ),
           ),
-          if (errorText != null)
+          if (widget.errorText != null)
             Padding(
               padding: const EdgeInsets.only(top: 4, left: 4),
               child: Text(
-                errorText!,
+                widget.errorText!,
                 style: const TextStyle(color: Colors.red, fontSize: 12),
               ),
             ),
         ],
       ),
+    );
+  }
+}
+
+class _DropdownContent extends StatelessWidget {
+  final String label;
+  final List<String> options;
+  final ValueChanged<String?>? onChanged;
+
+  const _DropdownContent({
+    required this.label,
+    required this.options,
+    this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _DropdownListView(
+          label: label,
+          options: options,
+          onChanged: (val) {
+            onChanged?.call(val);
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _DropdownListView extends StatefulWidget {
+  final String label;
+  final List<String> options;
+  final ValueChanged<String?>? onChanged;
+
+  const _DropdownListView({
+    required this.label,
+    required this.options,
+    this.onChanged,
+  });
+
+  @override
+  State<_DropdownListView> createState() => _DropdownListViewState();
+}
+
+class _DropdownListViewState extends State<_DropdownListView> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  late List<String> filtered;
+
+  @override
+  void initState() {
+    super.initState();
+    filtered = widget.options;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          'Select ${widget.label}',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _searchCtrl,
+          decoration: InputDecoration(
+            hintText: 'Search...',
+            prefixIcon: const Icon(Icons.search),
+            filled: true,
+            fillColor: Colors.grey[100],
+            contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+          ),
+          onChanged: (query) {
+            setState(() {
+              filtered = widget.options
+                  .where((opt) =>
+                  opt.toLowerCase().contains(query.toLowerCase()))
+                  .toList();
+            });
+          },
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: filtered.isEmpty
+              ? const Center(
+            child: Text(
+              'No results found',
+              style: TextStyle(color: Colors.grey),
+            ),
+          )
+              : ListView.separated(
+            itemCount: filtered.length,
+            separatorBuilder: (_, __) => Divider(color: Colors.grey[300]),
+            itemBuilder: (context, i) {
+              return ListTile(
+                title: Text(
+                  filtered[i],
+                  style: const TextStyle(fontSize: 16),
+                ),
+                onTap: () => widget.onChanged?.call(filtered[i]),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

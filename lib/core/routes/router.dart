@@ -13,6 +13,7 @@ import '../../features/menu/dashboard/purchase/repository/purchase_repository.da
 import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
 import '../../features/menu/report/imei_serial_report/view/imei_serial_report_screen.dart';
+import '../../features/menu/report/production_stock_report/view/production_stock_screen.dart';
 import '../../features/menu/report/sales_report/view/sales_report_screen.dart';
 import '../../features/menu/report/view/report_screen.dart';
 import '../../features/menu/view/contact_screen.dart';
@@ -150,6 +151,16 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         return SalesReportScreen(
           navigatorKey: _rootNavigatorKey,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/product-stock-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+        return ProductionStockScreen(
+          navigatorKey: _rootNavigatorKey,
+          apiClient: apiClient,
         );
       },
     ),

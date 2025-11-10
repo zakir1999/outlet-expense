@@ -13,8 +13,9 @@ import '../../features/menu/dashboard/purchase/repository/purchase_repository.da
 import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
 import '../../features/menu/report/imei_serial_report/view/imei_serial_report_screen.dart';
+import '../../features/menu/report/production_stock_report/bloc/production_stock_bloc.dart';
 import '../../features/menu/report/production_stock_report/view/production_stock_screen.dart';
-import '../../features/menu/report/sales_report/view/sales_report_screen.dart';
+import '../../features/menu/report/category_sales_report/view/sales_report_screen.dart';
 import '../../features/menu/report/view/report_screen.dart';
 import '../../features/menu/view/contact_screen.dart';
 import '../../features/menu/view/dash_board.dart';
@@ -158,12 +159,16 @@ final GoRouter router = GoRouter(
       path: '/product-stock-report',
       builder: (context, state) {
         final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
-        return ProductionStockScreen(
-          navigatorKey: _rootNavigatorKey,
-          apiClient: apiClient,
+        return BlocProvider(
+          create: (_) => ProductionStockBloc(navigatorKey: _rootNavigatorKey),
+          child: ProductionStockScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
         );
       },
     ),
+
     GoRoute(
       path: '/imei-serial-report',
       builder: (context, state) {

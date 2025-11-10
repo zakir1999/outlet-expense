@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../sales_model/sales_report_model.dart';
+import '../model/sales_report_model.dart';
 
 abstract class ReportState extends Equatable {
   @override

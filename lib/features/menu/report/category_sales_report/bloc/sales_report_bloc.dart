@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:outlet_expense/features/menu/report/sales_report/bloc/sales_report_event.dart';
-import 'package:outlet_expense/features/menu/report/sales_report/bloc/sales_report_state.dart';
-import '../sales_repository/sales_repository.dart';
+import 'package:outlet_expense/features/menu/report/category_sales_report/bloc/sales_report_event.dart';
+import 'package:outlet_expense/features/menu/report/category_sales_report/bloc/sales_report_state.dart';
+import '../repository/sales_repository.dart';
 import '../../../../../core/api/api_client.dart';
 
 class ReportBloc extends Bloc<ReportEvent, ReportState> {

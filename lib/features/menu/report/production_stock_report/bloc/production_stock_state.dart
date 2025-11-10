@@ -1,6 +1,32 @@
-part of 'production_stock_bloc.dart';
+// lib/features/reports/production_stock/bloc/production_stock_state.dart
+import 'package:equatable/equatable.dart';
+import '../model/production_stock_model.dart';
 
-@immutable
-sealed class ProductionStockState {}
+abstract class ProductionStockState extends Equatable {
+  const ProductionStockState();
 
-final class ProductionStockInitial extends ProductionStockState {}
+  @override
+  List<Object?> get props => [];
+}
+
+class ProductionStockInitial extends ProductionStockState {}
+
+class ProductionStockLoading extends ProductionStockState {}
+
+class ProductionStockLoaded extends ProductionStockState {
+  final ProductionStockResponse response;
+
+  const ProductionStockLoaded({required this.response});
+
+  @override
+  List<Object?> get props => [response];
+}
+
+class ProductionStockError extends ProductionStockState {
+  final String message;
+
+  const ProductionStockError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

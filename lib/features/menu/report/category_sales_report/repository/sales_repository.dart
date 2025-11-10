@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../../../../core/api/api_client.dart';
-import '../sales_model/sales_report_model.dart';
+import '../model/sales_report_model.dart';
 
 class ReportRepository {
   final ApiClient apiClient;

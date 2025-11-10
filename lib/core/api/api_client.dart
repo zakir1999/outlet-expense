@@ -10,12 +10,12 @@ import '../constants/api_constants.dart';
 /// It handles token injection, network errors, timeouts, and 401 logout/redirection.
 class ApiClient {
   final String baseUrl = ApiConstants.baseUrl;
-  final GlobalKey<NavigatorState> navigatorKey;
+  final GlobalKey<NavigatorState>? navigatorKey;
 
   // Define a default timeout duration
   static const Duration timeoutDuration = Duration(seconds: 30);
 
-  ApiClient({required this.navigatorKey});
+  ApiClient({this.navigatorKey});
 
   /// Performs a GET request.
   Future<http.Response> get(String endpoint) async {
@@ -72,7 +72,7 @@ class ApiClient {
       // Handle Unauthorized: clear session and redirect to login
       await prefs.clear();
       // Use pushNamedAndRemoveUntil to clear the navigation stack
-      navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (route) => false);
+      navigatorKey?.currentState?.pushNamedAndRemoveUntil('/login', (route) => false);
       // Stop further execution by throwing an exception
       throw Exception('Unauthorized access. Redirecting to login screen.');
     } else if (response.statusCode >= 400) {

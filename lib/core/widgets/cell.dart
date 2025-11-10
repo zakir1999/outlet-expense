@@ -51,6 +51,19 @@ class ResponsiveCell extends StatelessWidget {
       cellWidth = 100.w;
     }
 
+    // ✅ Dynamic alignment (left, center, right)
+    Alignment alignment;
+    switch (align) {
+      case TextAlign.center:
+        alignment = Alignment.center;
+        break;
+      case TextAlign.right:
+        alignment = Alignment.centerRight;
+        break;
+      default:
+        alignment = Alignment.centerLeft;
+    }
+
     return Container(
       constraints: BoxConstraints(
         minHeight: rowHeight,
@@ -61,10 +74,10 @@ class ResponsiveCell extends StatelessWidget {
         horizontal: horizontalPadding,
         vertical: verticalPadding,
       ),
-      alignment: Alignment.centerLeft,
+      alignment: alignment, // ✅ now alignment follows your textAlign
       decoration: const BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Colors.black38, width: 0.5),
+          bottom: BorderSide(color: Colors.black26, width: 0.5), // slightly lighter for professional look
         ),
       ),
       child: Text(
@@ -73,6 +86,7 @@ class ResponsiveCell extends StatelessWidget {
         style: TextStyle(
           fontWeight: bold ? FontWeight.w600 : FontWeight.normal,
           fontSize: fontSize,
+          color: Colors.black87,
         ),
         overflow: TextOverflow.ellipsis,
         softWrap: false,

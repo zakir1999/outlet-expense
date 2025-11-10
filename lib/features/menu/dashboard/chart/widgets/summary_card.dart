@@ -105,7 +105,7 @@ class _SummaryCardState extends State<SummaryCard> {
                       decoration: BoxDecoration(
                         gradient: RadialGradient(
                           colors: [
-                            widget.color.withOpacity(0.9),
+                            Colors.white.withOpacity(0.1),
                             Colors.transparent
                           ],
                           center: Alignment.topRight,
@@ -164,7 +164,7 @@ class _SummaryCardState extends State<SummaryCard> {
                                     Text(
                                       widget.customerPercentage!,
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Colors.black,
                                         fontSize:
                                         screenW < 400 ? 12 : 14,
                                         fontWeight: FontWeight.w700,

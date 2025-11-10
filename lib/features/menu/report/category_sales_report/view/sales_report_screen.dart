@@ -10,7 +10,7 @@ import '../../../../../core/widgets/date_picker.dart';
 import '../bloc/sales_report_bloc.dart';
 import '../bloc/sales_report_event.dart';
 import '../bloc/sales_report_state.dart';
-import '../sales_model/sales_report_model.dart';
+import '../model/sales_report_model.dart';
 
 class SalesReportScreen extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
@@ -27,6 +27,30 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
   String brandId = "";
   final ScrollController _scrollController = ScrollController();
   bool _isHovered = false;
+
+  late ReportBloc _reportBloc; // Bloc instance
+
+  @override
+  void initState() {
+    super.initState();
+
+    _reportBloc = ReportBloc(navigatorKey: widget.navigatorKey);
+
+    // Page load auto API hit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (startDate != null && endDate != null) {
+        _reportBloc.add(
+          FetchReportEvent(
+            startDate: startDate!.toIso8601String(),
+            endDate: endDate!.toIso8601String(),
+            filter: filter,
+            brandId: brandId,
+          ),
+        );
+      }
+    });
+  }
+
   Future<void> _generatePDF(ReportResponse reportResponse) async {
     if (reportResponse.reports.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -38,7 +62,6 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     final pdf = pw.Document();
     final reports = reportResponse.reports;
 
-    // Calculate totals
     final double totalSales = reports.fold(0, (sum, r) => sum + r.price);
     final double totalPurchase =
     reports.fold(0, (sum, r) => sum + r.purchasePrice);
@@ -49,7 +72,6 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
         pageFormat: PdfPageFormat.a4.landscape,
         margin: const pw.EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         build: (context) => [
-          // 🔹 Centered title
           pw.Center(
             child: pw.Text(
               'Sales Report',
@@ -61,24 +83,21 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
             ),
           ),
           pw.SizedBox(height: 10),
-
-          // 🔹 Fixed column layout
           pw.Table(
             border: pw.TableBorder.all(color: PdfColors.black, width: 0.3),
             columnWidths: const {
-              0: pw.FlexColumnWidth(1),  // SL
-              1: pw.FlexColumnWidth(2),  // Date
-              2: pw.FlexColumnWidth(2),  // Voucher
-              3: pw.FlexColumnWidth(2.5),// Customer
-              4: pw.FlexColumnWidth(2),  // Order Type
-              5: pw.FlexColumnWidth(3),  // Product
-              6: pw.FlexColumnWidth(1),  // Qty
-              7: pw.FlexColumnWidth(2),  // Sales
-              8: pw.FlexColumnWidth(2),  // Purchase
-              9: pw.FlexColumnWidth(2),  // Profit
+              0: pw.FlexColumnWidth(1),
+              1: pw.FlexColumnWidth(2),
+              2: pw.FlexColumnWidth(2),
+              3: pw.FlexColumnWidth(2.5),
+              4: pw.FlexColumnWidth(2),
+              5: pw.FlexColumnWidth(3),
+              6: pw.FlexColumnWidth(1),
+              7: pw.FlexColumnWidth(2),
+              8: pw.FlexColumnWidth(2),
+              9: pw.FlexColumnWidth(2),
             },
             children: [
-              // 🔹 Header Row
               pw.TableRow(
                 decoration: const pw.BoxDecoration(color: PdfColors.grey300),
                 children: [
@@ -107,8 +126,6 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                     ),
                 ],
               ),
-
-              // 🔹 Data Rows
               ...List.generate(reports.length, (i) {
                 final r = reports[i];
                 final bgColor =
@@ -130,8 +147,6 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                   ],
                 );
               }),
-
-              // 🔹 Footer rows (totals)
               _pdfFooterRow(
                 days: "${reportResponse.daysCount} Days",
                 title: "Grand Total",
@@ -167,8 +182,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
       text,
       textAlign: pw.TextAlign.center,
       style: pw.TextStyle(
-        fontWeight:
-        bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+        fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
         fontSize: 9,
       ),
       maxLines: 2,
@@ -201,180 +215,180 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ReportBloc(navigatorKey: widget.navigatorKey),
-      child: Builder(
-
-        builder: (context) => Scaffold(
+    return BlocProvider.value(
+      value: _reportBloc,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.black),
           backgroundColor: Colors.white,
-
-          appBar: AppBar(
-            iconTheme: const IconThemeData(color: Colors.black),
-            backgroundColor: Colors.white,
-            title: const Text("Sales Report", style: TextStyle(color: Colors.black)),
-            centerTitle: true,
-          ),
-          floatingActionButton: BlocBuilder<ReportBloc, ReportState>(
-            builder: (context, state) {
-              if (state is ReportLoaded) {
-                return MouseRegion(
-                  onEnter: (_) => setState(() => _isHovered = true),
-                  onExit: (_) => setState(() => _isHovered = false),
-                  child: AnimatedScale(
-                    scale: _isHovered ? 1.1 : 1.0,
-                    duration: const Duration(milliseconds: 100),
-                    child: FloatingActionButton(
-                      onPressed: () => _generatePDF(state.reportResponse),
-                      backgroundColor:
-                      _isHovered ? Colors.blueGrey : Colors.grey,
-                      elevation: _isHovered ? 8 : 4,
-                      child: const Icon(
-                        Icons.file_download,
-                        color: Colors.white,
-                        size: 28,
+          title: const Text("Sales Report", style: TextStyle(color: Colors.black)),
+          centerTitle: true,
+        ),
+        floatingActionButton: BlocBuilder<ReportBloc, ReportState>(
+          builder: (context, state) {
+            if (state is ReportLoaded) {
+              return MouseRegion(
+                onEnter: (_) => setState(() => _isHovered = true),
+                onExit: (_) => setState(() => _isHovered = false),
+                child: AnimatedScale(
+                  scale: _isHovered ? 1.1 : 1.0,
+                  duration: const Duration(milliseconds: 100),
+                  child: FloatingActionButton(
+                    onPressed: () => _generatePDF(state.reportResponse),
+                    backgroundColor: _isHovered ? Colors.blueGrey : Colors.grey,
+                    elevation: _isHovered ? 8 : 4,
+                    child: const Icon(
+                      Icons.file_download,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomDatePicker(
+                      title: "Start Date",
+                      hintText: (startDate ?? DateTime.now())
+                          .toIso8601String()
+                          .split("T")
+                          .first,
+                      initialDate: startDate ?? DateTime.now(),
+                      onDateSelected: (date) {
+                        setState(() => startDate = date);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: CustomDatePicker(
+                      title: "End Date",
+                      hintText: (endDate ?? DateTime.now())
+                          .toIso8601String()
+                          .split("T")
+                          .first,
+                      initialDate: endDate,
+                      onDateSelected: (date) {
+                        setState(() => endDate = date);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Wrap(
+                      alignment: WrapAlignment.start,
+                      spacing: 10,
+                      children: ["All", "IEMI", "Normal"].map((item) {
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Radio<String>(
+                              value: item,
+                              groupValue: filter,
+                              onChanged: (val) =>
+                                  setState(() => filter = val!),
+                            ),
+                            Text(item),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(3),
+                    width: 150,
+                    height: 50,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3240B6),
+                        ),
+                        icon: const Icon(
+                          Icons.analytics_outlined,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          "Report",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        // ✅ Updated: Use _reportBloc directly
+                        onPressed: () {
+                          if (startDate != null && endDate != null) {
+                            _reportBloc.add(
+                              FetchReportEvent(
+                                startDate: startDate!.toIso8601String(),
+                                endDate: endDate!.toIso8601String(),
+                                filter: filter,
+                                brandId: brandId,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    "Please select both start and end dates."),
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ),
                   ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomDatePicker(
-                        title: "Start Date",
-                        hintText: (startDate ?? DateTime.now()).toIso8601String().split("T").first,
-                        initialDate: startDate ?? DateTime.now(),
-                        onDateSelected: (date) {
-                          setState(() => startDate = date);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: CustomDatePicker(
-                        title: "End Date",
-                        hintText: (endDate ?? DateTime.now()).toIso8601String().split("T").first,
-                        initialDate: endDate,
-                        onDateSelected: (date) {
-                          setState(() => endDate = date);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ],
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Expanded(
-                        child: Wrap(
-                          alignment: WrapAlignment.start,
-                          spacing: 10,
-                          children: ["All", "IEMI", "Normal"].map((item) {
-                            return Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Radio<String>(
-                                  value: item,
-                                  groupValue: filter,
-                                  onChanged: (val) =>
-                                      setState(() => filter = val!),
-                                ),
-                                Text(item),
-                              ],
+                      const SizedBox(height: 12),
+                      BlocBuilder<ReportBloc, ReportState>(
+                        builder: (context, state) {
+                          if (state is ReportLoading) {
+                            return _buildShimmer();
+                          }
+                          if (state is ReportError) {
+                            return Center(
+                              child: Text("❌ ${state.message}",
+                                  style: const TextStyle(
+                                      color: Colors.redAccent)),
                             );
-                          }).toList(),
-                        ),
-                      ),
-
-                      Container(
-                        margin: const EdgeInsets.all(3),
-                        width: 150,
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF3240B6),
-                            ),
-                            icon: const Icon(
-                              Icons.analytics_outlined,
-                              color: Colors.white,
-                            ),
-                            label: const Text(
-                              "Report",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize:17, fontWeight: FontWeight.bold),
-                            ),
-                            onPressed: () {
-                              if (startDate != null && endDate != null) {
-                                context.read<ReportBloc>().add(
-                                  FetchReportEvent(
-                                    startDate: startDate!.toIso8601String(),
-                                    endDate: endDate!.toIso8601String(),
-                                    filter: filter,
-                                    brandId: brandId,
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        "Please select both start and end dates."),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
+                          }
+                          if (state is ReportLoaded) {
+                            if (state.reportResponse.reports.isEmpty) {
+                              return _buildEmptyState();
+                            }
+                            return _buildUnifiedTable(state.reportResponse);
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
                     ],
-
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 12),
-                        BlocBuilder<ReportBloc, ReportState>(
-                          builder: (context, state) {
-                            if (state is ReportLoading) {
-                              return _buildShimmer();
-                            }
-                            if (state is ReportError) {
-                              return Center(
-                                child: Text("❌ ${state.message}",
-                                    style: const TextStyle(
-                                        color: Colors.redAccent)),
-                              );
-                            }
-                            if (state is ReportLoaded) {
-                              if (state.reportResponse.reports.isEmpty) {
-                                return _buildEmptyState();
-                              }
-                              return _buildUnifiedTable(
-                                  state.reportResponse);
-                            }
-                            return const SizedBox.shrink();
-                          },
-                        ),
-                      ],
-                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -402,7 +416,9 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     ),
   );
 
-  Widget _buildUnifiedTable(ReportResponse reportResponse) {
+// ... _buildUnifiedTable, _buildHeaderCells, _footerRow remain unchanged
+
+Widget _buildUnifiedTable(ReportResponse reportResponse) {
     final reports = reportResponse.reports;
     double totalSales = reports.fold(0, (sum, r) => sum + r.price);
     double totalPurchase = reports.fold(0, (sum, r) => sum + r.purchasePrice);
@@ -425,8 +441,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
       scrollDirection: Axis.horizontal,
       controller: _scrollController,
       child: Table(
-        border: const TableBorder(
-        ),
+        border: const TableBorder(),
         columnWidths: columnWidths,
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: [
@@ -436,7 +451,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
           ),
           ...List.generate(reports.length, (i) {
             final r = reports[i];
-            final bgColor = i.isEven ? Colors.white : const Color(0xFFF7F8FC);
+            final bgColor =
+            i.isEven ? Colors.white : const Color(0xFFF7F8FC);
             return TableRow(
               decoration: BoxDecoration(color: bgColor),
               children: [
@@ -450,7 +466,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                 ResponsiveCell(text: r.customerName, align: TextAlign.center),
                 ResponsiveCell(text: r.paymentType, align: TextAlign.center),
                 ResponsiveCell(text: r.productName, align: TextAlign.center),
-                ResponsiveCell(text: r.qty.toString(), align: TextAlign.center),
+                ResponsiveCell(
+                    text: r.qty.toString(), align: TextAlign.center),
                 ResponsiveCell(
                     text: r.price.toStringAsFixed(2), align: TextAlign.center),
                 ResponsiveCell(
@@ -475,7 +492,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
           ),
           _footerRow(
             title: "Actual Grand Total",
-            sales: reportResponse.grandTotal - reportResponse.discountTotal,
+            sales: reportResponse.grandTotal -
+                reportResponse.discountTotal,
           ),
           _footerRow(
             title: 'Profit Total',
@@ -506,8 +524,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
       child: Text(
         h,
         textAlign: TextAlign.center,
-        style:
-        const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+        style: const TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 13),
       ),
     ))
         .toList();

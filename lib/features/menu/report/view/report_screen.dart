@@ -11,26 +11,31 @@ import '../widgets/report_card.dart';
 class _ReportItem {
   final String title;
   final Color color;
-  const _ReportItem({required this.title, required this.color});
+  final IconData icon;
+
+
+  const _ReportItem({required this.title, required this.color,required this.icon});
 }
 
 class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});
-  final List<_ReportItem> _items = const[
-    _ReportItem(title: 'Category Sale Report', color: Color(0xFF00897B)),
-    _ReportItem(title: 'IMEI/Serial Report', color: Color(0xFF3949AB)),
-    _ReportItem(title: 'Sales Register Details Report', color: Color(0xFF1976D2)),
-    _ReportItem(title: 'Product Stock Report', color: Color(0xFF388E3C)),
-    _ReportItem(title: 'Expense Type Wise Report', color: Color(0xFF1E3A8A)),
-    _ReportItem(title: 'Employee Wise Sales Report', color: Color(0xFF26A69A)),
-    _ReportItem(title: 'Cash Book Details History', color: Color(0xFF9E9D24)),
-    _ReportItem(title: 'Monthly Sales Day Counting Report', color: Color(0xFFFFB300)),
-    _ReportItem(title: 'Monthly Purchase Day Counting Report', color: Color(0xFFF4511E)),
-    _ReportItem(title: 'Purchase Summary Report', color: Color(0xFF546E7A)),
-    _ReportItem(title: 'Profit and Loss Account Report', color: Color(0xFF8E24AA)),
-    _ReportItem(title: 'Customer Summary Report', color: Color(0xFF2E7D32)),
-    _ReportItem(title: 'Due Report History', color: Color(0xFF6D4C41)),
+
+  final List<_ReportItem> _items = const [
+    _ReportItem(title: 'Category Sale Report', icon: Icons.bar_chart, color: Color(0xFF00897B)),
+    _ReportItem(title: 'IMEI/Serial Report', icon: Icons.qr_code, color: Color(0xFF3949AB)),
+    _ReportItem(title: 'Sales Register Details Report', icon: Icons.receipt_long, color: Color(0xFF1976D2)),
+    _ReportItem(title: 'Product Stock Report', icon: Icons.inventory, color: Color(0xFF388E3C)),
+    _ReportItem(title: 'Expense Type Wise Report', icon: Icons.money_off, color: Color(0xFF1E3A8A)),
+    _ReportItem(title: 'Employee Wise Sales Report', icon: Icons.people_alt, color: Color(0xFF26A69A)),
+    _ReportItem(title: 'Cash Book Details History', icon: Icons.book, color: Color(0xFF9E9D24)),
+    _ReportItem(title: 'Monthly Sales Day Counting Report', icon: Icons.calendar_month, color: Color(0xFFFFB300)),
+    _ReportItem(title: 'Monthly Purchase Day Counting Report', icon: Icons.shopping_cart, color: Color(0xFFF4511E)),
+    _ReportItem(title: 'Purchase Summary Report', icon: Icons.summarize, color: Color(0xFF546E7A)),
+    _ReportItem(title: 'Profit and Loss Account Report', icon: Icons.trending_up, color: Color(0xFF8E24AA)),
+    _ReportItem(title: 'Customer Summary Report', icon: Icons.person, color: Color(0xFF2E7D32)),
+    _ReportItem(title: 'Due Report History', icon: Icons.history, color: Color(0xFF6D4C41)),
   ];
+
 
 
 
@@ -81,13 +86,10 @@ class ReportScreen extends StatelessWidget {
 
                 return ReportCard(
                   title: item.title,
+                  icon: item.icon,
                   color: item.color,
-                  percentText: '↑ 0%',
-                  isLeftCard: isEvenIndex,
                   onTap: () {
-                    context
-                        .read<ReportBloc>()
-                        .add(ReportCardTapped(title: item.title));
+                    context.read<ReportBloc>().add(ReportCardTapped(title: item.title));
                   },
                 );
               },

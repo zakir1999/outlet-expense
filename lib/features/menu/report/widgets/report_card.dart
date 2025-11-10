@@ -1,121 +1,178 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ReportCard extends StatelessWidget {
+class ReportCard extends StatefulWidget {
   final String title;
+  final IconData icon;
   final Color color;
-  final String percentText;
-  final bool isLeftCard;
   final VoidCallback? onTap;
 
   const ReportCard({
     super.key,
     required this.title,
+    required this.icon,
     required this.color,
-    required this.percentText,
-    required this.isLeftCard,
     this.onTap,
   });
 
   @override
+  State<ReportCard> createState() => _ReportCardState();
+}
+
+class _ReportCardState extends State<ReportCard> {
+  bool _isHovering = false;
+
+  void _setHovering(bool value) {
+    setState(() => _isHovering = value);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final double scale = _isHovering ? 1.07 : 1.0;
+    final double tilt = _isHovering ? 0.04 : 0.0;
+
     return GestureDetector(
-      onTap: onTap,
-      child: Stack(
-        // Use explicit parameter name.
-        clipBehavior: Clip.none,
-        children: [
-          Container(
+      onTap: widget.onTap,
+      onTapDown: (_) => _setHovering(true),
+      onTapUp: (_) => _setHovering(false),
+      onTapCancel: () => _setHovering(false),
+      child: MouseRegion(
+        onEnter: (_) => _setHovering(true),
+        onExit: (_) => _setHovering(false),
+        child: AnimatedScale(
+          scale: scale,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001)
+              ..rotateX(-tilt)
+              ..rotateY(tilt),
             decoration: BoxDecoration(
-              color: color,
-              // Use explicit parameter name.
               borderRadius: BorderRadius.circular(24.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 8,
-                  // Use const for fixed Offset.
-                  offset: const Offset(0, 3),
+                  color: widget.color.withOpacity(_isHovering ? 0.45 : 0.2),
+                  blurRadius: _isHovering ? 22 : 12,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp,
-                      // Prefer 1.3 over 1.30 for conciseness.
-                      height: 1.3,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Row(
-                  children: [
-                    CustomPaint(
-                      // Use explicit parameter name.
-                      size: Size(50.w, 22.h),
-                      // Use a concise name for the painter, e.g., _TrendLinePainter.
-                      painter: _UpwardTrendLinePainter(color),
-                    ),
-                    const Spacer(),
-                    Text(
-                      percentText,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13.sp,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24.r),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // 🟦 Frosted blur background
+                  BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            widget.color.withOpacity(1.0),
+                            Colors.white.withOpacity(0.5),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(24.r),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 1.2,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+
+                  // ✨ Light reflection overlay (top-right)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: 120.w,
+                      height: 120.w,
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          colors: [Colors.white.withOpacity(0.2),
+                            Colors.transparent
+                          ],
+                          center: Alignment.topRight,
+                          radius: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // 📈 Trend line (bottom-right)
+                  Positioned(
+                    bottom: 10.h,
+                    right: 10.w,
+                    child: CustomPaint(
+                      size: Size(60.w, 25.h),
+                      painter: _UpwardTrendLinePainter(widget.color),
+                    ),
+                  ),
+
+                  // 🧩 Main content
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 54.w,
+                        height: 54.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.color.withOpacity(0.9),
+                              blurRadius: 12,
+                              offset: const Offset(0, 9),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          widget.icon,
+                          size: 28.sp,
+                          color: widget.color,
+                        ),
+                      ),
+                      SizedBox(height: 14.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: Text(
+                          widget.title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black.withOpacity(0.85),
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          Positioned(
-            top: 0.h,
-            // Use positional arguments (right: null, left: null) explicitly for clarity.
-            right: isLeftCard ? -12.w : null,
-            left: isLeftCard ? null : -12.w,
-            // Use a descriptive name for the private method.
-            child: _buildCircleDecoration(),
-          ),
-        ],
+        ),
       ),
     );
   }
-
-  // Use _build prefix for private methods that return widgets.
-  Widget _buildCircleDecoration() => Container(
-    // Use an explicit type for dimension.
-    width: 25.w,
-    height: 25.w,
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      shape: BoxShape.circle,
-    ),
-  );
 }
-
-
 
 class _UpwardTrendLinePainter extends CustomPainter {
   final Color _color;
-
   _UpwardTrendLinePainter(this._color);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-    // Use explicit parameter name.
       ..color = Colors.white.withOpacity(0.6)
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke
@@ -124,16 +181,12 @@ class _UpwardTrendLinePainter extends CustomPainter {
 
     final path = Path();
 
-    // Use a factor instead of a magic number for better readability if possible,
-    // but keeping the current structure as per request.
     path.moveTo(-size.width * 0.2, size.height * 0.8);
-
     path.cubicTo(
       size.width * 0.2, size.height * 0.4,
       size.width * 0.4, size.height * 1.0,
       size.width * 0.7, size.height * 0.2,
     );
-
     path.cubicTo(
       size.width * 0.8, size.height * 0.0,
       size.width * 0.9, size.height * 0.5,
@@ -144,9 +197,13 @@ class _UpwardTrendLinePainter extends CustomPainter {
   }
 
   @override
-  // Explicitly use the type for oldDelegate.
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
+
+
+
 
 // -------------------- DETAIL PAGE --------------------
 

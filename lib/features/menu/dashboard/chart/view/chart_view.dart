@@ -85,45 +85,67 @@ class _ChartViewState extends State<ChartView> {
 
                             ),
                           ),
+
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Horizontal summary cards
+
+
+
                               SizedBox(
                                 height: screenHeight * 0.16,
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
                                   physics: BouncingScrollPhysics(),
                                   children: [
+                                Container(
+                                margin: EdgeInsets.only(bottom: 10.0, top: 5.0),
+                                    child:
                                     SummaryCard(
                                       color: Colors.purple,
                                       title: "Total Sales",
                                       value: "${state.chartData.sales}৳",
                                       icon: Icons.pie_chart,
                                     ),
-                                    SummaryCard(
+                                ),
+
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 10.0, top: 5.0),
+                                  child:
+                                  SummaryCard(
                                       color: Colors.orange,
                                       title: "Total Expense",
                                       value: "${state.chartData.expenses}৳",
                                       icon: Icons.shopping_cart,
                                     ),
+                                ),
+                                    Container(
+                                      margin: EdgeInsets.only(bottom: 10.0, top: 5.0), // Margin only on left and top
+                                      child:
                                     SummaryCard(
                                       color: Colors.teal,
                                       title: "Orders",
                                       value: "${state.chartData.orders}",
                                       icon: Icons.timer,
                                     ),
+                                    ),
+                          Container(
+                            margin: EdgeInsets.only(bottom: 10.0, top: 5.0),
+                            child:
                                     SummaryCard(
                                       color: Colors.green,
                                       title: "Customers",
                                       value: "${state.chartData.customers}",
                                       icon: Icons.person,
-                                      customer_percentage:
+                                      customerPercentage:
                                       "${state.chartData.customerPercentage}",
                                     ),
+                          ),
                                   ],
                                 ),
                               ),
+
+
                               const SizedBox(height: 20),
 
                               // Total Balance Card

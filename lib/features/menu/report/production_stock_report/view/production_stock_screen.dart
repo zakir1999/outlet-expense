@@ -6,11 +6,14 @@ import 'package:printing/printing.dart';
 import 'package:pdf/pdf.dart';
 
 import '../../../../../core/api/api_client.dart';
+import '../../../../../core/widgets/button.dart';
+import '../../../../../core/widgets/download_button.dart';
+import '../../../../../core/widgets/shimmer.dart';
 import '../bloc/production_stock_bloc.dart';
 import '../bloc/production_stock_event.dart';
 import '../bloc/production_stock_state.dart';
 
-import '../../../../../core/widgets/cell.dart';
+import '../../../../../core/widgets/responsive_cell.dart';
 import '../../../../../core/widgets/date_picker.dart';
 import '../model/production_stock_model.dart';
 
@@ -145,24 +148,19 @@ class _ProductionStockScreenState extends State<ProductionStockScreen> {
             style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
-      floatingActionButton:
-      BlocBuilder<ProductionStockBloc, ProductionStockState>(
+
+      floatingActionButton: BlocBuilder<ProductionStockBloc, ProductionStockState>(
         builder: (context, state) {
           if (state is ProductionStockLoaded) {
-            return MouseRegion(
-              onEnter: (_) => setState(() => _isHovered = true),
-              onExit: (_) => setState(() => _isHovered = false),
-              child: AnimatedScale(
-                scale: _isHovered ? 1.1 : 1.0,
-                duration: const Duration(milliseconds: 120),
-                child: FloatingActionButton(
-                  onPressed: () => _generatePDF(state.response),
-                  backgroundColor:
-                  _isHovered ? Colors.blueGrey : Colors.grey,
-                  elevation: _isHovered ? 8 : 4,
-                  child: const Icon(Icons.file_download,
-                      color: Colors.white, size: 28),
-                ),
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10, right: 5),
+              child: DownloadButton(
+                onPressed: () => _generatePDF(state.response),
+                icon: Icons.file_download_rounded,
+                backgroundColor: Colors.grey.shade800.withOpacity(0.85),
+                iconColor: Colors.white,
+                size: 60,
+                iconSize: 26,
               ),
             );
           }
@@ -203,42 +201,35 @@ class _ProductionStockScreenState extends State<ProductionStockScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Container(
-                  margin: const EdgeInsets.all(8),
+
+
+                CustomAnimatedButton(
+                  label: "Report",
+                  icon: Icons.analytics_outlined,
+                  color: const Color(0xFF3240B6),
+                  pressedColor: const Color(0xFF26338A),
+                  fullWidth: false,
                   width: 150,
                   height: 50,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3240B6),
-                    ),
-                    icon: const Icon(Icons.analytics_outlined,
-                        color: Colors.white),
-                    label: const Text(
-                      "Report",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onPressed: () {
-                      if (startDate != null && endDate != null) {
-                        context.read<ProductionStockBloc>().add(
-                          FetchProductionStockEvent(
-                            startDate: startDate!.toIso8601String(),
-                            endDate: endDate!.toIso8601String(),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content:
-                              Text("Please select both start and end dates.")),
-                        );
-                      }
-                    },
-                  ),
-                ),
+                  borderRadius: 24,
+                  onPressed: () {
+                    if (startDate != null && endDate != null) {
+                      context.read<ProductionStockBloc>().add(
+                        FetchProductionStockEvent(
+                          startDate: startDate!.toIso8601String(),
+                          endDate: endDate!.toIso8601String(),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content:
+                            Text("Please select both start and end dates.")),
+                      );
+                    }
+                  },
+                )
+
               ],
             ),
             Expanded(
@@ -250,7 +241,7 @@ class _ProductionStockScreenState extends State<ProductionStockScreen> {
                   BlocBuilder<ProductionStockBloc, ProductionStockState>(
                     builder: (context, state) {
                       if (state is ProductionStockLoading) {
-                        return _buildShimmer();
+                        return const ResponsiveShimmer();
                       }
                       if (state is ProductionStockError) {
                         return Center(
@@ -276,19 +267,7 @@ class _ProductionStockScreenState extends State<ProductionStockScreen> {
     );
   }
 
-  Widget _buildShimmer() => ListView.builder(
-    itemCount: 8,
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemBuilder: (_, __) => Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-          height: 60,
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          color: Colors.white),
-    ),
-  );
+
 
   Widget _buildEmptyState() => const Center(
       child:

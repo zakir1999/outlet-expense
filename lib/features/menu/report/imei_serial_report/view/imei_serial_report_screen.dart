@@ -7,6 +7,8 @@ import 'package:outlet_expense/core/theme/app_colors.dart';
 import 'package:outlet_expense/core/widgets/drop_down.dart';
 import '../../../../../core/api/api_client.dart';
 import '../../../../../core/widgets/TextField.dart';
+import '../../../../../core/widgets/button.dart';
+import '../../../../../core/widgets/download_button.dart';
 import '../bloc/imei_event.dart';
 import '../bloc/imei_state.dart';
 import '../bloc/imei_bloc.dart';
@@ -263,30 +265,18 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                 const SizedBox(width: 8),
                 const Text('Select Date', style: TextStyle(fontSize: 16)),
                 const Spacer(),
-                Container(
-                  margin: const EdgeInsets.all(3),
+                CustomAnimatedButton(
+                  label: "Report",
+                  icon: Icons.analytics_outlined,
+                  color: const Color(0xFF3240B6),
+                  pressedColor: const Color(0xFF26338A),
+                  fullWidth: false,
                   width: 150,
                   height: 50,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3240B6),
-                      ),
-                      icon: const Icon(Icons.analytics_outlined,
-                          color: Colors.white),
-                      label: const Text(
-                        "Report",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: _applyFilters,
-                    ),
-                  ),
-                ),
+                  borderRadius: 24,
+                  onPressed: _applyFilters,
+                )
+
               ],
             ),
             const SizedBox(height: 12),
@@ -533,30 +523,22 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
       floatingActionButton: BlocBuilder<ImeiSerialReportBloc, ImeiSerialReportState>(
         builder: (context, state) {
           if (state is ImeiSerialLoadSuccess && state.groupedRecords.isNotEmpty) {
-            return MouseRegion(
-              onEnter: (_) => setState(() => _isHovered = true),
-              onExit: (_) => setState(() => _isHovered = false),
-              child: AnimatedScale(
-                scale: _isHovered ? 1.1 : 1.0,
-                duration: const Duration(milliseconds: 100),
-                child: FloatingActionButton(
-                  onPressed: () => _generatePDF(state.groupedRecords),
-                  backgroundColor:
-                  _isHovered ? Colors.blueGrey : Colors.grey,
-                  elevation: _isHovered ? 8 : 4,
-                  child: const Icon(
-                    Icons.file_download,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                ),
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10, right: 5),
+              child: DownloadButton(
+                onPressed: () => _generatePDF(state.groupedRecords),
+                icon: Icons.file_download_rounded,
+                backgroundColor: Colors.grey.shade800.withOpacity(0.85),
+                iconColor: Colors.white,
+                size: 60, // adjust size if needed
+                iconSize: 26,
               ),
             );
-
           }
           return const SizedBox.shrink();
         },
       ),
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

@@ -16,9 +16,10 @@ class ProductionStockRepository {
       'start_date': startDate,
       'end_date': endDate,
     };
+    final url='date-wise-product-stock-report-list';
 
     try {
-      final res = await apiClient.post('date-wise-product-stock-report-list', payload);
+      final res = await apiClient.post(url, payload);
       final decode = jsonDecode(res.body);
 
       if (decode == null) {

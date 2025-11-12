@@ -1,49 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:outlet_expense/core/widgets/download_button.dart';
 import 'package:outlet_expense/core/widgets/shimmer.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:pdf/pdf.dart';
-
 import '../../../../../core/widgets/button.dart';
+import '../../../../../core/widgets/download_button.dart';
 import '../../../../../core/widgets/responsive_cell.dart';
 import '../../../../../core/widgets/date_picker.dart';
-import '../bloc/sales_report_bloc.dart';
-import '../bloc/sales_report_event.dart';
-import '../bloc/sales_report_state.dart';
-import '../model/sales_report_model.dart';
+import '../bloc/monthly_sales_report_bloc.dart';
+import '../bloc/monthly_sales_report_event.dart';
+import '../bloc/monthly_sales_report_state.dart';
+import '../model/monthly_sales_model.dart';
 
-class SalesReportScreen extends StatefulWidget {
+
+class MonthlySalesReportScreen extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
-  const SalesReportScreen({super.key, required this.navigatorKey});
+  const MonthlySalesReportScreen({super.key, required this.navigatorKey});
 
   @override
-  State<SalesReportScreen> createState() => _SalesReportScreenState();
+  State<MonthlySalesReportScreen> createState() => _MonthlySaleScreenState();
 }
 
-class _SalesReportScreenState extends State<SalesReportScreen> {
+class _MonthlySaleScreenState extends State<MonthlySalesReportScreen> {
   DateTime? startDate = DateTime.now();
   DateTime? endDate = DateTime.now();
   String filter = "All";
   String brandId = "";
   final ScrollController _scrollController = ScrollController();
-  bool _isPressed = false;
+  bool _isHovered = false;
 
-  late ReportBloc _reportBloc; // Bloc instance
+  late MonthlySaleReportBloc _reportBloc;
 
   @override
   void initState() {
     super.initState();
 
-    _reportBloc = ReportBloc(navigatorKey: widget.navigatorKey);
+    _reportBloc = MonthlySaleReportBloc(navigatorKey: widget.navigatorKey);
 
     // Page load auto API hit
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (startDate != null && endDate != null) {
         _reportBloc.add(
-          FetchReportEvent(
+          FetchMonthlySaleEvent(
             startDate: startDate!.toIso8601String(),
             endDate: endDate!.toIso8601String(),
             filter: filter,
@@ -54,8 +53,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     });
   }
 
-  Future<void> _generatePDF(ReportResponse reportResponse) async {
-    if (reportResponse.reports.isEmpty) {
+  Future<void> _generatePDF(MonthlySalesModel reportResponse) async {
+    if (reportResponse.data.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No report data available to export.")),
       );
@@ -63,8 +62,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     }
 
     final pdf = pw.Document();
-    final reports = reportResponse.reports;
-
+    final reports = reportResponse.data;
     final double totalSales = reports.fold(0, (sum, r) => sum + r.price);
     final double totalPurchase =
     reports.fold(0, (sum, r) => sum + r.purchasePrice);
@@ -77,7 +75,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
         build: (context) => [
           pw.Center(
             child: pw.Text(
-              'Sales Report',
+              'Monthly Sales Report',
               textAlign: pw.TextAlign.center,
               style: pw.TextStyle(
                 fontSize: 22,
@@ -227,12 +225,12 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.black),
           backgroundColor: Colors.white,
-          title: const Text("Sales Report", style: TextStyle(color: Colors.black)),
+          title: const Text("Monthly Sales Report", style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
-        floatingActionButton: BlocBuilder<ReportBloc, ReportState>(
+        floatingActionButton: BlocBuilder<MonthlySaleReportBloc, MonthlySalesReportState>(
           builder: (context, state) {
-            if (state is ReportLoaded) {
+            if (state is MonthlySaleLoaded) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10, right: 5),
                 child: DownloadButton(
@@ -240,7 +238,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                   icon: Icons.file_download_rounded,
                   backgroundColor: Colors.grey.shade800.withOpacity(0.85),
                   iconColor: Colors.white,
-                  size: 60, // adjust size if needed
+                  size: 60,
                   iconSize: 26,
                 ),
               );
@@ -248,6 +246,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
             return const SizedBox.shrink();
           },
         ),
+
+
 
 
 
@@ -310,6 +310,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                       }).toList(),
                     ),
                   ),
+
                   CustomAnimatedButton(
                     label: "Report",
                     icon: Icons.analytics_outlined,
@@ -322,7 +323,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                     onPressed: () {
                       if (startDate != null && endDate != null) {
                         _reportBloc.add(
-                          FetchReportEvent(
+                          FetchMonthlySaleEvent(
                             startDate: startDate!.toIso8601String(),
                             endDate: endDate!.toIso8601String(),
                             filter: filter,
@@ -349,20 +350,20 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 12),
-                      BlocBuilder<ReportBloc, ReportState>(
+                      BlocBuilder<MonthlySaleReportBloc, MonthlySalesReportState>(
                         builder: (context, state) {
-                          if (state is ReportLoading) {
+                          if (state is MonthlySaleLoading) {
                             return const ResponsiveShimmer();
                           }
-                          if (state is ReportError) {
+                          if (state is MonthlySaleError) {
                             return Center(
                               child: Text("❌ ${state.message}",
                                   style: const TextStyle(
                                       color: Colors.redAccent)),
                             );
                           }
-                          if (state is ReportLoaded) {
-                            if (state.reportResponse.reports.isEmpty) {
+                          if (state is MonthlySaleLoaded) {
+                            if (state.reportResponse.data.isEmpty) {
                               return _buildEmptyState();
                             }
                             return _buildUnifiedTable(state.reportResponse);
@@ -392,8 +393,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
 
 // ... _buildUnifiedTable, _buildHeaderCells, _footerRow remain unchanged
 
-Widget _buildUnifiedTable(ReportResponse reportResponse) {
-    final reports = reportResponse.reports;
+  Widget _buildUnifiedTable(MonthlySalesModel reportResponse) {
+    final reports = reportResponse.data;
     double totalSales = reports.fold(0, (sum, r) => sum + r.price);
     double totalPurchase = reports.fold(0, (sum, r) => sum + r.purchasePrice);
     double totalProfit = totalSales - totalPurchase;

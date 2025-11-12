@@ -1,28 +1,3 @@
-// import 'package:bloc/bloc.dart';
-// import 'package:flutter/material.dart';
-//
-// // Import the separated event and state files
-// import 'report_event.dart';
-// import 'report_state.dart';
-//
-// class ReportBloc extends Bloc<ReportEvent, ReportState> {
-//   ReportBloc() : super(ReportInitial()) {
-//     // Register the event handler
-//     on<ReportCardTapped>(_onReportCardTapped);
-//   }
-//
-//   void _onReportCardTapped(
-//       ReportCardTapped event,
-//       Emitter<ReportState> emit,
-//       ) {
-//     // 1. Request navigation, carrying the report title.
-//     emit(ReportNavigationRequested(title: event.title));
-//
-//     // 2. Immediately reset to the initial state to prepare for the next tap.
-//     emit(ReportInitial());
-//   }
-// }
-
 
 import 'package:bloc/bloc.dart';
 import 'report_event.dart';
@@ -54,12 +29,14 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         return '/category-sale-report';
       case 'IMEI/Serial Report':
         return '/imei-serial-report';
-      case 'Product Sale Report':
-        return '/product-sale-report';
+      case 'Sales Register Report':
+        return '/sales-register-report';
       case 'Product Stock Report':
         return '/product-stock-report';
-      case 'Balance History':
-        return '/balance-history';
+      case 'Monthly Sales Day Count Report':
+        return '/monthly-sales-day-count-report';
+      case 'Monthly Purchase Day Count Report':
+        return '/monthly-purchase-day-count-report';
       case 'Category Stock Report':
         return '/category-stock-report';
       case 'Accounting History Report':

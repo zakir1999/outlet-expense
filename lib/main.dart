@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        // SignupBloc provider
         BlocProvider<SignupBloc>(
           create: (context) => SignupBloc(ApiService()),
         ),

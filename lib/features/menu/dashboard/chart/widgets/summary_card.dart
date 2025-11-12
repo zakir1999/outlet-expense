@@ -182,7 +182,7 @@ class _SummaryCardState extends State<SummaryCard> {
                                     child: Text(
                                       widget.value,
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Colors.black,
                                         fontSize: screenW < 400 ? 18 : 22,
                                         fontWeight: FontWeight.bold,
                                       ),

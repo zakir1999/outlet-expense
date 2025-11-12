@@ -1,7 +1,6 @@
-// sales_report_model.dart
 import 'dart:convert';
 
-/// 🧾 Individual report item model
+/// 🧾 Individual report item monthly_sales_report
 class ReportModel {
   final String date;
   final String invoiceId;
@@ -49,7 +48,7 @@ class ReportModel {
   }
 }
 
-/// 📦 Top-level response model (includes totals + report list)
+/// 📦 Top-level response monthly_sales_report (includes totals + report list)
 class ReportResponse {
   final bool success;
   final String message;

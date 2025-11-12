@@ -5,7 +5,6 @@ import '../bloc/navigation_bloc.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import '../bloc/navigation_event.dart';
 import '../bloc/navigation_state.dart';
-
 class ScaffoldWithNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
   const ScaffoldWithNavBar({super.key, required this.navigationShell});

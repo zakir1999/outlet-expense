@@ -13,9 +13,16 @@ import '../../features/menu/dashboard/purchase/repository/purchase_repository.da
 import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
 import '../../features/menu/report/imei_serial_report/view/imei_serial_report_screen.dart';
+import '../../features/menu/report/monthly_purchase_report/bloc/monthly_purchase_report_bloc.dart';
+import '../../features/menu/report/monthly_purchase_report/repository/monthly_purchase_repository.dart';
+import '../../features/menu/report/monthly_purchase_report/view/monthly_purchase_report.dart';
+import '../../features/menu/report/monthly_sales_report/view/monthly_sales_report.dart';
 import '../../features/menu/report/production_stock_report/bloc/production_stock_bloc.dart';
 import '../../features/menu/report/production_stock_report/view/production_stock_screen.dart';
 import '../../features/menu/report/category_sales_report/view/sales_report_screen.dart';
+import '../../features/menu/report/sales_register_report/bloc/sales_register_details_bloc.dart';
+import '../../features/menu/report/sales_register_report/repository/sales_register_details_repository.dart';
+import '../../features/menu/report/sales_register_report/view/sales_register_report_screen.dart';
 import '../../features/menu/report/view/report_screen.dart';
 import '../../features/menu/view/contact_screen.dart';
 import '../../features/menu/view/dash_board.dart';
@@ -53,7 +60,7 @@ final GoRouter router = GoRouter(
       '/signup/3',
       '/signup/4',
       '/signup/5',
-      '/signup/6'
+      '/signup/6',
     ];
 
     final isLoggedIn = token != null;
@@ -67,7 +74,8 @@ final GoRouter router = GoRouter(
     // Login
     GoRoute(
       path: '/login',
-      builder: (BuildContext context, GoRouterState state) => const LoginScreen(),
+      builder: (BuildContext context, GoRouterState state) =>
+          const LoginScreen(),
     ),
 
     // Signup pages
@@ -84,9 +92,7 @@ final GoRouter router = GoRouter(
           ScaffoldWithNavBar(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(
-          routes: [
-            GoRoute(path: '/', builder: (_, __) => const DashBoard()),
-          ],
+          routes: [GoRoute(path: '/', builder: (_, __) => const DashBoard())],
         ),
         StatefulShellBranch(
           routes: [
@@ -95,7 +101,10 @@ final GoRouter router = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/contact', builder: (_, __) => const ContactScreen()),
+            GoRoute(
+              path: '/contact',
+              builder: (_, __) => const ContactScreen(),
+            ),
           ],
         ),
       ],
@@ -150,9 +159,13 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/category-sale-report',
       builder: (context, state) {
-        return SalesReportScreen(
-          navigatorKey: _rootNavigatorKey,
-        );
+        return SalesReportScreen(navigatorKey: _rootNavigatorKey);
+      },
+    ),
+    GoRoute(
+      path: '/monthly-sales-day-count-report',
+      builder: (context, state) {
+        return MonthlySalesReportScreen(navigatorKey: _rootNavigatorKey);
       },
     ),
     GoRoute(
@@ -168,11 +181,47 @@ final GoRouter router = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/monthly-purchase-day-count-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+
+        final repository = MonthlyPurchaseRepository(apiClient: apiClient);
+        return BlocProvider(
+          create: (_) => MonthlyPurchaseReportBloc(repository: repository),
+          child: MonthlyPurchaseReportScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
+
+
+    GoRoute(
+      path: '/sales-register-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+
+        return BlocProvider(
+          create: (_) => SalesRegisterBloc(
+            repository: SalesRegisterRepository(apiClient: apiClient),
+          ),
+          child: SalesRegisterScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
+
 
     GoRoute(
       path: '/imei-serial-report',
       builder: (context, state) {
-        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey); // or use dependency injection
+        final apiClient = ApiClient(
+          navigatorKey: _rootNavigatorKey,
+        ); // or use dependency injection
         return ImeiSerialReportScreen(
           navigatorKey: _rootNavigatorKey,
           apiClient: apiClient,

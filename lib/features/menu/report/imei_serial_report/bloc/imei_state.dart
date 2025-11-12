@@ -1,7 +1,7 @@
 // //
 // // import 'package:flutter/foundation.dart';
 // //
-// // import '../model/imei_model.dart';
+// // import '../monthly_sales_report/imei_model.dart';
 // //
 // //
 // // @immutable
@@ -98,7 +98,7 @@
 // //   const ImeiSerialLoadFailure(this.error);
 // // }
 // import 'package:flutter/foundation.dart';
-// import '../model/imei_model.dart';
+// import '../monthly_sales_report/imei_model.dart';
 //
 // @immutable
 // abstract class ImeiSerialReportState {

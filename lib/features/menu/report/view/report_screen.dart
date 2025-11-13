@@ -24,6 +24,8 @@ class ReportScreen extends StatelessWidget {
     _ReportItem(title: 'Category Sale Report', icon: Icons.bar_chart, color: Color(0xFF00897B)),
     _ReportItem(title: 'IMEI/Serial Report', icon: Icons.qr_code, color: Color(0xFF3949AB)),
     _ReportItem(title: 'Sales Register Details Report', icon: Icons.receipt_long, color: Color(0xFF1976D2)),
+    _ReportItem(title: 'Purchase Register Details Report', icon: Icons.receipt_long, color: Color(
+        0xFF2DCD2F)),
     _ReportItem(title: 'Product Stock Report', icon: Icons.inventory, color: Color(0xFF388E3C)),
     _ReportItem(title: 'Expense Type Wise Report', icon: Icons.money_off, color: Color(0xFF1E3A8A)),
     _ReportItem(title: 'Employee Wise Sales Report', icon: Icons.people_alt, color: Color(0xFF26A69A)),

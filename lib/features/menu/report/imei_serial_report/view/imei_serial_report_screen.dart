@@ -54,7 +54,6 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
   final ScrollController _customerScrollController = ScrollController();
 
   bool _isDateSelected = false;
-  bool _isHovered = false;
   DateTime? _startDate = DateTime.now();
   DateTime? _endDate = DateTime.now();
 
@@ -233,7 +232,6 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
   Widget _filtersSection() {
     return BlocBuilder<ImeiSerialReportBloc, ImeiSerialReportState>(
       builder: (context, state) {
-        // Default empty lists
         List<String> customerOptions = [];
         List<String> vendorOptions = [];
         List<String> productOptions = [];

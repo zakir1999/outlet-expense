@@ -33,7 +33,6 @@ class MonthlyPurchaseReportBloc extends Bloc<MonthlyPurchaseEvent, MonthlyPurcha
         grandTotal: resp.grandTotal,
       ));
 
-      print("🟢 Bloc Loaded: ${resp.data.length}");
     } catch (e) {
       emit(MonthlyPurchaseError(e.toString()));
     }

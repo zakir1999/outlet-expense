@@ -21,22 +21,78 @@ class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});
 
   final List<_ReportItem> _items = const [
-    _ReportItem(title: 'Category Sale Report', icon: Icons.bar_chart, color: Color(0xFF00897B)),
-    _ReportItem(title: 'IMEI/Serial Report', icon: Icons.qr_code, color: Color(0xFF3949AB)),
-    _ReportItem(title: 'Sales Register Report', icon: Icons.receipt_long, color: Color(0xFF1976D2)),
-    _ReportItem(title: 'Purchase Register Details Report', icon: Icons.receipt_long, color: Color(
-        0xFF2DCD2F)),
-    _ReportItem(title: 'Product Stock Report', icon: Icons.inventory, color: Color(0xFF388E3C)),
-    _ReportItem(title: 'Expense Type Wise Report', icon: Icons.money_off, color: Color(0xFF1E3A8A)),
-    _ReportItem(title: 'Employee Wise Sales Report', icon: Icons.people_alt, color: Color(0xFF26A69A)),
-    _ReportItem(title: 'Cash Book Details History', icon: Icons.book, color: Color(0xFF9E9D24)),
-    _ReportItem(title: 'Monthly Sales Day Count Report', icon: Icons.calendar_month, color: Color(0xFFFFB300)),
-    _ReportItem(title: 'Monthly Purchase Day Count Report', icon: Icons.shopping_cart, color: Color(0xFFF4511E)),
-    _ReportItem(title: 'Purchase Summary Report', icon: Icons.summarize, color: Color(0xFF546E7A)),
-    _ReportItem(title: 'Profit and Loss Account Report', icon: Icons.trending_up, color: Color(0xFF8E24AA)),
-    _ReportItem(title: 'Customer Summary Report', icon: Icons.person, color: Color(0xFF2E7D32)),
-    _ReportItem(title: 'Due Report History', icon: Icons.history, color: Color(0xFF6D4C41)),
+    _ReportItem(
+      title: 'Category Sale Report',
+      icon: Icons.bar_chart,
+      color: Color(0xFF3B82F6), // Soft primary blue
+    ),
+    _ReportItem(
+      title: 'IMEI/Serial Report',
+      icon: Icons.qr_code,
+      color: Color(0xFF2563EB), // Medium royal blue
+    ),
+    _ReportItem(
+      title: 'Sales Register Report',
+      icon: Icons.receipt_long,
+      color: Color(0xFF0284C7), // Modern light blue
+    ),
+    _ReportItem(
+      title: 'Purchase Register Details Report',
+      icon: Icons.receipt_long,
+      color: Color(0xFF10B981), // Fresh emerald green
+    ),
+    _ReportItem(
+      title: 'Product Stock Report',
+      icon: Icons.inventory,
+      color: Color(0xFF059669), // Professional green
+    ),
+    _ReportItem(
+      title: 'Expense Type Wise Report',
+      icon: Icons.money_off,
+      color: Color(0xFF1E40AF), // Deep navy blue – finance vibe
+    ),
+    _ReportItem(
+      title: 'Employee Wise Sales Report',
+      icon: Icons.people_alt,
+      color: Color(0xFF14B8A6), // Aqua teal – people/HR feel
+    ),
+    _ReportItem(
+      title: 'Cash Book Details History',
+      icon: Icons.book,
+      color: Color(0xFFF59E0B), // Subtle amber – accounting tone
+    ),
+    _ReportItem(
+      title: 'Monthly Sales Day Count Report',
+      icon: Icons.calendar_month,
+      color: Color(0xFFF97316), // Orange accent – event/schedule feel
+    ),
+    _ReportItem(
+      title: 'Monthly Purchase Day Count Report',
+      icon: Icons.shopping_cart,
+      color: Color(0xFFEA580C), // Deep orange – purchase tone
+    ),
+    _ReportItem(
+      title: 'Purchase Summary Report',
+      icon: Icons.summarize,
+      color: Color(0xFF64748B), // Slate gray – neutral summary tone
+    ),
+    _ReportItem(
+      title: 'Profit and Loss Account Report',
+      icon: Icons.trending_up,
+      color: Color(0xFF8B5CF6), // Soft purple – analytical tone
+    ),
+    _ReportItem(
+      title: 'Customer Summary Report',
+      icon: Icons.person,
+      color: Color(0xFF16A34A), // Fresh green – customer trust tone
+    ),
+    _ReportItem(
+      title: 'Due Report History',
+      icon: Icons.history,
+      color: Color(0xFF6B7280), // Neutral gray – subdued tone
+    ),
   ];
+
 
 
   @override

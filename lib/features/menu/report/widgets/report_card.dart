@@ -20,7 +20,8 @@ class ReportCard extends StatefulWidget {
   State<ReportCard> createState() => _ReportCardState();
 }
 
-class _ReportCardState extends State<ReportCard> {
+class _ReportCardState extends State<ReportCard>
+    with SingleTickerProviderStateMixin {
   bool _isHovering = false;
 
   void _setHovering(bool value) {
@@ -29,8 +30,13 @@ class _ReportCardState extends State<ReportCard> {
 
   @override
   Widget build(BuildContext context) {
-    final double scale = _isHovering ? 1.07 : 1.0;
-    final double tilt = _isHovering ? 0.04 : 0.0;
+    final double scale = _isHovering ? 1.05 : 1.0;
+    final double tilt = _isHovering ? 0.03 : 0.0;
+
+    // Automatically adjust gradient based on base color
+    final hsl = HSLColor.fromColor(widget.color);
+    final lighter = hsl.withLightness((hsl.lightness + 0.25).clamp(0.0, 1.0)).toColor();
+    final darker = hsl.withLightness((hsl.lightness - 0.2).clamp(0.0, 1.0)).toColor();
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -42,7 +48,7 @@ class _ReportCardState extends State<ReportCard> {
         onExit: (_) => _setHovering(false),
         child: AnimatedScale(
           scale: scale,
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
@@ -51,96 +57,62 @@ class _ReportCardState extends State<ReportCard> {
               ..rotateX(-tilt)
               ..rotateY(tilt),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24.r),
+              borderRadius: BorderRadius.circular(22.r),
+
+              gradient: LinearGradient(
+                colors: [lighter, widget.color, darker],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: widget.color.withOpacity(_isHovering ? 0.45 : 0.2),
-                  blurRadius: _isHovering ? 22 : 12,
-                  offset: const Offset(0, 10),
+                  color: widget.color.withOpacity(_isHovering ? 0.25 : 0.15),
+                  blurRadius: _isHovering ? 18 : 10,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(24.r),
+              borderRadius: BorderRadius.circular(22.r),
+
+
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // 🟦 Frosted blur background
-                  BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            widget.color.withOpacity(1.0),
-                            Colors.white.withOpacity(0.5),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(24.r),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
-                          width: 1.2,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Minimal translucent blur for depth
 
-                  // ✨ Light reflection overlay (top-right)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      width: 120.w,
-                      height: 120.w,
-                      decoration: BoxDecoration(
-                        gradient: RadialGradient(
-                          colors: [Colors.white.withOpacity(0.2),
-                            Colors.transparent
-                          ],
-                          center: Alignment.topRight,
-                          radius: 1.0,
-                        ),
-                      ),
-                    ),
-                  ),
 
-                  // 📈 Trend line (bottom-right)
+                  // Trend Line (subtle white tone)
                   Positioned(
-                    bottom: 10.h,
+                    bottom: 2.h,
                     right: 10.w,
                     child: CustomPaint(
                       size: Size(60.w, 25.h),
-                      painter: _UpwardTrendLinePainter(widget.color),
+                      painter: _UpwardTrendLinePainter(Colors.white),
                     ),
                   ),
 
-                  // 🧩 Main content
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        width: 54.w,
-                        height: 54.w,
+                        width: 50.w,
+                        height: 50.w,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withOpacity(0.15),
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: widget.color.withOpacity(0.9),
-                              blurRadius: 12,
-                              offset: const Offset(0, 9),
-                            ),
-                          ],
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.25),
+                            width: 1.2,
+                          ),
                         ),
                         child: Icon(
                           widget.icon,
                           size: 28.sp,
-                          color: widget.color,
+                          color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 14.h),
+                      SizedBox(height: 5.h),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.w),
                         child: Text(
@@ -149,8 +121,14 @@ class _ReportCardState extends State<ReportCard> {
                           style: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black.withOpacity(0.85),
+                            color: Colors.white,
                             height: 1.3,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 3,
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -166,65 +144,36 @@ class _ReportCardState extends State<ReportCard> {
   }
 }
 
+// Minimal trend line painter
 class _UpwardTrendLinePainter extends CustomPainter {
-  final Color _color;
-  _UpwardTrendLinePainter(this._color);
+  final Color color;
+  _UpwardTrendLinePainter(this.color);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.6)
+      ..color = color
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
-    final path = Path();
-
-    path.moveTo(-size.width * 0.2, size.height * 0.8);
-    path.cubicTo(
-      size.width * 0.2, size.height * 0.4,
-      size.width * 0.4, size.height * 1.0,
-      size.width * 0.7, size.height * 0.2,
-    );
-    path.cubicTo(
-      size.width * 0.8, size.height * 0.0,
-      size.width * 0.9, size.height * 0.5,
-      size.width * 1.1, size.height * 0.3,
-    );
+    final path = Path()
+      ..moveTo(0, size.height * 0.8)
+      ..cubicTo(
+        size.width * 0.25, size.height * 0.4,
+        size.width * 0.5, size.height * 1.0,
+        size.width * 0.75, size.height * 0.2,
+      )
+      ..cubicTo(
+        size.width * 0.85, size.height * 0.0,
+        size.width * 0.95, size.height * 0.5,
+        size.width, size.height * 0.3,
+      );
 
     canvas.drawPath(path, paint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-
-
-
-
-
-// -------------------- DETAIL PAGE --------------------
-
-class DetailPage extends StatelessWidget {
-  final String title;
-  const DetailPage({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-      ),
-      body: Center(
-        child: Text(
-          '$title - detail page',
-          style: TextStyle(fontSize: 18.sp),
-        ),
-      ),
-    );
-  }
 }

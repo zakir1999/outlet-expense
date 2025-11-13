@@ -39,8 +39,8 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         return '/monthly-purchase-day-count-report';
       case 'Category Stock Report':
         return '/category-stock-report';
-      case 'Accounting History Report':
-        return '/accounting-history-report';
+      case 'Due Report History':
+        return '/due-report-history';
       default:
         return null;
     }

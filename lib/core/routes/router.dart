@@ -12,6 +12,9 @@ import '../../features/menu/dashboard/most_sellling_product/view/most_selling_sc
 import '../../features/menu/dashboard/purchase/repository/purchase_repository.dart';
 import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
+import '../../features/menu/report/due_report_history/bloc/due_report_bloc.dart';
+import '../../features/menu/report/due_report_history/repository/due_report_repository.dart';
+import '../../features/menu/report/due_report_history/view/due_report_history.dart';
 import '../../features/menu/report/imei_serial_report/view/imei_serial_report_screen.dart';
 import '../../features/menu/report/monthly_purchase_report/bloc/monthly_purchase_report_bloc.dart';
 import '../../features/menu/report/monthly_purchase_report/repository/monthly_purchase_repository.dart';
@@ -196,7 +199,21 @@ final GoRouter router = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/due-report-history',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
 
+        final repository = DueReportRepository(apiClient: apiClient);
+        return BlocProvider(
+          create: (_) => DueReportBloc(repository: repository),
+          child: DueReportHistory(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
 
     GoRoute(
       path: '/sales-register-report',

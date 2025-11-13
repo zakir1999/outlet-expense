@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:outlet_expense/core/widgets/custom_button.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:pdf/pdf.dart';
@@ -36,8 +35,7 @@ class _MonthlyPurchaseReportScreenState
   DateTime? startDate;
   DateTime? endDate;
   final ScrollController _scrollController = ScrollController();
-  bool _isHovered = false;
-  bool _isPressed = false;
+
 
   late final MonthlyPurchaseReportBloc _bloc;
 

@@ -36,7 +36,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        print(jsonResponse);
         final token = jsonResponse['authorisation']?['token'] as String?;
         if (token != null) {
           final prefs = await SharedPreferences.getInstance();

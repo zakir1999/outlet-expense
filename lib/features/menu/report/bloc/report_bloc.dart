@@ -29,6 +29,10 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         return '/category-sale-report';
       case 'IMEI/Serial Report':
         return '/imei-serial-report';
+      case 'Purchase Register Details Report':
+        return '/purchase-register-details-report';
+      case 'Sales Register Details Report':
+        return '/sales-register-details-report';
       case 'Sales Register Report':
         return '/sales-register-report';
       case 'Product Stock Report':
@@ -37,10 +41,12 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         return '/monthly-sales-day-count-report';
       case 'Monthly Purchase Day Count Report':
         return '/monthly-purchase-day-count-report';
-      case 'Category Stock Report':
-        return '/category-stock-report';
+      case 'Profit & Loss Account Report':
+        return '/profit-&-loss-account-report';
       case 'Due Report History':
         return '/due-report-history';
+      case 'Employee Wise Sales Report':
+        return '/employee-wise-sales-report';
       default:
         return null;
     }

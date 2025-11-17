@@ -1,3 +1,4 @@
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,9 @@ class CustomDropdown extends StatefulWidget {
   final Color borderColor;
   final EdgeInsetsGeometry? padding;
 
+  /// 🔥 external scroll controller for pagination
+  final ScrollController? scrollController;
+
   const CustomDropdown({
     super.key,
     required this.label,
@@ -25,6 +29,7 @@ class CustomDropdown extends StatefulWidget {
     this.borderRadius = 12.0,
     this.borderColor = Colors.grey,
     this.padding,
+    this.scrollController,
   });
 
   @override
@@ -41,15 +46,18 @@ class _CustomDropdownState extends State<CustomDropdown> {
     filteredOptions = List.from(widget.options);
   }
 
+  /// 🔥 IMPORTANT FIX: update UI when new data comes
   @override
   void didUpdateWidget(covariant CustomDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (oldWidget.options != widget.options) {
-      filteredOptions = List.from(widget.options);
+      setState(() {
+        filteredOptions = List.from(widget.options);
+      });
     }
   }
 
-  /// 🔹 Decide between bottom sheet (mobile) or dialog (desktop/web)
   void _openDropdownAdaptive() {
     if (widget.onTap != null) widget.onTap!();
 
@@ -62,7 +70,6 @@ class _CustomDropdownState extends State<CustomDropdown> {
     }
   }
 
-  /// 🧭 Mobile: opens from bottom with search + scroll
   void _openBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -71,14 +78,14 @@ class _CustomDropdownState extends State<CustomDropdown> {
       builder: (context) {
         return _DropdownContent(
           label: widget.label,
-          options: widget.options,
+          options: filteredOptions,
           onChanged: widget.onChanged,
+          scrollController: widget.scrollController,
         );
       },
     );
   }
 
-  /// 🖥️ Desktop/Web: centered frosted dialog
   void _openCenterDialog() {
     showDialog(
       context: context,
@@ -99,11 +106,12 @@ class _CustomDropdownState extends State<CustomDropdown> {
                 padding: const EdgeInsets.all(16),
                 child: _DropdownListView(
                   label: widget.label,
-                  options: widget.options,
+                  options: filteredOptions,
                   onChanged: (val) {
                     widget.onChanged?.call(val);
                     Navigator.pop(context);
                   },
+                  scrollController: widget.scrollController,
                 ),
               ),
             ),
@@ -190,11 +198,13 @@ class _DropdownContent extends StatelessWidget {
   final String label;
   final List<String> options;
   final ValueChanged<String?>? onChanged;
+  final ScrollController? scrollController;
 
   const _DropdownContent({
     required this.label,
     required this.options,
     this.onChanged,
+    this.scrollController,
   });
 
   @override
@@ -214,6 +224,7 @@ class _DropdownContent extends StatelessWidget {
             onChanged?.call(val);
             Navigator.pop(context);
           },
+          scrollController: scrollController,
         ),
       ),
     );
@@ -224,11 +235,13 @@ class _DropdownListView extends StatefulWidget {
   final String label;
   final List<String> options;
   final ValueChanged<String?>? onChanged;
+  final ScrollController? scrollController;
 
   const _DropdownListView({
     required this.label,
     required this.options,
     this.onChanged,
+    this.scrollController,
   });
 
   @override
@@ -237,12 +250,38 @@ class _DropdownListView extends StatefulWidget {
 
 class _DropdownListViewState extends State<_DropdownListView> {
   final TextEditingController _searchCtrl = TextEditingController();
+
+  late ScrollController scrollController;
   late List<String> filtered;
 
   @override
   void initState() {
     super.initState();
-    filtered = widget.options;
+    scrollController =
+        widget.scrollController ?? ScrollController();
+
+    filtered = List.from(widget.options);
+  }
+
+  /// 🔥 CRITICAL FIX — new data now updates UI
+  @override
+  void didUpdateWidget(covariant _DropdownListView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.options != widget.options) {
+      setState(() {
+        filtered = List.from(widget.options);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.scrollController == null) {
+      scrollController.dispose();
+    }
+    _searchCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -257,6 +296,7 @@ class _DropdownListViewState extends State<_DropdownListView> {
           ),
         ),
         const SizedBox(height: 12),
+
         TextField(
           controller: _searchCtrl,
           decoration: InputDecoration(
@@ -280,7 +320,9 @@ class _DropdownListViewState extends State<_DropdownListView> {
             });
           },
         ),
+
         const SizedBox(height: 12),
+
         Expanded(
           child: filtered.isEmpty
               ? const Center(
@@ -290,8 +332,10 @@ class _DropdownListViewState extends State<_DropdownListView> {
             ),
           )
               : ListView.separated(
+            controller: scrollController,
             itemCount: filtered.length,
-            separatorBuilder: (_, __) => Divider(color: Colors.grey[300]),
+            separatorBuilder: (_, __) =>
+                Divider(color: Colors.grey[300]),
             itemBuilder: (context, i) {
               return ListTile(
                 title: Text(
@@ -307,3 +351,5 @@ class _DropdownListViewState extends State<_DropdownListView> {
     );
   }
 }
+
+

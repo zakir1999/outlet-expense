@@ -1,4 +1,4 @@
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -22,121 +22,88 @@ class ReportCard extends StatefulWidget {
 
 class _ReportCardState extends State<ReportCard>
     with SingleTickerProviderStateMixin {
-  bool _isHovering = false;
+  bool _pressed = false;
 
-  void _setHovering(bool value) {
-    setState(() => _isHovering = value);
+  void _setPressed(bool value) {
+    setState(() => _pressed = value);
   }
 
   @override
   Widget build(BuildContext context) {
-    final double scale = _isHovering ? 1.05 : 1.0;
-    final double tilt = _isHovering ? 0.03 : 0.0;
+    final double scale = _pressed ? 0.95 : 1.0;
 
-    // Automatically adjust gradient based on base color
+    // Convert base color → soft pastel
     final hsl = HSLColor.fromColor(widget.color);
-    final lighter = hsl.withLightness((hsl.lightness + 0.25).clamp(0.0, 1.0)).toColor();
-    final darker = hsl.withLightness((hsl.lightness - 0.2).clamp(0.0, 1.0)).toColor();
+    final pastel = hsl
+        .withSaturation((hsl.saturation * 0.30).clamp(0.0, 1.0))
+        .withLightness(0.90)
+        .toColor();
 
     return GestureDetector(
-      onTap: widget.onTap,
-      onTapDown: (_) => _setHovering(true),
-      onTapUp: (_) => _setHovering(false),
-      onTapCancel: () => _setHovering(false),
-      child: MouseRegion(
-        onEnter: (_) => _setHovering(true),
-        onExit: (_) => _setHovering(false),
-        child: AnimatedScale(
-          scale: scale,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.001)
-              ..rotateX(-tilt)
-              ..rotateY(tilt),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22.r),
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) {
+        _setPressed(false);
+        if (widget.onTap != null) widget.onTap!();
+      },
+      onTapCancel: () => _setPressed(false),
 
-              gradient: LinearGradient(
-                colors: [lighter, widget.color, darker],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+      child: AnimatedScale(
+        scale: scale,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+
+        child: Container(
+          width: 240.w,
+          height: 150.h,
+          padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 15.h),
+
+          decoration: BoxDecoration(
+            color: pastel,
+            borderRadius: BorderRadius.circular(22.r),
+            boxShadow: [
+              BoxShadow(
+                color: widget.color.withOpacity(0.12),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: widget.color.withOpacity(_isHovering ? 0.25 : 0.15),
-                  blurRadius: _isHovering ? 18 : 10,
-                  offset: const Offset(0, 8),
+            ],
+          ),
+
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 55.w,
+                height: 55.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.7),
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(22.r),
-
-
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Minimal translucent blur for depth
-
-
-                  // Trend Line (subtle white tone)
-                  Positioned(
-                    bottom: 2.h,
-                    right: 10.w,
-                    child: CustomPaint(
-                      size: Size(60.w, 25.h),
-                      painter: _UpwardTrendLinePainter(Colors.white),
-                    ),
-                  ),
-
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 50.w,
-                        height: 50.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.25),
-                            width: 1.2,
-                          ),
-                        ),
-                        child: Icon(
-                          widget.icon,
-                          size: 28.sp,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 5.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w),
-                        child: Text(
-                          widget.title,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            height: 1.3,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 3,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                child: Icon(
+                  widget.icon,
+                  color: widget.color,
+                  size: 32.sp,
+                ),
               ),
-            ),
+
+              SizedBox(height: 8.h),
+
+              Flexible( // Prevents text overflow
+                child: Text(
+                  widget.title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black.withOpacity(0.78),
+                    height: 1.3,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -144,36 +111,3 @@ class _ReportCardState extends State<ReportCard>
   }
 }
 
-// Minimal trend line painter
-class _UpwardTrendLinePainter extends CustomPainter {
-  final Color color;
-  _UpwardTrendLinePainter(this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 2.0
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final path = Path()
-      ..moveTo(0, size.height * 0.8)
-      ..cubicTo(
-        size.width * 0.25, size.height * 0.4,
-        size.width * 0.5, size.height * 1.0,
-        size.width * 0.75, size.height * 0.2,
-      )
-      ..cubicTo(
-        size.width * 0.85, size.height * 0.0,
-        size.width * 0.95, size.height * 0.5,
-        size.width, size.height * 0.3,
-      );
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}

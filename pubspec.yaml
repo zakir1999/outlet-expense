@@ -49,6 +49,7 @@ dependencies:
   flutter_pdfview: ^1.4.3
   data_table_2: ^2.6.0
   pdf: ^3.11.3
+  intl: ^0.20.2
 
 
 

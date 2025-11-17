@@ -12,9 +12,14 @@ import '../../features/menu/dashboard/most_sellling_product/view/most_selling_sc
 import '../../features/menu/dashboard/purchase/repository/purchase_repository.dart';
 import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen.dart';
 import '../../features/login/view/login_screen.dart';
+import '../../features/menu/report/Purchase_register_details_report/bloc/purchase_register_details_bloc.dart';
+import '../../features/menu/report/Purchase_register_details_report/view/purchase_register_details_screen.dart';
 import '../../features/menu/report/due_report_history/bloc/due_report_bloc.dart';
 import '../../features/menu/report/due_report_history/repository/due_report_repository.dart';
 import '../../features/menu/report/due_report_history/view/due_report_history.dart';
+import '../../features/menu/report/employee_wise_sales_report/bloc/employee_wise_sales_report_bloc.dart';
+import '../../features/menu/report/employee_wise_sales_report/repository/employee_wise_sales_report_repository.dart';
+import '../../features/menu/report/employee_wise_sales_report/view/employee_wise_sales_report_screen.dart';
 import '../../features/menu/report/imei_serial_report/view/imei_serial_report_screen.dart';
 import '../../features/menu/report/monthly_purchase_report/bloc/monthly_purchase_report_bloc.dart';
 import '../../features/menu/report/monthly_purchase_report/repository/monthly_purchase_repository.dart';
@@ -23,6 +28,10 @@ import '../../features/menu/report/monthly_sales_report/view/monthly_sales_repor
 import '../../features/menu/report/production_stock_report/bloc/production_stock_bloc.dart';
 import '../../features/menu/report/production_stock_report/view/production_stock_screen.dart';
 import '../../features/menu/report/category_sales_report/view/sales_report_screen.dart';
+import '../../features/menu/report/profit_loss_account_report/bloc/profit_loss_account_report_bloc.dart';
+import '../../features/menu/report/profit_loss_account_report/view/profit_loss_account_report_screen.dart';
+import '../../features/menu/report/sales_register_details_report/bloc/sales_register_details_bloc.dart';
+import '../../features/menu/report/sales_register_details_report/view/sales_register_details_screen.dart';
 import '../../features/menu/report/sales_register_report/bloc/sales_register_details_bloc.dart';
 import '../../features/menu/report/sales_register_report/repository/sales_register_details_repository.dart';
 import '../../features/menu/report/sales_register_report/view/sales_register_report_screen.dart';
@@ -185,6 +194,63 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/purchase-register-details-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+        return BlocProvider(
+          create: (_) =>
+              PurchaseRegisterDetailsBloc(navigatorKey: _rootNavigatorKey),
+          child: PurchaseRegisterDetailsScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/sales-register-details-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+        return BlocProvider(
+          create: (_) =>
+              SalesRegisterDetailsBloc(navigatorKey: _rootNavigatorKey),
+          child: SalesRegisterDetailsScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/profit-&-loss-account-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+        return BlocProvider(
+          create: (_) => ProfitLossReportBloc(navigatorKey: _rootNavigatorKey),
+          child: ProfitLossReportScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
+
+    GoRoute(
+      path: '/employee-wise-sales-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+
+        final repository = EmployeeWiseSalesReportRepository(apiClient: apiClient);
+        return BlocProvider(
+          create: (_) => EmployeeWiseSalesReportBloc(repository: repository),
+          child: EmployeeWiseSalesReportScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
+    GoRoute(
       path: '/monthly-purchase-day-count-report',
       builder: (context, state) {
         final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
@@ -231,7 +297,6 @@ final GoRouter router = GoRouter(
         );
       },
     ),
-
 
     GoRoute(
       path: '/imei-serial-report',

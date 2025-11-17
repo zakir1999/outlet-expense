@@ -17,7 +17,7 @@ class CustomDatePicker extends StatefulWidget {
   final String? Function(DateTimeRange?)? rangeValidator;
 
   const CustomDatePicker({
-    Key? key,
+    super.key,
     required this.title,
     required this.hintText,
     this.isRangePicker = false,
@@ -26,11 +26,11 @@ class CustomDatePicker extends StatefulWidget {
     this.initialRange,
     this.onDateSelected,
     this.onRangeSelected,
-    this.dateFormat = 'dd/MM/yyyy',
+    this.dateFormat = 'yyyy-MM-dd',
     this.locale,
     this.validator,
     this.rangeValidator,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomDatePicker> createState() => _CustomDatePickerState();

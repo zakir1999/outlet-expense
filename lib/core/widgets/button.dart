@@ -83,15 +83,14 @@ class _CustomAnimatedButtonState extends State<CustomAnimatedButton> {
             icon: widget.icon != null
                 ? Icon(widget.icon, color: widget.textColor)
                 : const SizedBox.shrink(),
-            label: Flexible(
-              child: Text(
+            label: Text(
                 widget.label??'',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: widget.textColor,
                   fontSize: widget.fontSize,
                   fontWeight: widget.fontWeight,
-                ),
+
               ),
             ),
           ),

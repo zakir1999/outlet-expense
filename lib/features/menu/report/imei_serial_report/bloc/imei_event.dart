@@ -83,7 +83,9 @@ class ImeiSerialReportUpdateDates extends ImeiSerialReportEvent {
 }
 
 class ImeiSerialFetchRequested extends ImeiSerialReportEvent {
-  const ImeiSerialFetchRequested();
+  const ImeiSerialFetchRequested(
+
+      );
 }
 class LoadMoreCustomerList extends ImeiSerialReportEvent {}
 
@@ -107,9 +109,9 @@ class FetchDropdownPage extends ImeiSerialReportEvent {
 
   const FetchDropdownPage({
     required this.type,
-    this.page = 1,
+    required this.page,
     this.limit = 10,
     this.search,
-    this.append = true,
+    this.append = false,
   });
 }

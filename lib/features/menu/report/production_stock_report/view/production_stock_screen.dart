@@ -31,10 +31,10 @@ class ProductionStockScreen extends StatefulWidget {
 }
 
 class _ProductionStockScreenState extends State<ProductionStockScreen> {
+
   DateTime? startDate = DateTime.now();
   DateTime? endDate = DateTime.now();
   final ScrollController _scrollController = ScrollController();
-  bool _isHovered = false;
 
   @override
   void initState() {
@@ -283,37 +283,41 @@ class _ProductionStockScreenState extends State<ProductionStockScreen> {
       4: const FixedColumnWidth(120),
     };
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+    return Scrollbar(
       controller: _scrollController,
-      child: Table(
-        border: const TableBorder(),
-        columnWidths: columnWidths,
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: [
-          TableRow(
-            decoration: const BoxDecoration(color: Color(0xFFEEF0FA)),
-            children: _buildHeaderCells(),
-          ),
-          ...List.generate(items.length, (i) {
-            final it = items[i];
-            final bg = i.isEven ? Colors.white : const Color(0xFFF7F8FC);
-            final total = it.currentStock * it.purchasePrice;
-            return TableRow(
-              decoration: BoxDecoration(color: bg),
-              children: [
-                ResponsiveCell(text: '${i + 1}', align: TextAlign.center),
-                ResponsiveCell(text: it.name, align: TextAlign.center),
-                ResponsiveCell(
-                    text: it.currentStock.toString(), align: TextAlign.center),
-                ResponsiveCell(
-                    text: it.purchasePrice.toString(), align: TextAlign.center),
-                ResponsiveCell(
-                    text: total.toStringAsFixed(2), align: TextAlign.center),
-              ],
-            );
-          }),
-        ],
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        controller: _scrollController,
+        child: Table(
+          border: const TableBorder(),
+          columnWidths: columnWidths,
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          children: [
+            TableRow(
+              decoration: const BoxDecoration(color: Color(0xFFEEF0FA)),
+              children: _buildHeaderCells(),
+            ),
+            ...List.generate(items.length, (i) {
+              final it = items[i];
+              final bg = i.isEven ? Colors.white : const Color(0xFFF7F8FC);
+              final total = it.currentStock * it.purchasePrice;
+              return TableRow(
+                decoration: BoxDecoration(color: bg),
+                children: [
+                  ResponsiveCell(text: '${i + 1}', align: TextAlign.center),
+                  ResponsiveCell(text: it.name, align: TextAlign.center),
+                  ResponsiveCell(
+                      text: it.currentStock.toString(), align: TextAlign.center),
+                  ResponsiveCell(
+                      text: it.purchasePrice.toString(), align: TextAlign.center),
+                  ResponsiveCell(
+                      text: total.toStringAsFixed(2), align: TextAlign.center),
+                ],
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

@@ -13,9 +13,8 @@ class CustomDropdown extends StatefulWidget {
   final double borderRadius;
   final Color borderColor;
   final EdgeInsetsGeometry? padding;
-
-  /// 🔥 external scroll controller for pagination
   final ScrollController? scrollController;
+  final Widget Function(BuildContext context,List<String>Options)?popupBuilder;
 
   const CustomDropdown({
     super.key,
@@ -30,6 +29,7 @@ class CustomDropdown extends StatefulWidget {
     this.borderColor = Colors.grey,
     this.padding,
     this.scrollController,
+    this.popupBuilder
   });
 
   @override
@@ -46,7 +46,6 @@ class _CustomDropdownState extends State<CustomDropdown> {
     filteredOptions = List.from(widget.options);
   }
 
-  /// 🔥 IMPORTANT FIX: update UI when new data comes
   @override
   void didUpdateWidget(covariant CustomDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -76,7 +75,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return _DropdownContent(
+        return widget.popupBuilder?.call(context,widget.options)??_DropdownContent(
           label: widget.label,
           options: filteredOptions,
           onChanged: widget.onChanged,
@@ -104,7 +103,8 @@ class _CustomDropdownState extends State<CustomDropdown> {
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 450, maxHeight: 600),
                 padding: const EdgeInsets.all(16),
-                child: _DropdownListView(
+
+                child: widget.popupBuilder?.call(context,widget.options)?? _DropdownContent(
                   label: widget.label,
                   options: filteredOptions,
                   onChanged: (val) {
@@ -263,14 +263,16 @@ class _DropdownListViewState extends State<_DropdownListView> {
     filtered = List.from(widget.options);
   }
 
-  /// 🔥 CRITICAL FIX — new data now updates UI
   @override
   void didUpdateWidget(covariant _DropdownListView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.options != widget.options) {
+      final searchQuery = _searchCtrl.text.toLowerCase();
       setState(() {
-        filtered = List.from(widget.options);
+        filtered = widget.options
+            .where((opt) => opt.toLowerCase().contains(searchQuery))
+            .toList();
       });
     }
   }

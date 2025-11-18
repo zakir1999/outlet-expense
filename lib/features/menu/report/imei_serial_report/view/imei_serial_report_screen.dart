@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -14,8 +13,7 @@ import '../bloc/imei_state.dart';
 import '../bloc/imei_bloc.dart';
 import '../model/imei_model.dart';
 import '../repository/imei_report_repository.dart';
-
-import 'package:pdf/widgets.dart' as pw; // ✅ correct
+import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'dart:typed_data';
@@ -79,14 +77,14 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
     _vendorScrollController.addListener(() {
 
       final state=context.read<ImeiSerialReportBloc>().state;
-      if(state is ImeiSerialLoadSuccess){
+      if(state is ImeiSerialLoaded){
         final maxScroll = _vendorScrollController.position.maxScrollExtent;
         final currentScroll = _vendorScrollController.position.pixels;
         if( currentScroll>=maxScroll && state.hasMoreVendors && !state.loadingVendors){
           context.read<ImeiSerialReportBloc>().add(
             FetchDropdownPage(
               type: 'vendor',
-              page: state.customerPage + 1,
+              page: state.vendorPage + 1,
               limit: 10,
               append: true,
             ),
@@ -96,14 +94,14 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
     });
     _brandScrollController.addListener(() {
       final state=context.read<ImeiSerialReportBloc>().state;
-      if(state is ImeiSerialLoadSuccess){
+      if(state is ImeiSerialLoaded){
         final maxScroll = _brandScrollController.position.maxScrollExtent;
         final currentScroll = _brandScrollController.position.pixels;
         if( currentScroll>=maxScroll && state.hasMoreBrands && !state.loadingBrands){
           context.read<ImeiSerialReportBloc>().add(
             FetchDropdownPage(
               type: 'brand',
-              page: state.customerPage + 1,
+              page: state.brandPage + 1,
               limit: 10,
               append: true,
             ),
@@ -112,12 +110,11 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
       }
     });
     _customerScrollController.addListener(() {
-
-      final state=context.read<ImeiSerialReportBloc>().state;
-      if(state is ImeiSerialLoadSuccess){
+      final state = context.read<ImeiSerialReportBloc>().state;
+      if (state is ImeiSerialLoaded) {
         final maxScroll = _customerScrollController.position.maxScrollExtent;
         final currentScroll = _customerScrollController.position.pixels;
-        if( currentScroll>=maxScroll && state.hasMoreCustomers && !state.loadingCustomers){
+        if (currentScroll >= maxScroll && state.hasMoreCustomers && !state.loadingCustomers) {
           context.read<ImeiSerialReportBloc>().add(
             FetchDropdownPage(
               type: 'customer',
@@ -132,14 +129,14 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
     _productScrollController.addListener(() {
 
       final state=context.read<ImeiSerialReportBloc>().state;
-      if(state is ImeiSerialLoadSuccess){
+      if(state is ImeiSerialLoaded){
         final maxScroll = _productScrollController.position.maxScrollExtent;
         final currentScroll = _productScrollController.position.pixels;
         if( currentScroll>=maxScroll && state.hasMoreProducts && !state.loadingProducts){
           context.read<ImeiSerialReportBloc>().add(
             FetchDropdownPage(
               type: 'product',
-              page: state.customerPage + 1,
+              page: state.productPage + 1,
               limit: 10,
               append: true,
             ),
@@ -194,7 +191,7 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
               ),
             ),
 
-            pw.Table.fromTextArray(
+            pw.TableHelper.fromTextArray(
               headers: [
                 'Date',
                 'Brand',
@@ -281,10 +278,10 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
         stockType: _stockType,
       ),
     );
-    context.read<ImeiSerialReportBloc>().add(const ImeiSerialFetchRequested());
+    context.read<ImeiSerialReportBloc>().add(ImeiSerialFetchRequested());
   }
 
-  // UI Widgets
+
   Widget _inputField(
       String label,
       TextEditingController controller, {
@@ -308,19 +305,19 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
   Widget _filtersSection() {
     return BlocBuilder<ImeiSerialReportBloc, ImeiSerialReportState>(
       builder: (context, state) {
-        List<String> customerOptions = [];
-        List<String> vendorOptions = [];
-        List<String> productOptions = [];
-        List<String> brandOptions = [];
+        // List<String> customerOptions = [];
+        // List<String> vendorOptions = [];
+        // List<String> productOptions = [];
+        // List<String> brandOptions = [];
         List<String> conditionOptions =["Intact","Used","Damaged","Service","Client"];
 
-        if (state is ImeiSerialLoadSuccess) {
-          customerOptions = state.customerOptions;
-          vendorOptions = state.vendorOptions;
-          productOptions = state.productOptions;
-          brandOptions = state.brandOptions;
-
-        }
+        // if (state is ImeiSerialLoaded) {
+        //   customerOptions = state.customerOptions;
+        //   vendorOptions = state.vendorOptions;
+        //   productOptions = state.productOptions;
+        //   brandOptions = state.brandOptions;
+        //
+        // }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,7 +354,7 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
 
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             if (_isDateSelected)
               Row(
                 children: [
@@ -368,7 +365,7 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                       onTap: () => _pickStartDate(context),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: _inputField(
                       'End Date',
@@ -378,94 +375,78 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                   ),
                 ],
               ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
-            // ✅ Customer + Product Dropdown
             Row(
               children: [
                 Expanded(
                     child:CustomDropdown(
-                      label: 'Customer',
-                      options: customerOptions,
-                      selectedValue: name,
-                      scrollController: _customerScrollController, // 🔥 Pass controller
-                      onChanged: (val) {
-                        setState(() => name = val);
-
-                        context.read<ImeiSerialReportBloc>().add(
-                          ImeiSerialReportUpdateFilters(
-                            customerName: val ?? '',
-                            brandName: '',
-                            productName: '',
-                            imei: '',
-                            productCondition: '',
-                            vendorName: '',
-                            stockType: '',
-                          ),
-                        );
+                      key: state is ImeiSerialLoaded ? ValueKey('customer-${state.customerOptions.length}') : null,
+                      label: "Customer",
+                      options: state is ImeiSerialLoaded ? state.customerOptions : [],
+                      selectedValue: state is ImeiSerialLoaded && state.customerName.isNotEmpty
+                          ? state.customerName
+                          : null,
+                      scrollController: _customerScrollController,
+                      onChanged: (value) {
+                        if (state is ImeiSerialLoaded) {
+                          context.read<ImeiSerialReportBloc>()
+                              .add(UpdateCustomerName(value ?? ''));
+                        }
                       },
-                    )
+                    ),
+
 
 
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: CustomDropdown(
-                    label: 'Product',
-                    options: productOptions,
-                    scrollController: _productScrollController,
-                    selectedValue: product,
-                    onChanged: (val) {
-                      setState(() => product= val);
+                    key: state is ImeiSerialLoaded ? ValueKey('customer-${state.productOptions.length}') : null,
 
-                      context.read<ImeiSerialReportBloc>().add(
-                        ImeiSerialReportUpdateFilters(
-                          customerName: '',
-                          brandName: '',
-                          productName: val ?? '',
-                          imei: '',
-                          productCondition: '',
-                          vendorName: '',
-                          stockType: '',
-                        ),
-                      );
+                    label: "Product",
+                    options: state is ImeiSerialLoaded ? state.productOptions : [],
+                    scrollController: _productScrollController,
+                     selectedValue: state is ImeiSerialLoaded && state.productName.isNotEmpty
+                     ? state.productName:null,
+                    onChanged: (value) {
+                      if (state is ImeiSerialLoaded) {
+                        context.read<ImeiSerialReportBloc>()
+                            .add(UpdateProductName(value ?? ''));
+                      }
                     },
                   ),
-                ),
-              ],
-            ),
+                )
+            ],
+           ),
 
-            const SizedBox(height: 12),
+
+            const SizedBox(height: 8),
 
             Row(
               children: [
+
                 Expanded(
                   child: CustomDropdown(
-                    label: 'Vendor',
-                    options: vendorOptions,
-                    scrollController: _vendorScrollController,
-                    selectedValue: vendor,
-                    onChanged: (val) {
-                      setState(() => vendor = val);
+                    key: state is ImeiSerialLoaded ? ValueKey('customer-${state.vendorOptions.length}') : null,
 
-                      context.read<ImeiSerialReportBloc>().add(
-                        ImeiSerialReportUpdateFilters(
-                          customerName: '',
-                          brandName: '',
-                          productName:  '',
-                          imei: '',
-                          productCondition: '',
-                          vendorName:val ?? '',
-                          stockType: '',
-                        ),
-                      );
+                    label: "Vendor",
+                    options: state is ImeiSerialLoaded ? state.vendorOptions : [],
+                    scrollController: _vendorScrollController,
+                    selectedValue: state is ImeiSerialLoaded && state.vendorName.isNotEmpty
+                        ? state.vendorName:null,
+                    onChanged: (value) {
+                      if (state is ImeiSerialLoaded) {
+                        context.read<ImeiSerialReportBloc>()
+                            .add(UpdateVendorName(value ?? ''));
+                      }
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: CustomDropdown(
-                    label: 'Product Condition',
+                    label: "Product Condition",
                     options: conditionOptions,
                     selectedValue: _conditionCtrl.text.isEmpty ? null : _conditionCtrl.text,
                     onChanged: (value) {
@@ -473,10 +454,11 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                     },
                   ),
                 ),
+
               ],
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             Row(
               children: [
@@ -490,26 +472,21 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
+
                 Expanded(
                   child: CustomDropdown(
-                    label: 'Brand',
-                    options: brandOptions,
+                    key: state is ImeiSerialLoaded ? ValueKey('customer-${state.brandOptions.length}') : null,
+                    label: "Brand",
+                    options: state is ImeiSerialLoaded ? state.brandOptions : [],
                     scrollController: _brandScrollController,
-                    selectedValue:brand,
-                    onChanged: (val) {
-                      setState(() => brand= val);
-                      context.read<ImeiSerialReportBloc>().add(
-                        ImeiSerialReportUpdateFilters(
-                          customerName: '',
-                          brandName: val ?? '',
-                          productName:  '',
-                          imei: '',
-                          productCondition: '',
-                          vendorName: '',
-                          stockType: '',
-                        ),
-                      );
+                    selectedValue: state is ImeiSerialLoaded && state.brandName.isNotEmpty
+                        ? state.brandName:null,
+                    onChanged: (value) {
+                      if (state is ImeiSerialLoaded) {
+                        context.read<ImeiSerialReportBloc>()
+                            .add(UpdateBrandName(value ?? ''));
+                      }
                     },
                   ),
                 ),
@@ -523,7 +500,7 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _stockTypeButton('Stock In'),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 _stockTypeButton('Stock Out'),
               ],
             ),
@@ -632,7 +609,7 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
       ),
       floatingActionButton: BlocBuilder<ImeiSerialReportBloc, ImeiSerialReportState>(
         builder: (context, state) {
-          if (state is ImeiSerialLoadSuccess && state.groupedRecords.isNotEmpty) {
+          if (state is ImeiSerialLoaded && state.groupedRecords.isNotEmpty) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10, right: 5),
               child: DownloadButton(
@@ -662,7 +639,7 @@ class _ImeiSerialReportViewState extends State<ImeiSerialReportView> {
             builder: (context, state) {
               if (state is ImeiSerialLoading) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (state is ImeiSerialLoadSuccess) {
+              } else if (state is ImeiSerialLoaded) {
                 return SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

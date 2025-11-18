@@ -19,7 +19,6 @@ class InvoiceRepository {
     }
     final body = json.decode(res.body);
 
-    // ✅ Safely extract list of invoices
     List<dynamic> list = [];
     try {
       if (body['data'] is Map && body['data']['data'] is List) {
@@ -29,7 +28,6 @@ class InvoiceRepository {
       } else if (body['invoices'] is List) {
         list = body['invoices'];
       } else {
-        // fallback scan for list anywhere
         body.forEach((key, value) {
           if (value is List) list = value;
         });

@@ -54,3 +54,9 @@ class EmployeeReportItem {
     );
   }
 }
+class EmployeeItem {
+  final int id;
+  final String name;
+
+  EmployeeItem({required this.id, required this.name});
+}

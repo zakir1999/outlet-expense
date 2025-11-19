@@ -17,10 +17,10 @@ class EmployeeWiseSalesReportRepository {
       final payload = {
         "start_date": startDate,
         "end_date": endDate,
-        "employee_id":65 ,
+        "employee_id": id,
 
       };
-      final url='employee-wise-sales';
+      final url = 'employee-wise-sales';
       final response = await apiClient.post(url, payload);
       final decoded = jsonDecode(response.body);
       if (decoded == null) {
@@ -37,4 +37,38 @@ class EmployeeWiseSalesReportRepository {
       rethrow;
     }
   }
+
+
+
+  Future<List<EmployeeItem>> fetchEmployee({int limit = 10}) async {
+    final url = 'employee?page=undefined&limit=$limit';
+    final response = await apiClient.get(url);
+    return _parseListResponse(response);
+  }
+
+
+  Map<String, dynamic> _parseResponse(dynamic response) {
+    if (response == null) return {};
+    if (response is Map<String, dynamic>) return response;
+    if (response is String) return jsonDecode(response);
+    try {
+      return jsonDecode(response.body);
+    } catch (_) {
+      return {};
+    }
+  }
+  List<EmployeeItem> _parseListResponse(dynamic response) {
+    final data = _parseResponse(response);
+    final List items = (data['data'] is Map && data['data']['data'] is List)
+        ? data['data']['data']
+        : [];
+
+    return items.map<EmployeeItem>((item) {
+      return EmployeeItem(
+        id: item["id"] ?? 0,
+        name: item["name"] ?? "",
+      );
+    }).toList();
+  }
+
 }

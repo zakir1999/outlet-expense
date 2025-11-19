@@ -38,7 +38,6 @@ class CustomDropdown extends StatefulWidget {
 
 class _CustomDropdownState extends State<CustomDropdown> {
   late List<String> filteredOptions;
-  final TextEditingController _searchCtrl = TextEditingController();
 
   @override
   void initState() {

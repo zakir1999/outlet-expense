@@ -28,7 +28,6 @@ class _MonthlySaleScreenState extends State<MonthlySalesReportScreen> {
   String filter = "All";
   String brandId = "";
   final ScrollController _scrollController = ScrollController();
-  bool _isHovered = false;
 
   late MonthlySaleReportBloc _reportBloc;
 

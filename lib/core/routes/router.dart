@@ -14,6 +14,12 @@ import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen
 import '../../features/login/view/login_screen.dart';
 import '../../features/menu/report/Purchase_register_details_report/bloc/purchase_register_details_bloc.dart';
 import '../../features/menu/report/Purchase_register_details_report/view/purchase_register_details_screen.dart';
+import '../../features/menu/report/cashbook-details_history/bloc/cashbook_details_history_bloc.dart';
+import '../../features/menu/report/cashbook-details_history/repository/cashbook_repository.dart';
+import '../../features/menu/report/cashbook-details_history/view/cashbook_details_history_screen.dart';
+import '../../features/menu/report/customer_summary_report/bloc/customer_summary_report_bloc.dart';
+import '../../features/menu/report/customer_summary_report/repository/customer_summary_report_repository.dart';
+import '../../features/menu/report/customer_summary_report/view/customer_summary_report_screen.dart';
 import '../../features/menu/report/due_report_history/bloc/due_report_bloc.dart';
 import '../../features/menu/report/due_report_history/repository/due_report_repository.dart';
 import '../../features/menu/report/due_report_history/view/due_report_history.dart';
@@ -236,11 +242,46 @@ final GoRouter router = GoRouter(
     ),
 
     GoRoute(
+      path: '/cash-book-details-history',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+
+        final repository = CashbookDetailsRepository(apiClient: apiClient);
+        return BlocProvider(
+          create: (_) => CashbookDetailsBloc(repository: repository),
+          child: TransactionReportScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/customer-summary-report',
+      builder: (context, state) {
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+
+        final repository = CustomerSummaryReportRepository(
+          apiClient: apiClient,
+        );
+        return BlocProvider(
+          create: (_) => CustomerSummaryReportBloc(repository: repository),
+          child: CustomerSummaryReportScreen(
+            navigatorKey: _rootNavigatorKey,
+            apiClient: apiClient,
+          ),
+        );
+      },
+    ),
+
+    GoRoute(
       path: '/employee-wise-sales-report',
       builder: (context, state) {
         final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
 
-        final repository = EmployeeWiseSalesReportRepository(apiClient: apiClient);
+        final repository = EmployeeWiseSalesReportRepository(
+          apiClient: apiClient,
+        );
         return BlocProvider(
           create: (_) => EmployeeWiseSalesReportBloc(repository: repository),
           child: EmployeeWiseSalesReportScreen(

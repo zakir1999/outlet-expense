@@ -26,7 +26,6 @@ class MonthlySalesModel {
       ),
       daysCount: json['days_count'] ?? 0,
 
-      /// ✅ Convert both INT or STRING to DOUBLE safely
       grandTotal: double.tryParse(json['grand_total'].toString()) ?? 0,
       discountTotal: double.tryParse(json['discount_total'].toString()) ?? 0,
     );

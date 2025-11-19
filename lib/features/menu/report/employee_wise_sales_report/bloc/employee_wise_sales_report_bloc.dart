@@ -15,7 +15,6 @@ class EmployeeWiseSalesReportBloc
     on<FetchEmployeeWiseSalesReportEvent>(_onFetchEmployeeReport);
   }
 
-  /// Fetch employee dropdown options
   Future<void> _onFetchEmployeeOptions(
       FetchEmployeeOptions event, Emitter<EmployeeWiseSalesReportState> emit) async {
     emit(EmployeeWiseSalesLoading());
@@ -66,7 +65,7 @@ class EmployeeWiseSalesReportBloc
       emit(EmployeeWiseSalesLoading());
       try {
         final res = await repository.fetchEmployWiseSalesReport(
-          id: event.id.toString(),
+          id: event.id,
           startDate: event.startDate,
           endDate: event.endDate,
         );
@@ -90,36 +89,5 @@ class EmployeeWiseSalesReportBloc
       }
     }
 
-
-  // Future<void> _onFetchEmployeeReport(
-  //     FetchEmployeeWiseSalesReportEvent event,
-  //     Emitter<EmployeeWiseSalesReportState> emit) async {
-  //
-  //   emit(EmployeeWiseSalesLoading());
-  //
-  //   try {
-  //     final res = await repository.fetchEmployWiseSalesReport(
-  //       id: event.id.toString(),
-  //       startDate: event.startDate,
-  //       endDate: event.endDate,
-  //     );
-  //
-  //     emit(EmployeeWiseSalesLoaded(
-  //       data: res.data,
-  //       employeeOptions: state is EmployeeWiseSalesLoaded
-  //           ? (state as EmployeeWiseSalesLoaded).employeeOptions
-  //           : [],
-  //       employeeName: event.id,
-  //       startDate: DateTime.tryParse(event.startDate),
-  //       endDate: DateTime.tryParse(event.endDate),
-  //       grandTotal: res.grandTotal,
-  //       employeePage: 1,
-  //       hasMoreEmployee: true,
-  //       loadingEmployee: false,
-  //     ));
-  //   } catch (e) {
-  //     emit(EmployeeWiseSalesError(e.toString()));
-  //   }
-  // }
 
 }

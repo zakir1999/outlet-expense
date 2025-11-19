@@ -29,12 +29,16 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         return '/category-sale-report';
       case 'IMEI/Serial Report':
         return '/imei-serial-report';
+      case 'Cash Book Details History':
+        return '/cash-book-details-history';
       case 'Purchase Register Details Report':
         return '/purchase-register-details-report';
       case 'Sales Register Details Report':
         return '/sales-register-details-report';
       case 'Sales Register Report':
         return '/sales-register-report';
+      case 'Customer Summary Report':
+        return '/customer-summary-report';
       case 'Product Stock Report':
         return '/product-stock-report';
       case 'Monthly Sales Day Count Report':

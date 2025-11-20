@@ -102,7 +102,6 @@ Future<Uint8List> _generatePdf(Map<String, dynamic> payload) async {
                   ],
                 );
               }),
-              // footer rows
               pw.TableRow(
                 decoration: const pw.BoxDecoration(color: PdfColors.grey200),
                 children: [
@@ -152,7 +151,6 @@ pw.Widget _pwCell(String text, {bool bold = false}) => pw.Padding(
 class CategorySaleReportScreen extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   final ApiClient apiClient;
-
   const CategorySaleReportScreen({
     super.key,
     required this.navigatorKey,
@@ -166,11 +164,11 @@ class CategorySaleReportScreen extends StatefulWidget {
 class _CategorySaleReportScreen extends State<CategorySaleReportScreen>   with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-
   DateTime? startDate = DateTime.now();
   DateTime? endDate = DateTime.now();
   String filter = "All";
   String brandId = "";
+
   final ScrollController _horizontalScrollController = ScrollController();
   final ScrollController _verticalScrollController = ScrollController();
 
@@ -279,7 +277,7 @@ class _CategorySaleReportScreen extends State<CategorySaleReportScreen>   with A
                     },
                   ),
                 ),
-                const SizedBox(width: 5),
+                const SizedBox(width: 2),
                 Expanded(
                   child: CustomDatePicker(
                     title: "End Date",
@@ -392,7 +390,7 @@ class _CategorySaleReportScreen extends State<CategorySaleReportScreen>   with A
                         if (data == null) {
                           return Center(
                             child: Text(
-                              'No data found',
+                              'No report data found',
                               style: const TextStyle(color: Colors.grey),
                             ),
                           );

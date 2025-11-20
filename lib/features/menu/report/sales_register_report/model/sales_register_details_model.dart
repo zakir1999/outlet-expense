@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class SalesRegisterDetailsModel {
+class SalesRegisterModel {
   final int status;
   final bool success;
   final String message;
@@ -8,7 +8,7 @@ class SalesRegisterDetailsModel {
   final int totalDiscountAmount;
   final int totalSalesAmount;
 
-  SalesRegisterDetailsModel({
+  SalesRegisterModel({
     required this.status,
     required this.success,
     required this.message,
@@ -17,9 +17,8 @@ class SalesRegisterDetailsModel {
     required this.totalSalesAmount,
   });
 
-  /// Factory constructor to create an instance from JSON Map
-  factory SalesRegisterDetailsModel.fromJson(Map<String, dynamic> json) {
-    return SalesRegisterDetailsModel(
+  factory SalesRegisterModel.fromJson(Map<String, dynamic> json) {
+    return SalesRegisterModel(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
       message: json['message'] ?? '',
@@ -32,7 +31,6 @@ class SalesRegisterDetailsModel {
     );
   }
 
-  /// Converts monthly_sales_report to JSON Map
   Map<String, dynamic> toJson() => {
     'status': status,
     'success': success,
@@ -42,11 +40,9 @@ class SalesRegisterDetailsModel {
     'total_sales_amount': totalSalesAmount,
   };
 
-  /// Parse from raw JSON string
-  static SalesRegisterDetailsModel fromRawJson(String str) =>
-      SalesRegisterDetailsModel.fromJson(json.decode(str));
+  static SalesRegisterModel fromRawJson(String str) =>
+      SalesRegisterModel.fromJson(json.decode(str));
 
-  /// Convert to raw JSON string
   String toRawJson() => json.encode(toJson());
 }
 
@@ -54,7 +50,7 @@ class SalesData {
   final String date;
   final int salesDiscount;
   final int salesAmount;
-  final int slImei; // kept as slImei for backend consistency
+  final int slImei;
   final int normal;
   final int gift;
   final int giftAmount;
@@ -69,7 +65,6 @@ class SalesData {
     required this.giftAmount,
   });
 
-  /// Factory constructor to create an instance from JSON Map
   factory SalesData.fromJson(Map<String, dynamic> json) {
     return SalesData(
       date: json['date'] ?? '',
@@ -82,7 +77,6 @@ class SalesData {
     );
   }
 
-  /// Converts monthly_sales_report to JSON Map
   Map<String, dynamic> toJson() => {
     'date': date,
     'sales_discount': salesDiscount,

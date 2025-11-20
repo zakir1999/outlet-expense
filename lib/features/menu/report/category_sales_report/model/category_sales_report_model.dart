@@ -1,6 +1,4 @@
-import 'dart:convert';
 
-/// Helper: safely parse double
 double _toDouble(dynamic value) {
   if (value == null) return 0.0;
   if (value is double) return value;
@@ -9,7 +7,6 @@ double _toDouble(dynamic value) {
   return double.tryParse(str) ?? 0.0;
 }
 
-/// Helper: safely parse int
 int _toInt(dynamic value) {
   if (value == null) return 0;
   if (value is int) return value;
@@ -17,7 +14,6 @@ int _toInt(dynamic value) {
   return int.tryParse(str) ?? 0;
 }
 
-/// 🧾 Individual report item monthly_sales_report
 class CategorySaleModel {
   final String date;
   final String invoiceId;
@@ -67,7 +63,6 @@ class CategorySaleModel {
   }
 }
 
-/// 📦 Top-level response monthly_sales_report (includes totals + report list)
 class CategorySaleResponse {
   final bool success;
   final String message;

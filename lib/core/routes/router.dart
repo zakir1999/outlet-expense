@@ -41,7 +41,7 @@ import '../../features/menu/report/profit_loss_account_report/bloc/profit_loss_a
 import '../../features/menu/report/profit_loss_account_report/view/profit_loss_account_report_screen.dart';
 import '../../features/menu/report/sales_register_details_report/bloc/sales_register_details_bloc.dart';
 import '../../features/menu/report/sales_register_details_report/view/sales_register_details_screen.dart';
-import '../../features/menu/report/sales_register_report/bloc/sales_register_details_bloc.dart';
+import '../../features/menu/report/sales_register_report/bloc/sales_register_bloc.dart';
 import '../../features/menu/report/sales_register_report/repository/sales_register_details_repository.dart';
 import '../../features/menu/report/sales_register_report/view/sales_register_report_screen.dart';
 import '../../features/menu/report/view/report_screen.dart';
@@ -334,18 +334,28 @@ final GoRouter router = GoRouter(
       path: '/sales-register-report',
       builder: (context, state) {
         final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
-
         return BlocProvider(
-          create: (_) => SalesRegisterBloc(
-            repository: SalesRegisterRepository(apiClient: apiClient),
-          ),
-          child: SalesRegisterScreen(
-            navigatorKey: _rootNavigatorKey,
-            apiClient: apiClient,
-          ),
+          create: (_) => SalesRegisterBloc(navigatorKey:_rootNavigatorKey),
+          child: SalesRegisterScreen(navigatorKey: _rootNavigatorKey,apiClient:apiClient),
         );
       },
     ),
+    // GoRoute(
+    //   path: '/sales-register-report',
+    //   builder: (context, state) {
+    //     final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+    //
+    //     return BlocProvider(
+    //       create: (_) => SalesRegisterBloc(
+    //         repository: SalesRegisterRepository(apiClient: apiClient),
+    //       ),
+    //       child: SalesRegisterScreen(
+    //         navigatorKey: _rootNavigatorKey,
+    //         apiClient: apiClient,
+    //       ),
+    //     );
+    //   },
+    // ),
 
     GoRoute(
       path: '/imei-serial-report',

@@ -17,12 +17,9 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     if (route != null) {
       emit(ReportNavigationRequested(routeName: route));
     }
-
-    // Reset to initial after navigation
     emit(ReportInitial());
   }
 
-  /// Maps report titles to specific routes.
   String? _mapTitleToRoute(String title) {
     switch (title) {
       case 'Category Sale Report':

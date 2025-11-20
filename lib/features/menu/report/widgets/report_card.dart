@@ -31,8 +31,6 @@ class _ReportCardState extends State<ReportCard>
   @override
   Widget build(BuildContext context) {
     final double scale = _pressed ? 0.95 : 1.0;
-
-    // Convert base color → soft pastel
     final hsl = HSLColor.fromColor(widget.color);
     final pastel = hsl
         .withSaturation((hsl.saturation * 0.30).clamp(0.0, 1.0))
@@ -59,7 +57,11 @@ class _ReportCardState extends State<ReportCard>
 
           decoration: BoxDecoration(
             color: pastel,
-            borderRadius: BorderRadius.circular(22.r),
+            borderRadius: BorderRadius.circular(22.r,),
+            border: Border.all(
+              color: Colors.white70,
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: widget.color.withOpacity(0.12),

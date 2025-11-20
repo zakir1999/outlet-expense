@@ -14,9 +14,12 @@ import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen
 import '../../features/login/view/login_screen.dart';
 import '../../features/menu/report/Purchase_register_details_report/bloc/purchase_register_details_bloc.dart';
 import '../../features/menu/report/Purchase_register_details_report/view/purchase_register_details_screen.dart';
+import '../../features/menu/report/bloc/report_bloc.dart';
 import '../../features/menu/report/cashbook-details_history/bloc/cashbook_details_history_bloc.dart';
 import '../../features/menu/report/cashbook-details_history/repository/cashbook_repository.dart';
 import '../../features/menu/report/cashbook-details_history/view/cashbook_details_history_screen.dart';
+import '../../features/menu/report/category_sales_report/bloc/category_sale_report_bloc.dart';
+import '../../features/menu/report/category_sales_report/repository/category_sale_repository.dart';
 import '../../features/menu/report/customer_summary_report/bloc/customer_summary_report_bloc.dart';
 import '../../features/menu/report/customer_summary_report/repository/customer_summary_report_repository.dart';
 import '../../features/menu/report/customer_summary_report/view/customer_summary_report_screen.dart';
@@ -33,7 +36,7 @@ import '../../features/menu/report/monthly_purchase_report/view/monthly_purchase
 import '../../features/menu/report/monthly_sales_report/view/monthly_sales_report.dart';
 import '../../features/menu/report/production_stock_report/bloc/production_stock_bloc.dart';
 import '../../features/menu/report/production_stock_report/view/production_stock_screen.dart';
-import '../../features/menu/report/category_sales_report/view/sales_report_screen.dart';
+import '../../features/menu/report/category_sales_report/view/category_sale_report_screen.dart';
 import '../../features/menu/report/profit_loss_account_report/bloc/profit_loss_account_report_bloc.dart';
 import '../../features/menu/report/profit_loss_account_report/view/profit_loss_account_report_screen.dart';
 import '../../features/menu/report/sales_register_details_report/bloc/sales_register_details_bloc.dart';
@@ -177,9 +180,14 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/category-sale-report',
       builder: (context, state) {
-        return SalesReportScreen(navigatorKey: _rootNavigatorKey);
+        final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
+        return BlocProvider(
+          create: (_) => CategoryReportBloc(navigatorKey:_rootNavigatorKey),
+          child: CategorySaleReportScreen(navigatorKey: _rootNavigatorKey,apiClient:apiClient),
+        );
       },
     ),
+
     GoRoute(
       path: '/monthly-sales-day-count-report',
       builder: (context, state) {

@@ -59,25 +59,25 @@ class ImeiSerialReportRepository {
   }
 
   // -------------------- Dropdown Fetching with Pagination --------------------
-  Future<List<String>> fetchCustomers({int page = 1, int limit = 10}) async {
+  Future<List<String>> fetchCustomers({int page = 1, int limit = 100}) async {
     final url = 'customer-lists?page=$page&limit=$limit';
     final response = await apiClient.get(url);
     return _parseListResponse(response);
   }
 
-  Future<List<String>> fetchVendors({int page = 1, int limit = 10}) async {
+  Future<List<String>> fetchVendors({int page = 1, int limit = 100}) async {
     final url = 'search-vendor?page=$page&limit=$limit';
     final response = await apiClient.post(url, "");
     return _parseListResponse(response);
   }
 
-  Future<List<String>> fetchProducts({int page = 1, int limit = 10}) async {
+  Future<List<String>> fetchProducts({int page = 1, int limit = 100}) async {
     final url = 'product?page=$page&limit=$limit';
     final response = await apiClient.get(url);
     return _parseListResponse(response);
   }
 
-  Future<List<String>> fetchBrands({int page = 1, int limit = 10}) async {
+  Future<List<String>> fetchBrands({int page = 1, int limit = 100}) async {
     final url = 'brands?page=$page&limit=$limit';
     final response = await apiClient.get(url);
     return _parseListResponse(response);

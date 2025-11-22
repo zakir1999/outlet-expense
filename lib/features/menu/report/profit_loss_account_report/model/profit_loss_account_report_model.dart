@@ -24,7 +24,6 @@ class ProfitLossReport extends Equatable {
   }
 
   factory ProfitLossReport.fromJson(Map<String, dynamic> json) {
-    // Safely parse the expenses map
     final Map<String, int> expensesMap = {};
     if (json['expenses'] is Map) {
       (json['expenses'] as Map).forEach((key, value) {

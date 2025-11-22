@@ -54,11 +54,13 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
       ),
     );
   }
+
   String startDateString() =>
       (startDate ?? DateTime.now()).toIso8601String().split('T').first;
 
   String endDateString() =>
       (endDate ?? DateTime.now()).toIso8601String().split('T').first;
+
   Future<void> _generatePDF(ProfitLossReport report) async {
     final pdf = pw.Document();
     final f = NumberFormat('#,##0', 'en_US');
@@ -85,12 +87,15 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Text('Generated: ${DateFormat('dd-MMM-yyyy').format(DateTime.now())}', style: pw.TextStyle(fontSize: 10)),
+              pw.Text(
+                'Generated: ${DateFormat('dd-MMM-yyyy').format(DateTime.now())}',
+                style: pw.TextStyle(fontSize: 10),
+              ),
             ],
           ),
           pw.SizedBox(height: 12),
           pw.Table(
-            border: pw.TableBorder.all(color: PdfColors.grey700, width: 0.4),
+            border: pw.TableBorder.all(color: PdfColors.grey700, width: 0.8),
             columnWidths: {
               0: const pw.FlexColumnWidth(3),
               1: const pw.FlexColumnWidth(2),
@@ -107,7 +112,6 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
                   _pdfCell('Amount (In BDT)', bold: true),
                 ],
               ),
-              // body rows
               for (var i = 0; i < maxRows; i++)
                 pw.TableRow(
                   decoration: pw.BoxDecoration(
@@ -120,7 +124,6 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
                     i < rightItems.length ? _pdfCell(f.format(rightItems[i].value)) : _pdfCell(''),
                   ],
                 ),
-              // Total row
               pw.TableRow(
                 decoration: const pw.BoxDecoration(color: PdfColors.grey200),
                 children: [
@@ -133,10 +136,12 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
             ],
           ),
           pw.SizedBox(height: 8),
-          // Optional note/footer area
           pw.Align(
             alignment: pw.Alignment.centerLeft,
-            child: pw.Text('Note: All amounts are in BDT.', style: pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
+            child: pw.Text(
+              'Note: All amounts are in BDT.',
+              style: pw.TextStyle(fontSize: 9, color: PdfColors.grey600),
+            ),
           ),
         ],
       ),
@@ -150,14 +155,17 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
     child: pw.Text(
       text,
       textAlign: pw.TextAlign.left,
-      style: pw.TextStyle(fontSize: 10, fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal),
+      style: pw.TextStyle(
+        fontSize: 10,
+        fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+      ),
     ),
   );
 
-  // ----------------- UI -----------------
   @override
   Widget build(BuildContext context) {
     final formatter = NumberFormat('#,##0', 'en_US');
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
       appBar: AppBar(
@@ -167,22 +175,23 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
         centerTitle: true,
       ),
 
-      floatingActionButton: BlocBuilder<ProfitLossReportBloc, ProfitLossReportState>(
-        builder: (context, state) {
-          if (state is ProfitLossReportLoaded) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10, right: 5),
-              child: DownloadButton(
-                onPressed: () => _generatePDF(state.report),
-                icon: Icons.file_download_rounded,
-                backgroundColor: Colors.grey.shade800.withOpacity(0.85),
-                iconColor: Colors.white,
-                size: 60,
-                iconSize: 26,
-              ),
-            );
+      floatingActionButton: BlocSelector<ProfitLossReportBloc, ProfitLossReportState, ProfitLossReport?>(
+        selector: (state) => state is ProfitLossReportLoaded ? state.report : null,
+        builder: (context, report) {
+          if (report == null) {
+            return const SizedBox.shrink();
           }
-          return const SizedBox.shrink();
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10, right: 5),
+            child: DownloadButton(
+              onPressed: () => _generatePDF(report),
+              icon: Icons.file_download_rounded,
+              backgroundColor: const Color(0xF2959292),
+              iconColor: Colors.white,
+              size: 60,
+              iconSize: 26,
+            ),
+          );
         },
       ),
 
@@ -190,27 +199,69 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
         child: Column(
           children: [
             _datePickerSection(),
+
+            // ---------------------------
+            // FIX APPLIED HERE
+            // ---------------------------
             Expanded(
-              child: BlocBuilder<ProfitLossReportBloc, ProfitLossReportState>(
-                builder: (context, state) {
-                  if (state is ProfitLossReportLoading) return const ResponsiveShimmer();
-                  if (state is ProfitLossReportError) {
-                    return Center(child: Text('❌ ${state.message}', style: const TextStyle(color: Colors.red)));
-                  }
-                  if (state is ProfitLossReportLoaded) {
-                    return _tableSection(state.report, formatter);
-                  }
-                  return const SizedBox.shrink();
-                },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    BlocBuilder<ProfitLossReportBloc, ProfitLossReportState>(
+                      buildWhen: (prev, current) =>
+                      current is ProfitLossReportLoading ||
+                          current is ProfitLossReportError ||
+                          current is ProfitLossReportLoaded,
+                      builder: (context, state) {
+                        if (state is ProfitLossReportLoading) {
+                          return ResponsiveShimmer();
+                        }
+
+                        if (state is ProfitLossReportError) {
+                          return Center(
+                            child: Text(
+                              "❌ ${state.message}",
+                              style: const TextStyle(color: Colors.redAccent),
+                            ),
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      },
+                    ),
+
+                    // Table Section
+                    SizedBox(
+                      height: 600, // keeps scroll working & avoids overflow
+                      child: BlocSelector<ProfitLossReportBloc,
+                          ProfitLossReportState, ProfitLossReport?>(
+                        selector: (state) =>
+                        state is ProfitLossReportLoaded ? state.report : null,
+                        builder: (context, data) {
+                          if (data == null) {
+                            return const Center(
+                              child: Text(
+                                'No report data found',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            );
+                          }
+
+                          return _tableSection(data, formatter);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
+            // ---------------------------
           ],
         ),
       ),
     );
   }
 
-  // ----------------- DATE PICKER UI -----------------
   Widget _datePickerSection() {
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -222,11 +273,11 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
                 child: CustomDatePicker(
                   title: 'Start Date',
                   hintText: startDateString(),
-                  initialDate: startDate!,
+                  initialDate: startDate ?? DateTime.now(),
                   onDateSelected: (date) => setState(() => startDate = date),
                 ),
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 2),
               Expanded(
                 child: CustomDatePicker(
                   title: 'End Date',
@@ -237,13 +288,19 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               CustomAnimatedButton(
                 label: 'Report',
                 icon: Icons.analytics_outlined,
+                color: const Color(0xFF3240B6),
+                pressedColor: const Color(0xFF26338A),
+                fullWidth: false,
+                height: 50,
+                borderRadius: 24,
+                width: 150,
                 onPressed: _fetchReport,
               ),
             ],
@@ -253,13 +310,11 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
     );
   }
 
-  // ----------------- TABLE UI -----------------
-  /// We'll use fixed column widths so horizontal scrolling feels natural like SalesRegisterDetailsScreen.
   Widget _tableSection(ProfitLossReport report, NumberFormat f) {
-
     const double particularsWidth = 280;
     const double amountWidth = 140;
-    const double totalWidth = particularsWidth + amountWidth + particularsWidth + amountWidth;
+    const double totalWidth =
+        particularsWidth + amountWidth + particularsWidth + amountWidth;
 
     final leftItems = report.expenses.entries.map((e) => MapEntry(e.key, e.value)).toList();
     final rightItems = <MapEntry<String, num>>[
@@ -347,7 +402,8 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
       alignment: Alignment.centerLeft,
       child: Text(
         text,
-        style: TextStyle(fontWeight: bold ? FontWeight.bold : FontWeight.normal, fontSize: 14),
+        style: TextStyle(
+            fontWeight: bold ? FontWeight.bold : FontWeight.normal, fontSize: 14),
       ),
     );
   }
@@ -359,7 +415,6 @@ class _ProfitLossReportScreenState extends State<ProfitLossReportScreen> {
   }
 }
 
-/// This helper delegate can be moved to a shared widgets file if used elsewhere.
 class _TableHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;

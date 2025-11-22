@@ -31,9 +31,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
                   activeItem: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blueAccent,
+                      color: Colors.white,
                     ),
-                    child: const Icon(Icons.home, color: Colors.white),
+                    child: const Icon(Icons.home, color: Colors.blueAccent),
                   ),
                 ),
                 BottomBarItem(
@@ -41,9 +41,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
                   activeItem: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blueAccent,
+                      color: Colors.white,
                     ),
-                    child: const Icon(Icons.pie_chart_outline, color: Colors.white),
+                    child: const Icon(Icons.pie_chart, color: Colors.blueAccent),
                   ),
                 ),
                 BottomBarItem(
@@ -51,9 +51,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
                   activeItem: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blueAccent,
+                      color: Colors.white,
                     ),
-                    child: const Icon(Icons.shopping_cart, color: Colors.white),
+                    child: const Icon(Icons.shopping_cart, color: Colors.blueAccent),
                   ),
                 ),
                 BottomBarItem(
@@ -61,15 +61,15 @@ class ScaffoldWithNavBar extends StatelessWidget {
                   activeItem: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blueAccent,
+                      color: Colors.white,
                     ),
-                    child: const Icon(Icons.pages, color: Colors.white),
+                    child: const Icon(Icons.pages, color: Colors.blueAccent),
                   ),
                 ),
               ],
               kIconSize: 25.0,
               kBottomRadius: 25.0,
-              color: const Color.fromRGBO(35, 59, 201, 1.0), // opacity 1.0 = fully visible
+              color: const Color.fromRGBO(35, 59, 201, 1.0),
             showLabel: false,
             ),
           );

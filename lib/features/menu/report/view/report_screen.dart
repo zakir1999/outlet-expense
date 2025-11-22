@@ -38,7 +38,7 @@ class ReportScreen extends StatelessWidget {
     _ReportItem(
       title: 'Purchase Register Details Report',
       icon: Icons.receipt_long,
-      color: Color(0xFF10B981),
+      color: Color(0xFF0216EF),
     ),
     _ReportItem(
       title: 'Sales Register Details Report',
@@ -48,7 +48,7 @@ class ReportScreen extends StatelessWidget {
     _ReportItem(
       title: 'Product Stock Report',
       icon: Icons.inventory,
-      color: Color(0xFF059669),
+      color: Colors.deepOrange,
     ),
     _ReportItem(
       title: 'Expense Type Wise Report',
@@ -58,7 +58,7 @@ class ReportScreen extends StatelessWidget {
     _ReportItem(
       title: 'Employee Wise Sales Report',
       icon: Icons.people_alt,
-      color: Color(0xFF14B8A6),
+      color: Colors.deepPurpleAccent,
     ),
     _ReportItem(
       title: 'Cash Book Details History',
@@ -73,12 +73,12 @@ class ReportScreen extends StatelessWidget {
     _ReportItem(
       title: 'Monthly Purchase Day Count Report',
       icon: Icons.shopping_cart,
-      color: Color(0xFFEA580C),
+      color: Colors.purple,
     ),
     _ReportItem(
       title: 'Purchase Summary Report',
       icon: Icons.summarize,
-      color: Color(0xFF64748B),
+      color: Colors.pink,
     ),
     _ReportItem(
       title: 'Profit & Loss Account Report',

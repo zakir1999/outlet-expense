@@ -95,12 +95,15 @@ class _MostSellingScreenState extends State<MostSellingScreen> {
       minTextAdapt: true,
       builder: (context, child) => Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.6,
+          shadowColor: Colors.black.withOpacity(0.05),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_sharp, color: Colors.black),
             onPressed: () {
               Navigator.pop(context);
             },
-          ),          backgroundColor: Colors.white,
+          ),
           title: Text('Most Selling Products', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600,color: Colors.black)),
           centerTitle: true,
         ),

@@ -31,7 +31,7 @@ class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
       ) async {
     emit(InvoiceLoading());
     try {
-      final invoices = await repository.fetchInvoice(page: 1, limit: 10,type: 'Inv');
+      final invoices = await repository.fetchInvoice(page: 1, limit: 10);
       emit(InvoiceLoaded(
         allInvoices: invoices,
         page: 1,
@@ -56,7 +56,7 @@ class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
         _isFetching=true;
         final nextPage = current.page + 1;
         final newInvoices =
-        await repository.fetchInvoice(page: nextPage, limit: 10,type: current.activeType);
+        await repository.fetchInvoice(page: nextPage, limit: 10);
 
         final allInvoices = [...current.allInvoices, ...newInvoices];
         final hasMore = newInvoices.length == 10;
@@ -81,7 +81,7 @@ class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
       ) async {
     emit(InvoiceLoading());
     try {
-      final invoices = await repository.fetchInvoice(page: 1, limit: 10,type: event.type);
+      final invoices = await repository.fetchInvoice(page: 1, limit: 10);
       emit(InvoiceLoaded(
         allInvoices: invoices,
         activeType: event.type,
@@ -103,7 +103,7 @@ class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
 
       try {
         // 🧭 Reset to page 1 for a new search
-        final invoices = await repository.fetchInvoice(page: 1, limit: 10,type:current.activeType);
+        final invoices = await repository.fetchInvoice(page: 1, limit: 10);
 
         emit(current.copyWith(
           allInvoices: invoices,
@@ -119,7 +119,7 @@ class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
       // If no previous data, do a normal loading fetch
       emit(InvoiceLoading());
       try {
-        final invoices = await repository.fetchInvoice(page: 1, limit: 10,type: 'Inv');
+        final invoices = await repository.fetchInvoice(page: 1, limit: 10);
         emit(InvoiceLoaded(
           allInvoices: invoices,
           searchQuery: event.query,

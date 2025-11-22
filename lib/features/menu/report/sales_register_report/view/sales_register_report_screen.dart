@@ -401,7 +401,7 @@ class _SalesRegisterScreenState extends State<SalesRegisterScreen>
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           children: [
             TableRow(
-              decoration: const BoxDecoration(color: Color(0xFFEEF0FA)),
+              decoration: const BoxDecoration(color: Color(0xFFC8C6C6)),
               children: _buildHeaderCells(),
             ),
             ...List.generate(items.length, (i) {
@@ -440,7 +440,7 @@ class _SalesRegisterScreenState extends State<SalesRegisterScreen>
             }),
             // মোট সারি
             TableRow(
-              decoration: const BoxDecoration(color: Color(0xFF919393)),
+              decoration: const BoxDecoration(color: Color(0xFFC8C6C6)),
               children: [
                 ResponsiveCell(
                   text: 'Total Discount',
@@ -461,7 +461,7 @@ class _SalesRegisterScreenState extends State<SalesRegisterScreen>
               ],
             ),
             TableRow(
-              decoration: const BoxDecoration(color: Color(0xFF919393)),
+              decoration: const BoxDecoration(color: Color(0xFFC8C6C6)),
               children: [
                 ResponsiveCell(
                   text: 'Grand Total',

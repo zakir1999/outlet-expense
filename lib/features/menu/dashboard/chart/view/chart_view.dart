@@ -43,13 +43,12 @@ class _ChartViewState extends State<ChartView> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Interval Buttons
+
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: IntervalButtons(),
               ),
 
-              // Chart Section
               BlocBuilder<ChartBloc, ChartState>(
                 builder: (context, state) {
                   if (state is ChartLoading) {
@@ -72,7 +71,7 @@ class _ChartViewState extends State<ChartView> {
                           },),
                         ),
 
-                        // Bottom White Area
+
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.only(

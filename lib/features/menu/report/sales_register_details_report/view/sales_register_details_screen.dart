@@ -65,10 +65,10 @@ class _SalesRegisterDetailsScreenState extends State<SalesRegisterDetailsScreen>
           pw.Center(
             child: pw.Text(
               "Sales Register Details",
-              style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
             ),
           ),
-          pw.SizedBox(height: 10),
+          pw.SizedBox(height: 8),
           pw.Table(
             border: pw.TableBorder.all(color: PdfColors.black, width: 0.3),
             columnWidths: const {
@@ -112,7 +112,7 @@ class _SalesRegisterDetailsScreenState extends State<SalesRegisterDetailsScreen>
       textAlign: pw.TextAlign.center,
       style: pw.TextStyle(
         fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
-        fontSize: 10,
+        fontSize: 14,
       ),
     ),
   );
@@ -189,7 +189,7 @@ class _SalesRegisterDetailsScreenState extends State<SalesRegisterDetailsScreen>
                   onDateSelected: (date) => setState(() => startDate = date),
                 ),
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 2),
               Expanded(
                 child: CustomDatePicker(
                   title: "End Date",
@@ -200,7 +200,7 @@ class _SalesRegisterDetailsScreenState extends State<SalesRegisterDetailsScreen>
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -322,7 +322,6 @@ class _SalesRegisterDetailsScreenState extends State<SalesRegisterDetailsScreen>
   }
 }
 
-// This helper delegate can be moved to a shared widgets file if used elsewhere.
 class _TableHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;

@@ -158,8 +158,7 @@ class _SignupPage2State extends State<SignupPage2> {
                       ],
                     ),
                   );
-                }).toList(),
-
+                }),
                 SizedBox(height: 10.h),
                 NextButton(
                   onPressed: () {

@@ -14,12 +14,10 @@ import '../../features/menu/dashboard/purchase/view/purchase_invoice_list_screen
 import '../../features/login/view/login_screen.dart';
 import '../../features/menu/report/Purchase_register_details_report/bloc/purchase_register_details_bloc.dart';
 import '../../features/menu/report/Purchase_register_details_report/view/purchase_register_details_screen.dart';
-import '../../features/menu/report/bloc/report_bloc.dart';
 import '../../features/menu/report/cashbook-details_history/bloc/cashbook_details_history_bloc.dart';
 import '../../features/menu/report/cashbook-details_history/repository/cashbook_repository.dart';
 import '../../features/menu/report/cashbook-details_history/view/cashbook_details_history_screen.dart';
 import '../../features/menu/report/category_sales_report/bloc/category_sale_report_bloc.dart';
-import '../../features/menu/report/category_sales_report/repository/category_sale_repository.dart';
 import '../../features/menu/report/customer_summary_report/bloc/customer_summary_report_bloc.dart';
 import '../../features/menu/report/customer_summary_report/repository/customer_summary_report_repository.dart';
 import '../../features/menu/report/customer_summary_report/view/customer_summary_report_screen.dart';
@@ -42,7 +40,6 @@ import '../../features/menu/report/profit_loss_account_report/view/profit_loss_a
 import '../../features/menu/report/sales_register_details_report/bloc/sales_register_details_bloc.dart';
 import '../../features/menu/report/sales_register_details_report/view/sales_register_details_screen.dart';
 import '../../features/menu/report/sales_register_report/bloc/sales_register_bloc.dart';
-import '../../features/menu/report/sales_register_report/repository/sales_register_details_repository.dart';
 import '../../features/menu/report/sales_register_report/view/sales_register_report_screen.dart';
 import '../../features/menu/report/view/report_screen.dart';
 import '../../features/menu/view/contact_screen.dart';
@@ -137,7 +134,6 @@ final GoRouter router = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (_, __) => const PaymentScreen(),
     ),
-    // Recent Orders (Invoice)
     GoRoute(
       path: '/recent-orders',
       builder: (context, state) {
@@ -340,23 +336,6 @@ final GoRouter router = GoRouter(
         );
       },
     ),
-    // GoRoute(
-    //   path: '/sales-register-report',
-    //   builder: (context, state) {
-    //     final apiClient = ApiClient(navigatorKey: _rootNavigatorKey);
-    //
-    //     return BlocProvider(
-    //       create: (_) => SalesRegisterBloc(
-    //         repository: SalesRegisterRepository(apiClient: apiClient),
-    //       ),
-    //       child: SalesRegisterScreen(
-    //         navigatorKey: _rootNavigatorKey,
-    //         apiClient: apiClient,
-    //       ),
-    //     );
-    //   },
-    // ),
-
     GoRoute(
       path: '/imei-serial-report',
       builder: (context, state) {

@@ -11,12 +11,14 @@ abstract class ProfitLossReportEvent extends Equatable {
 class FetchProfitLossReportEvent extends ProfitLossReportEvent {
   final String startDate;
   final String endDate;
+  final bool forceRefresh;
 
   const FetchProfitLossReportEvent({
     required this.startDate,
     required this.endDate,
+    this.forceRefresh=false,
   });
 
   @override
-  List<Object?> get props => [startDate, endDate];
+  List<Object?> get props => [startDate, endDate,forceRefresh];
 }

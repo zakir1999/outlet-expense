@@ -1,5 +1,5 @@
 class Invoice {
-  final String id; // invoice_id
+  final String id;
   final String customerName;
   final double amount;
   final String type;

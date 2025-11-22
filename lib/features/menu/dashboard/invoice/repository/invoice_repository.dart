@@ -4,19 +4,50 @@ import '../model/invoice_model.dart';
 
 class InvoiceRepository {
   final ApiClient apiClient;
+
   InvoiceRepository({required this.apiClient});
+
+  /// Prevent duplicate API calls at the same time
+  final Map<String, Future<List<Invoice>>> _ongoingRequests = {};
+
+  String _generateKey({required int page, required int limit}) {
+    return 'page=$page&limit=$limit';
+  }
 
   Future<List<Invoice>> fetchInvoice({
     required int page,
     required int limit,
-    String type="Inv",
   }) async {
-    final endpoint=(type=='Pur')?'purchase-invoice-list': 'invoice-list';
+    final key = _generateKey(page: page, limit: limit);
+
+    // ---- Avoid duplicate API hit for same page ----
+    if (_ongoingRequests.containsKey(key)) {
+      return _ongoingRequests[key]!;
+    }
+
+    final futureRequest = _fetchFromApi(page: page, limit: limit);
+    _ongoingRequests[key] = futureRequest;
+
+    try {
+      final data = await futureRequest;
+      return data;
+    } finally {
+      _ongoingRequests.remove(key);
+    }
+  }
+
+  Future<List<Invoice>> _fetchFromApi({
+    required int page,
+    required int limit,
+  }) async {
+    final endpoint = 'invoice-list';
     final url = '$endpoint?page=$page&limit=$limit';
     final res = await apiClient.get(url);
+
     if (res.statusCode != 200) {
       throw Exception('Failed to fetch invoices');
     }
+
     final body = json.decode(res.body);
 
     List<dynamic> list = [];
@@ -40,7 +71,8 @@ class InvoiceRepository {
   }
 
   Future<Invoice> fetchInvoiceById(String id) async {
-    final invoices = await fetchInvoice(page: 1, limit: 1);
+    // fallback fetch page 1 if needed
+    final invoices = await fetchInvoice(page: 1, limit: 50);
     return invoices.firstWhere(
           (i) => i.id == id,
       orElse: () => Invoice(
